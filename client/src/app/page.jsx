@@ -17,11 +17,11 @@ const Landing = () => {
   useEffect(() => {
     const winkTimer = setTimeout(() => {
       setLogoSrc("/logo.png");
-    }, 1000);
+    }, 1100);
 
     const introTimer = setTimeout(() => {
       setShowIntro(false);
-    }, 2500);
+    }, 3100);
 
     return () => {
       clearTimeout(winkTimer);
@@ -43,6 +43,14 @@ const Landing = () => {
     hidden: { y: 30, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
   };
+
+  // Intro Floating Particles
+  const particles = [
+    { id: 1, type: "sparkle", top: "22%", left: "33%", size: 36, delay: 0.3, color: "text-brand-primary" },
+    { id: 2, type: "heart", top: "28%", left: "62%", size: 30, delay: 0.5, color: "text-brand-danger" },
+    { id: 3, type: "sparkle", top: "66%", left: "30%", size: 24, delay: 0.6, color: "text-brand-accent" },
+    { id: 4, type: "sparkle", top: "62%", left: "66%", size: 40, delay: 0.4, color: "text-brand-primary" },
+  ];
 
   const features = [
     {
@@ -74,28 +82,78 @@ const Landing = () => {
           <motion.div
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-brand-bg"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-brand-bg overflow-hidden"
           >
+            {/* Pulsing Back Glow */}
+            <motion.div
+              className="absolute w-[450px] h-[450px] rounded-full bg-gradient-to-r from-brand-accent/20 via-pink-400/5 to-brand-primary/20 blur-3xl"
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.5, 0.8, 0.5],
+              }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+
+            {/* Floating Particles */}
+            {particles.map((p) => (
+              <motion.div
+                key={p.id}
+                className={`absolute ${p.color}`}
+                style={{ top: p.top, left: p.left }}
+                initial={{ scale: 0, opacity: 0, y: 15 }}
+                animate={{
+                  scale: 1,
+                  opacity: 0.85,
+                  y: [0, -12, 0],
+                  rotate: [0, 15, -15, 0]
+                }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{
+                  scale: { delay: p.delay, duration: 0.6, type: "spring", stiffness: 100 },
+                  opacity: { delay: p.delay, duration: 0.6 },
+                  y: { repeat: Infinity, duration: 3.5, ease: "easeInOut", delay: p.delay },
+                  rotate: { repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: p.delay }
+                }}
+              >
+                {p.type === "sparkle" ? (
+                  <Sparkles size={p.size} className="fill-brand-primary/10" />
+                ) : (
+                  <Heart size={p.size} className="fill-current" />
+                )}
+              </motion.div>
+            ))}
+
+            {/* Main Centered Logo Card */}
             <motion.div
               layoutId="app-logo-wrapper"
-              className="flex flex-col items-center gap-6 select-none"
+              className="flex flex-col items-center gap-6 select-none relative z-10"
             >
-              <motion.img
-                src={logoSrc}
-                alt="Blink Logo"
-                className="w-48 h-48 object-cover rounded-[36px] border border-zinc-800/10 shadow-2xl"
-                initial={{ scale: 0.3, opacity: 0 }}
+              <motion.div
+                className="relative rounded-[40px] p-2 bg-brand-surface/40 backdrop-blur-md border border-white/5 shadow-2xl overflow-hidden"
+                initial={{ scale: 0.3, opacity: 0, rotate: -5 }}
                 animate={{
-                  scale: [0.3, 1.1, 1],
+                  scale: [0.3, 1.08, 0.96, 1.02, 1],
                   opacity: 1,
+                  rotate: 0
                 }}
                 transition={{
-                  duration: 0.8,
-                  ease: "easeInOut"
+                  duration: 1.0,
+                  ease: "easeOut"
                 }}
-              />
+              >
+                <motion.img
+                  src={logoSrc}
+                  alt="Blink Logo"
+                  className="w-52 h-52 object-cover rounded-[32px]"
+                />
+              </motion.div>
+
               <motion.span
-                className="font-logo text-6xl text-brand-accent mt-2 leading-none"
+                className="font-logo text-[72px] text-brand-accent mt-3 leading-none drop-shadow-sm"
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.6 }}
@@ -220,106 +278,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 bg-zinc-950/40 relative z-10 px-6 border-t border-zinc-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">
-              Designed for the Next Era
-            </h2>
-            <p className="text-sm text-brand-text-secondary leading-relaxed">
-              Blink pairs fluid web messaging interfaces with generative AI pipelines to elevate your standard social feed into creative memory channels.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-              >
-                <Card variant="glass" hoverEffect className="p-6 h-full flex flex-col items-start glass-panel-hover">
-                  <div className="p-3 rounded-xl bg-zinc-900 border border-zinc-800/50 mb-5">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-base font-bold text-white mb-2">{feature.title}</h3>
-                  <p className="text-xs text-brand-text-secondary leading-relaxed">{feature.description}</p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer Section */}
-      <footer className="bg-zinc-950 border-t border-zinc-900 py-16 px-6 relative z-10 mt-auto">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Column 1 - Brand */}
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 rounded-lg bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center">
-                <Radio className="text-brand-primary" size={14} />
-              </div>
-              <span className="font-bold text-white text-base">Blink.</span>
-            </div>
-            <p className="text-xs text-gray-500 leading-relaxed mb-6">
-              A modern messaging platform where conversations become memories.
-            </p>
-            <div className="flex gap-4">
-              <a href="#" className="text-gray-500 hover:text-white transition-colors"><Globe size={16} /></a>
-              <a href="#" className="text-gray-500 hover:text-white transition-colors"><Code size={16} /></a>
-              <a href="#" className="text-gray-500 hover:text-white transition-colors"><Heart size={16} /></a>
-            </div>
-          </div>
-
-          {/* Column 2 - Links */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">Product</h4>
-            <ul className="space-y-2.5">
-              <li><a href="#features" className="text-xs text-gray-500 hover:text-white transition-colors">Features</a></li>
-              <li><a href="#" className="text-xs text-gray-500 hover:text-white transition-colors">Integrations</a></li>
-              <li><a href="#" className="text-xs text-gray-500 hover:text-white transition-colors">Roadmap</a></li>
-            </ul>
-          </div>
-
-          {/* Column 3 - Resources */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">Company</h4>
-            <ul className="space-y-2.5">
-              <li><a href="#" className="text-xs text-gray-500 hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="text-xs text-gray-500 hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="text-xs text-gray-500 hover:text-white transition-colors">Privacy Policy</a></li>
-            </ul>
-          </div>
-
-          {/* Column 4 - Newsletter */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">Stay Tuned</h4>
-            <p className="text-xs text-gray-500 mb-4 leading-relaxed">Subscribe to stay updated with newest designs.</p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter email"
-                className="w-full bg-brand-surface border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-primary placeholder-gray-600"
-              />
-              <Button variant="primary" size="sm" className="px-3.5">
-                Join
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} Blink. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="text-xs text-gray-600 hover:text-white transition-colors">Terms of Service</a>
-            <a href="#" className="text-xs text-gray-600 hover:text-white transition-colors">Privacy Settings</a>
-          </div>
-        </div>
-      </footer>
       </motion.div>
     </div>
   );
