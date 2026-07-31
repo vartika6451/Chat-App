@@ -12,11 +12,11 @@ import Card from "../components/Card";
 const Landing = () => {
   const router = useRouter();
   const [showIntro, setShowIntro] = useState(true);
-  const [logoSrc, setLogoSrc] = useState("/logo_open.png?v=2");
+  const [isWinking, setIsWinking] = useState(false);
 
   useEffect(() => {
     const winkTimer = setTimeout(() => {
-      setLogoSrc("/logo.png?v=2");
+      setIsWinking(true);
     }, 1100);
 
     const introTimer = setTimeout(() => {
@@ -145,11 +145,25 @@ const Landing = () => {
                   ease: "easeOut"
                 }}
               >
-                <motion.img
-                  src={logoSrc}
-                  alt="Blink Logo"
-                  className="w-52 h-52 object-cover rounded-[32px]"
-                />
+                {/* Stacked Images for Seamless Crossfade Wink */}
+                <div className="relative w-52 h-52 overflow-hidden rounded-[32px]">
+                  {/* Base Layer: Winking (heart eye) */}
+                  <img
+                    src="/logo.png?v=2"
+                    alt="Blink Logo Wink"
+                    className="absolute inset-0 w-full h-full object-cover select-none"
+                  />
+                  
+                  {/* Overlay Layer: Both Eyes Open (fades out to reveal the wink) */}
+                  <motion.img
+                    src="/logo_open.png?v=2"
+                    alt="Blink Logo Open"
+                    className="absolute inset-0 w-full h-full object-cover select-none"
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: isWinking ? 0 : 1 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                  />
+                </div>
               </motion.div>
 
               <motion.span
