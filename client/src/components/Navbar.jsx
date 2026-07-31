@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, X, Radio } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { motion } from "framer-motion";
 import Button from "./Button";
 
-const Navbar = () => {
+const Navbar = ({ showIntro = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
@@ -40,17 +41,33 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center group-hover:bg-brand-primary/20 transition-all duration-300">
-            <Radio className="text-brand-primary group-hover:scale-110 transition-transform duration-300" size={18} />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-white">
-            Blink<span className="text-brand-primary">.</span>
-          </span>
-        </Link>
+        <div className="flex items-center justify-start shrink-0 min-w-[130px] min-h-[56px]">
+          {!showIntro && (
+            <Link href="/" className="flex items-center gap-3 group select-none cursor-pointer">
+              <motion.div
+                layoutId="app-logo-wrapper"
+                className="flex items-center gap-3"
+              >
+                <img
+                  src="/logo.png"
+                  alt="Blink Logo"
+                  className="w-14 h-14 object-cover rounded-2xl border border-zinc-800/10 group-hover:scale-105 transition-transform duration-300"
+                />
+                <span className="font-logo text-[42px] font-medium text-brand-accent pt-2 leading-none">
+                  Blink
+                </span>
+              </motion.div>
+            </Link>
+          )}
+        </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: showIntro ? 0 : 1, y: showIntro ? -10 : 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="hidden md:flex items-center gap-8"
+        >
           {navLinks.map((link) => (
             <a
               key={link.name}
@@ -60,25 +77,35 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
-        </div>
+        </motion.div>
 
         {/* Action Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: showIntro ? 0 : 1, scale: showIntro ? 0.8 : 1 }}
+          transition={{ duration: 0.5, delay: 0.4, type: "spring", stiffness: 100 }}
+          className="hidden md:flex items-center gap-3"
+        >
           <Button variant="ghost" size="sm" onClick={() => router.push("/login")}>
             Login
           </Button>
           <Button variant="primary" size="sm" onClick={() => router.push("/signup")}>
             Sign Up
           </Button>
-        </div>
+        </motion.div>
 
         {/* Mobile menu button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-1 text-gray-400 hover:text-white transition-colors"
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {!showIntro && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-1 text-gray-400 hover:text-white transition-colors"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </motion.button>
+        )}
       </div>
 
       {/* Mobile Menu */}

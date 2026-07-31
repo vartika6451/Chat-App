@@ -35,12 +35,14 @@ const Sidebar = () => {
     <aside className="w-64 h-screen bg-brand-surface border-r border-zinc-800 flex flex-col justify-between shrink-0">
       {/* Top Section - Brand Logo */}
       <div className="p-6 border-b border-zinc-800/80">
-        <Link href="/chat" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center">
-            <Radio className="text-brand-primary" size={16} />
-          </div>
-          <span className="font-bold tracking-tight text-white text-lg">
-            Blink<span className="text-brand-primary">.</span>
+        <Link href="/chat" className="flex items-center gap-3 group select-none cursor-pointer">
+          <img
+            src="/logo.png"
+            alt="Blink Logo"
+            className="w-14 h-14 object-cover rounded-2xl border border-zinc-800/10 group-hover:scale-105 transition-transform duration-300"
+          />
+          <span className="font-logo text-[42px] font-medium text-brand-accent pt-2 leading-none">
+            Blink
           </span>
         </Link>
       </div>
@@ -55,8 +57,8 @@ const Sidebar = () => {
               href={item.path}
               className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 select-none group cursor-pointer ${
                 isActive
-                  ? "bg-brand-primary/10 text-brand-primary border-l-2 border-brand-primary pl-3.5"
-                  : "text-gray-400 hover:text-white hover:bg-zinc-800/50"
+                  ? "bg-brand-accent/10 text-brand-accent border-l-2 border-brand-accent pl-3.5"
+                  : "text-gray-400 hover:text-white hover:bg-zinc-900/50"
               }`}
             >
               <span className="transition-transform group-hover:scale-105 duration-200">

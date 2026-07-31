@@ -47,7 +47,7 @@ const Avatar = ({ src, username = "User", status, size = "md", className = "" })
         />
       ) : (
         <div
-          className={`rounded-full flex items-center justify-center font-bold bg-gradient-to-br from-brand-primary/30 to-brand-accent/30 text-white border border-white/10 ${sizes[size]}`}
+          className={`rounded-full flex items-center justify-center font-bold bg-brand-accent text-zinc-950 border border-brand-bg/50 ${sizes[size]}`}
         >
           {getInitials(username)}
         </div>

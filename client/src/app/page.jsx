@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, Sparkles, Shield, Archive, ArrowRight, Code, Globe, Heart, Radio } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
@@ -11,6 +11,23 @@ import Card from "../components/Card";
 
 const Landing = () => {
   const router = useRouter();
+  const [showIntro, setShowIntro] = useState(true);
+  const [logoSrc, setLogoSrc] = useState("/logo_open.png");
+
+  useEffect(() => {
+    const winkTimer = setTimeout(() => {
+      setLogoSrc("/logo.png");
+    }, 1000);
+
+    const introTimer = setTimeout(() => {
+      setShowIntro(false);
+    }, 2500);
+
+    return () => {
+      clearTimeout(winkTimer);
+      clearTimeout(introTimer);
+    };
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -51,10 +68,53 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-brand-bg text-white gradient-bg flex flex-col font-sans">
-      <Navbar />
+    <div className="h-screen overflow-hidden bg-brand-bg text-white gradient-bg flex flex-col font-sans">
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-brand-bg"
+          >
+            <motion.div
+              layoutId="app-logo-wrapper"
+              className="flex flex-col items-center gap-6 select-none"
+            >
+              <motion.img
+                src={logoSrc}
+                alt="Blink Logo"
+                className="w-48 h-48 object-cover rounded-[36px] border border-zinc-800/10 shadow-2xl"
+                initial={{ scale: 0.3, opacity: 0 }}
+                animate={{
+                  scale: [0.3, 1.1, 1],
+                  opacity: 1,
+                }}
+                transition={{
+                  duration: 0.8,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.span
+                className="font-logo text-6xl text-brand-accent mt-2 leading-none"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+              >
+                Blink
+              </motion.span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Hero Section */}
+      <Navbar showIntro={showIntro} />
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showIntro ? 0 : 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="flex-1 flex flex-col"
+      >
       <section id="home" className="relative pt-32 pb-24 md:pt-40 md:pb-32 px-6 flex-1 flex flex-col justify-center overflow-hidden">
         {/* Glow Spheres */}
         <div className="absolute top-[20%] left-[10%] w-72 h-72 rounded-full bg-brand-primary/10 blur-[120px] animate-float" />
@@ -68,14 +128,6 @@ const Landing = () => {
             initial="hidden"
             animate="visible"
           >
-            <motion.div
-              variants={itemVariants}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800/80 mb-6"
-            >
-              <span className="w-2 h-2 rounded-full bg-brand-primary animate-ping" />
-              <span className="text-xs font-semibold text-gray-300">Introducing Blink v1.0</span>
-            </motion.div>
-
             <motion.h1
               variants={itemVariants}
               className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6 text-white"
@@ -136,7 +188,7 @@ const Landing = () => {
               {/* Chat simulation */}
               <div className="flex-1 py-6 flex flex-col gap-4 justify-end">
                 <div className="flex flex-col items-start max-w-[80%]">
-                  <div className="px-4 py-2.5 rounded-2xl bg-zinc-800 text-xs text-gray-300 rounded-bl-sm">
+                  <div className="px-4 py-2.5 rounded-2xl bg-[#A2B0C4] text-xs text-white rounded-bl-sm">
                     Hey! Have you tried the AI Greeting Card generator on Blink yet?
                   </div>
                 </div>
@@ -146,10 +198,10 @@ const Landing = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-start max-w-[80%]">
-                  <div className="px-4 py-2.5 rounded-2xl bg-zinc-800 text-xs text-gray-300 rounded-bl-sm flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+                  <div className="px-4 py-2.5 rounded-2xl bg-[#A2B0C4] text-xs text-white rounded-bl-sm flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#231A16]/50 animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#231A16]/50 animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#231A16]/50 animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                 </div>
               </div>
@@ -268,6 +320,7 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+      </motion.div>
     </div>
   );
 };

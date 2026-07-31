@@ -113,8 +113,8 @@ const Chat = () => {
                 onClick={() => setActiveChat(chat)}
                 className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 select-none ${
                   activeChat?.id === chat.id
-                    ? "bg-zinc-900 border border-zinc-800/50"
-                    : "hover:bg-zinc-900/50 border border-transparent"
+                    ? "bg-brand-accent/10 border-l-2 border-brand-accent pl-2.5"
+                    : "hover:bg-zinc-900/50 pl-3"
                 }`}
               >
                 <div className="flex items-center gap-3 overflow-hidden">
@@ -198,7 +198,7 @@ const Chat = () => {
               <div className="flex items-start gap-3 max-w-[80%]">
                 <Avatar username={activeChat.user.name} size="sm" />
                 <div className="flex flex-col items-start">
-                  <div className="px-4 py-2.5 rounded-2xl bg-zinc-900 text-sm text-gray-200 rounded-tl-sm border border-zinc-850">
+                  <div className="px-4 py-2.5 rounded-2xl bg-[#A2B0C4] text-sm text-white rounded-tl-sm">
                     {activeChat.lastMessage}
                   </div>
                   <span className="text-[9px] text-gray-600 mt-1 pl-1">
