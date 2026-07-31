@@ -12,11 +12,11 @@ import Card from "../components/Card";
 const Landing = () => {
   const router = useRouter();
   const [showIntro, setShowIntro] = useState(true);
-  const [logoSrc, setLogoSrc] = useState("/logo_open.png");
+  const [logoSrc, setLogoSrc] = useState("/logo_open.png?v=2");
 
   useEffect(() => {
     const winkTimer = setTimeout(() => {
-      setLogoSrc("/logo.png");
+      setLogoSrc("/logo.png?v=2");
     }, 1100);
 
     const introTimer = setTimeout(() => {

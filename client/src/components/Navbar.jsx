@@ -49,7 +49,7 @@ const Navbar = ({ showIntro = false }) => {
                 className="flex items-center gap-3"
               >
                 <img
-                  src="/logo.png"
+                  src="/logo.png?v=2"
                   alt="Blink Logo"
                   className="w-14 h-14 object-cover rounded-2xl border border-zinc-800/10 group-hover:scale-105 transition-transform duration-300"
                 />
