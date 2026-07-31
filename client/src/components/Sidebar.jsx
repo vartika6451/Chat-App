@@ -37,7 +37,7 @@ const Sidebar = () => {
       <div className="p-6 border-b border-zinc-800/80">
         <Link href="/chat" className="flex items-center gap-3 group select-none cursor-pointer">
           <img
-            src="/logo.png?v=2"
+            src="/logo.png?v=3"
             alt="Blink Logo"
             className="w-14 h-14 object-cover rounded-2xl border border-zinc-800/10 group-hover:scale-105 transition-transform duration-300"
           />

@@ -149,14 +149,14 @@ const Landing = () => {
                 <div className="relative w-52 h-52 overflow-hidden rounded-[32px]">
                   {/* Base Layer: Winking (heart eye) */}
                   <img
-                    src="/logo.png?v=2"
+                    src="/logo.png?v=3"
                     alt="Blink Logo Wink"
                     className="absolute inset-0 w-full h-full object-cover select-none"
                   />
                   
                   {/* Overlay Layer: Both Eyes Open (fades out to reveal the wink) */}
                   <motion.img
-                    src="/logo_open.png?v=2"
+                    src="/logo_open.png?v=3"
                     alt="Blink Logo Open"
                     className="absolute inset-0 w-full h-full object-cover select-none"
                     initial={{ opacity: 1 }}
