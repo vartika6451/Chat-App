@@ -1,12 +1,15 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Menu, X, Radio } from "lucide-react";
 import Button from "./Button";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,7 +40,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group">
           <div className="w-9 h-9 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center group-hover:bg-brand-primary/20 transition-all duration-300">
             <Radio className="text-brand-primary group-hover:scale-110 transition-transform duration-300" size={18} />
           </div>
@@ -61,10 +64,10 @@ const Navbar = () => {
 
         {/* Action Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/login")}>
+          <Button variant="ghost" size="sm" onClick={() => router.push("/login")}>
             Login
           </Button>
-          <Button variant="primary" size="sm" onClick={() => navigate("/signup")}>
+          <Button variant="primary" size="sm" onClick={() => router.push("/signup")}>
             Sign Up
           </Button>
         </div>
@@ -95,10 +98,10 @@ const Navbar = () => {
           </div>
           <div className="h-[1px] bg-zinc-800" />
           <div className="flex flex-col gap-3">
-            <Button variant="outline" className="w-full" onClick={() => { setMobileMenuOpen(false); navigate("/login"); }}>
+            <Button variant="outline" className="w-full" onClick={() => { setMobileMenuOpen(false); router.push("/login"); }}>
               Login
             </Button>
-            <Button variant="primary" className="w-full" onClick={() => { setMobileMenuOpen(false); navigate("/signup"); }}>
+            <Button variant="primary" className="w-full" onClick={() => { setMobileMenuOpen(false); router.push("/signup"); }}>
               Sign Up
             </Button>
           </div>

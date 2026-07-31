@@ -1,11 +1,14 @@
+"use client";
+
 import React from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { MessageSquare, Users, Sparkles, Settings, LogOut, Radio, User } from "lucide-react";
 import Avatar from "./Avatar";
 
 const Sidebar = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Mock User
   const user = {
@@ -25,50 +28,51 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     // TODO: Connect auth service logout logic here
-    navigate("/");
+    router.push("/");
   };
 
   return (
     <aside className="w-64 h-screen bg-brand-surface border-r border-zinc-800 flex flex-col justify-between shrink-0">
       {/* Top Section - Brand Logo */}
       <div className="p-6 border-b border-zinc-800/80">
-        <NavLink to="/chat" className="flex items-center gap-2.5 group">
+        <Link href="/chat" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center">
             <Radio className="text-brand-primary" size={16} />
           </div>
           <span className="font-bold tracking-tight text-white text-lg">
             Blink<span className="text-brand-primary">.</span>
           </span>
-        </NavLink>
+        </Link>
       </div>
 
       {/* Mid Section - Navigation Items */}
       <nav className="flex-1 py-6 px-4 space-y-1.5 overflow-y-auto">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 select-none group cursor-pointer ${
+        {navItems.map((item) => {
+          const isActive = pathname === item.path;
+          return (
+            <Link
+              key={item.name}
+              href={item.path}
+              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 select-none group cursor-pointer ${
                 isActive
                   ? "bg-brand-primary/10 text-brand-primary border-l-2 border-brand-primary pl-3.5"
                   : "text-gray-400 hover:text-white hover:bg-zinc-800/50"
-              }`
-            }
-          >
-            <span className="transition-transform group-hover:scale-105 duration-200">
-              {item.icon}
-            </span>
-            <span>{item.name}</span>
-          </NavLink>
-        ))}
+              }`}
+            >
+              <span className="transition-transform group-hover:scale-105 duration-200">
+                {item.icon}
+              </span>
+              <span>{item.name}</span>
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Bottom Section - Profile & Logout */}
       <div className="p-4 border-t border-zinc-800/80 flex flex-col gap-2.5 bg-zinc-900/20">
         {/* User Profile Preview */}
         <div
-          onClick={() => navigate("/profile")}
+          onClick={() => router.push("/profile")}
           className="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-800/50 cursor-pointer transition-colors"
         >
           <Avatar
