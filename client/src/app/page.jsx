@@ -147,20 +147,20 @@ const Landing = () => {
               >
                 {/* Stacked Images for Seamless Crossfade Wink */}
                 <div className="relative w-52 h-52 overflow-hidden rounded-[32px]">
-                  {/* Base Layer: Winking (heart eye) */}
+                  {/* Base Layer: Both Eyes Open (starts visible) */}
                   <img
-                    src="/logo.png?v=3"
-                    alt="Blink Logo Wink"
-                    className="absolute inset-0 w-full h-full object-cover select-none"
-                  />
-                  
-                  {/* Overlay Layer: Both Eyes Open (fades out to reveal the wink) */}
-                  <motion.img
                     src="/logo_open.png?v=3"
                     alt="Blink Logo Open"
                     className="absolute inset-0 w-full h-full object-cover select-none"
-                    initial={{ opacity: 1 }}
-                    animate={{ opacity: isWinking ? 0 : 1 }}
+                  />
+                  
+                  {/* Overlay Layer: Winking (fades in to close the eye) */}
+                  <motion.img
+                    src="/logo.png?v=3"
+                    alt="Blink Logo Wink"
+                    className="absolute inset-0 w-full h-full object-cover select-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isWinking ? 1 : 0 }}
                     transition={{ duration: 0.25, ease: "easeInOut" }}
                   />
                 </div>
