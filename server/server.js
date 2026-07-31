@@ -1,27 +1,63 @@
-import { WebSocketServer } from "ws";
+import express from "express";
+import http from "http";
+import cors from "cors";
+import dotenv from "dotenv";
+import { connectDB } from "./config/db.js";
+import { initSocket } from "./socket/socketHandler.js";
+import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/users.js";
+import chatRoutes from "./routes/chat.js";
+import cardRoutes from "./routes/cards.js";
 
-// Create a WebSocket server on port 3000
-const wss = new WebSocketServer({
-  port: 3000,
+// Load environment variables
+dotenv.config();
+
+const app = express();
+const server = http.createServer(app);
+
+const PORT = process.env.PORT || 5000;
+
+// Apply middlewares
+app.use(cors());
+app.use(express.json());
+
+// Logger middleware
+app.use((req, res, next) => {
+  console.log(`🌐 [HTTP] ${req.method} ${req.url}`);
+  next();
 });
 
-console.log("✅ WebSocket server running at ws://localhost:3000");
+// Connect to Database (mock)
+connectDB();
 
-wss.on("connection", (ws) => {
-  console.log("✅ Client connected");
+// Initialize WebSocket transmission socket
+initSocket(server);
 
-  ws.send("Welcome!");
+// Register API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/cards", cardRoutes);
 
-  ws.on("message", (message) => {
-    const text = message.toString();
-
-    console.log("Received:", text);
-
-    // Echo the message back
-    ws.send(text);
+// Root endpoint stub
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Welcome to the Blink API",
+    status: "online",
+    version: "1.0.0",
   });
+});
 
-  ws.on("close", () => {
-    console.log("❌ Client disconnected");
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("❌ [SERVER ERROR]", err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Internal server error occurred",
   });
+});
+
+// Listen on configured port
+server.listen(PORT, () => {
+  console.log(`✅ Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
 });
