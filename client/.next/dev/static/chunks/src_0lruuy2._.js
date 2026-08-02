@@ -65,13 +65,13 @@ const Button = ({ children, variant = "primary", size = "md", loading = false, d
         lg: "px-7 py-3.5 text-lg"
     };
     const variants = {
-        primary: "bg-brand-primary hover:bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 border border-transparent",
-        secondary: "bg-brand-card hover:bg-zinc-700 text-white border border-zinc-700/50",
-        accent: "bg-brand-accent hover:bg-violet-600 text-white shadow-lg shadow-violet-500/20 border border-transparent",
-        danger: "bg-brand-danger hover:bg-red-600 text-white shadow-lg shadow-red-500/20 border border-transparent",
-        outline: "bg-transparent hover:bg-zinc-800 text-white border border-zinc-700",
-        glass: "glass-panel hover:bg-zinc-800/80 text-white border border-white/10 backdrop-blur-md",
-        ghost: "bg-transparent hover:bg-zinc-800 text-gray-300 hover:text-white border border-transparent"
+        primary: "bg-brand-accent hover:bg-brand-accent/90 text-zinc-950 shadow-md shadow-brand-accent/15 border border-transparent",
+        secondary: "bg-brand-card hover:bg-zinc-900 text-white border border-zinc-800/50",
+        accent: "bg-brand-primary hover:bg-brand-primary/90 text-white shadow-md shadow-brand-primary/15 border border-transparent",
+        danger: "bg-brand-danger hover:bg-brand-danger/95 text-zinc-950 shadow-md shadow-brand-danger/15 border border-transparent",
+        outline: "bg-transparent hover:bg-zinc-900/30 text-white border border-zinc-800",
+        glass: "glass-panel hover:bg-zinc-900/30 text-white border border-zinc-800 backdrop-blur-md",
+        ghost: "bg-transparent hover:bg-zinc-900/30 text-brand-text-secondary hover:text-white border border-transparent"
     };
     const handleClick = (e)=>{
         if (disabled || loading) {
