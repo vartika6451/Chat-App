@@ -30,9 +30,16 @@ const Chat = () => {
   const activeChatRef = useRef(activeChat);
   const messagesEndRef = useRef(null);
 
-  // Keep activeChat ref updated for WebSocket listener closures
+  // Keep activeChat ref updated for WebSocket listener closures and persist state
   useEffect(() => {
     activeChatRef.current = activeChat;
+    if (typeof window !== "undefined") {
+      if (activeChat) {
+        localStorage.setItem("blink_active_chat", JSON.stringify(activeChat));
+      } else {
+        localStorage.removeItem("blink_active_chat");
+      }
+    }
   }, [activeChat]);
 
   // Scroll to bottom on new messages
@@ -46,14 +53,37 @@ const Chat = () => {
       const res = await api.get("/chat/conversations");
       if (res.data.success) {
         setConversations(res.data.conversations);
+        return res.data.conversations;
       }
     } catch (err) {
       console.error("❌ [CLIENT] Error fetching conversations:", err);
     }
+    return [];
   };
 
   useEffect(() => {
-    fetchConversations();
+    const initializeChat = async () => {
+      const fetched = await fetchConversations();
+      if (typeof window !== "undefined") {
+        const savedChat = localStorage.getItem("blink_active_chat");
+        if (savedChat) {
+          try {
+            const parsed = JSON.parse(savedChat);
+            if (parsed && parsed.id) {
+              const updated = fetched.find((c) => c.id === parsed.id);
+              if (updated) {
+                setActiveChat(updated);
+              }
+            } else if (parsed) {
+              setActiveChat(parsed);
+            }
+          } catch (e) {
+            console.error("Error restoring active chat:", e);
+          }
+        }
+      }
+    };
+    initializeChat();
   }, []);
 
   // Fetch conversation messages when active chat changes

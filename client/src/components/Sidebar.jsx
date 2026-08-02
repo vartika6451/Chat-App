@@ -5,17 +5,18 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { MessageSquare, Users, Sparkles, Settings, LogOut, Radio, User } from "lucide-react";
 import Avatar from "./Avatar";
+import { useAuth } from "../context/AuthContext";
 
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
-  // Mock User
-  const user = {
-    username: "Vartika Sharma",
-    email: "vartika@blink.app",
-    avatar: "",
-    status: "online",
+  const currentUser = user || {
+    name: "User",
+    username: "user",
+    email: "",
+    profileImage: "",
   };
 
   const navItems = [
@@ -27,8 +28,8 @@ const Sidebar = () => {
   ];
 
   const handleLogout = () => {
-    // TODO: Connect auth service logout logic here
-    router.push("/");
+    logout();
+    router.push("/login");
   };
 
   return (
@@ -78,15 +79,16 @@ const Sidebar = () => {
           className="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-800/50 cursor-pointer transition-colors"
         >
           <Avatar
-            username={user.username}
-            status={user.status}
+            username={currentUser.name}
+            src={currentUser.profileImage}
+            status="online"
             size="md"
           />
           <div className="overflow-hidden">
             <h4 className="text-sm font-semibold text-white truncate">
-              {user.username}
+              {currentUser.name}
             </h4>
-            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+            <p className="text-xs text-gray-500 truncate">@{currentUser.username}</p>
           </div>
         </div>
 

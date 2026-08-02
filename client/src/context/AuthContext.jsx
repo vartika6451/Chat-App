@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("blink_token");
     localStorage.removeItem("blink_user");
+    localStorage.removeItem("blink_active_chat");
   };
 
   const updateUserProfile = async (updatedData) => {
