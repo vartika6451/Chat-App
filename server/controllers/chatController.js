@@ -1,6 +1,5 @@
-// controllers/chatController.js
 import { prisma } from "../config/prisma.js";
-import { sendMessageToUser, clients } from "../socket/socketHandler.js";
+import { sendMessageToUser, clients, triggerAIReplyIfNeeded } from "../socket/socketHandler.js";
 
 export const getConversations = async (req, res) => {
   const userId = req.user.id;
@@ -48,7 +47,7 @@ export const getConversations = async (req, res) => {
       const otherParticipant = c.participants[0];
       const otherUser = otherParticipant?.user;
       const lastMsg = c.messages[0];
-      const isOnline = clients.has(otherUser?.id);
+      const isOnline = clients.has(otherUser?.id) || ["jarvis", "copilot", "echo_bot"].includes(otherUser?.username);
 
       return {
         id: c.id,
@@ -209,6 +208,9 @@ export const sendMessage = async (req, res) => {
     participants.forEach((p) => {
       sendMessageToUser(p.userId, broadcastPayload);
     });
+
+    // Trigger simulated AI reply if conversation contains an AI bot
+    triggerAIReplyIfNeeded(activeConversationId, text, senderId);
 
     return res.status(201).json({
       success: true,
