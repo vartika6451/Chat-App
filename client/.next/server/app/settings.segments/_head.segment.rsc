@@ -1,5 +1,5 @@
 1:"$Sreact.fragment"
-2:I[97367,["/_next/static/chunks/2owaka6787nd1.js","/_next/static/chunks/14mrh2-p_w84d.js"],"ViewportBoundary"]
-3:I[97367,["/_next/static/chunks/2owaka6787nd1.js","/_next/static/chunks/14mrh2-p_w84d.js"],"MetadataBoundary"]
+2:I[79101,["/_next/static/chunks/2aqwh5xt8ey69.js","/_next/static/chunks/010ab9b371nr2.js","/_next/static/chunks/2u1m3dajdz-t5.js"],"ViewportBoundary"]
+3:I[79101,["/_next/static/chunks/2aqwh5xt8ey69.js","/_next/static/chunks/010ab9b371nr2.js","/_next/static/chunks/2u1m3dajdz-t5.js"],"MetadataBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Blink | Connect & Create"}],["$","meta","1",{"name":"description","content":"Blink is a modern messaging platform where conversations become memories."}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"qwlZFXskQSNCirRREzL9l"}
+0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Blink | Connect & Create"}],["$","meta","1",{"name":"description","content":"Blink is a modern messaging platform where conversations become memories."}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"xngCRxcezWKZproSzgdwP"}

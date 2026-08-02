@@ -1,72 +1,272 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Search, MessageSquare, Plus, Send, Phone, Video, Info } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
+import api from "../../../utils/api";
 import Avatar from "../../../components/Avatar";
 import EmptyState from "../../../components/EmptyState";
 import Button from "../../../components/Button";
+import Modal from "../../../components/Modal";
+import { toast } from "react-hot-toast";
 
 const Chat = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const { user } = useAuth();
+  
+  const [conversations, setConversations] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [inputText, setInputText] = useState("");
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  
+  // User Search Modal States
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
 
-  // Mock Conversations
-  const mockChats = [
-    {
-      id: "chat-1",
-      user: {
-        name: "Leo Messi",
-        username: "leomessi",
-        avatar: "",
-        status: "online",
-      },
-      lastMessage: "The card was perfect! Thanks Vartika.",
-      time: "10:42 AM",
-      unread: 2,
-    },
-    {
-      id: "chat-2",
-      user: {
-        name: "Taylor Swift",
-        username: "taylorswift",
-        avatar: "",
-        status: "away",
-      },
-      lastMessage: "Can we collaborate on the next card theme?",
-      time: "Yesterday",
-      unread: 0,
-    },
-    {
-      id: "chat-3",
-      user: {
-        name: "Sam Altman",
-        username: "samaltman",
-        avatar: "",
-        status: "offline",
-      },
-      lastMessage: "Thanks for the congratulations card!",
-      time: "July 29",
-      unread: 0,
-    },
-    {
-      id: "chat-4",
-      user: {
-        name: "Elon Musk",
-        username: "elonmusk",
-        avatar: "",
-        status: "online",
-      },
-      lastMessage: "Blink is going to Mars.",
-      time: "July 28",
-      unread: 0,
-    },
-  ];
+  const socketRef = useRef(null);
+  const activeChatRef = useRef(activeChat);
+  const messagesEndRef = useRef(null);
 
-  const filteredChats = mockChats.filter(
+  // Keep activeChat ref updated for WebSocket listener closures
+  useEffect(() => {
+    activeChatRef.current = activeChat;
+  }, [activeChat]);
+
+  // Scroll to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Fetch initial conversations list
+  const fetchConversations = async () => {
+    try {
+      const res = await api.get("/chat/conversations");
+      if (res.data.success) {
+        setConversations(res.data.conversations);
+      }
+    } catch (err) {
+      console.error("❌ [CLIENT] Error fetching conversations:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchConversations();
+  }, []);
+
+  // Fetch conversation messages when active chat changes
+  useEffect(() => {
+    if (activeChat && activeChat.id) {
+      const fetchMessages = async () => {
+        setLoadingMessages(true);
+        try {
+          const res = await api.get(`/chat/messages/${activeChat.id}`);
+          if (res.data.success) {
+            setMessages(res.data.messages);
+          }
+        } catch (err) {
+          console.error("❌ [CLIENT] Error fetching messages:", err);
+          toast.error("Failed to load message history");
+        } finally {
+          setLoadingMessages(false);
+        }
+      };
+
+      fetchMessages();
+    } else {
+      setMessages([]);
+    }
+  }, [activeChat]);
+
+  // Setup WebSocket connection
+  useEffect(() => {
+    const token = localStorage.getItem("blink_token");
+    if (!token) return;
+
+    // Establish link
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    // target port 5001
+    const wsUrl = `${wsProtocol}//localhost:5001?token=${token}`;
+    
+    console.log("🔌 [SOCKET] Connecting client websocket to:", wsUrl);
+    const socket = new WebSocket(wsUrl);
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      console.log("✅ [SOCKET] Connected to transmission server");
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log("📥 [SOCKET] Received socket payload:", data);
+
+        if (data.type === "NEW_MESSAGE") {
+          const newMsg = data.payload;
+
+          // If the message is for the currently open chat, append it
+          if (activeChatRef.current && activeChatRef.current.id === newMsg.conversationId) {
+            setMessages((prev) => {
+              // Avoid duplicate messages
+              if (prev.some((m) => m.id === newMsg.id)) return prev;
+              return [...prev, newMsg];
+            });
+          }
+
+          // Update this conversation's lastMessage in the sidebar
+          setConversations((prev) => {
+            const index = prev.findIndex((c) => c.id === newMsg.conversationId);
+            if (index !== -1) {
+              const updated = [...prev];
+              updated[index].lastMessage = newMsg.text;
+              updated[index].updatedAt = newMsg.createdAt;
+              // Move to top
+              const [moved] = updated.splice(index, 1);
+              return [moved, ...updated];
+            } else {
+              // If conversation doesn't exist in user list, re-fetch all
+              fetchConversations();
+              return prev;
+            }
+          });
+        }
+      } catch (err) {
+        console.error("❌ [SOCKET MESSAGE PARSE ERROR]", err);
+      }
+    };
+
+    socket.onclose = () => {
+      console.log("🔌 [SOCKET] Connection closed");
+    };
+
+    return () => {
+      if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+        socket.close();
+      }
+    };
+  }, []);
+
+  // Handle User Search for starting new conversation
+  useEffect(() => {
+    if (!userSearchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    const delayDebounce = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await api.get(`/users/search?q=${userSearchQuery}`);
+        if (res.data.success) {
+          setSearchResults(res.data.users);
+        }
+      } catch (err) {
+        console.error("❌ [CLIENT] User search error:", err);
+      } finally {
+        setSearching(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [userSearchQuery]);
+
+  // Filter conversations in sidebar
+  const filteredChats = conversations.filter(
     (chat) =>
       chat.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       chat.user.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Send message submit handler
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
+
+    if (!activeChat) return;
+
+    const messageText = inputText.trim();
+    setInputText("");
+
+    // If it's a pre-existing conversation, send via WebSocket
+    if (activeChat.id) {
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(
+          JSON.stringify({
+            type: "SEND_MESSAGE",
+            payload: {
+              conversationId: activeChat.id,
+              text: messageText,
+            },
+          })
+        );
+      } else {
+        // Fallback to REST API if socket is disconnected
+        try {
+          await api.post("/chat/message", {
+            conversationId: activeChat.id,
+            text: messageText,
+          });
+        } catch (err) {
+          console.error("❌ [CLIENT] Send message REST error:", err);
+          toast.error("Failed to send message");
+        }
+      }
+    } else {
+      // Starting a brand new conversation
+      try {
+        const res = await api.post("/chat/message", {
+          recipientId: activeChat.user.id,
+          text: messageText,
+        });
+
+        if (res.data.success) {
+          const { newMessage } = res.data;
+          
+          // Re-fetch conversations list to include the newly created conversation
+          await fetchConversations();
+
+          // Set active chat to the new conversation
+          setActiveChat({
+            id: newMessage.conversationId,
+            user: activeChat.user,
+            lastMessage: newMessage.text,
+            updatedAt: newMessage.createdAt,
+          });
+        }
+      } catch (err) {
+        console.error("❌ [CLIENT] Error initializing new chat:", err);
+        toast.error("Failed to start new conversation");
+      }
+    }
+  };
+
+  const handleStartChatWithUser = (selectedUser) => {
+    setIsSearchOpen(false);
+    setUserSearchQuery("");
+    setSearchResults([]);
+
+    // Check if conversation already exists with this user
+    const existing = conversations.find((c) => c.user.id === selectedUser.id);
+    if (existing) {
+      setActiveChat(existing);
+    } else {
+      // Pending conversation setup
+      setActiveChat({
+        id: null,
+        user: {
+          id: selectedUser.id,
+          name: selectedUser.name,
+          username: selectedUser.username,
+          status: "offline",
+          profileImage: selectedUser.profileImage || "",
+        },
+        lastMessage: "",
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  };
 
   return (
     <div className="flex-1 flex h-full overflow-hidden">
@@ -77,9 +277,7 @@ const Chat = () => {
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-white tracking-tight">Messages</h1>
             <button
-              onClick={() => {
-                alert("Add conversation feature placeholder");
-              }}
+              onClick={() => setIsSearchOpen(true)}
               className="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer"
             >
               <Plus size={16} />
@@ -133,7 +331,12 @@ const Chat = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1.5 shrink-0">
-                  <span className="text-[10px] text-gray-600">{chat.time}</span>
+                  <span className="text-[10px] text-gray-600">
+                    {new Date(chat.updatedAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
                   {chat.unread > 0 && (
                     <span className="w-4 h-4 rounded-full bg-brand-primary text-[9px] font-bold text-white flex items-center justify-center">
                       {chat.unread}
@@ -182,56 +385,62 @@ const Chat = () => {
 
             {/* Messages Feed Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {/* Dummy chat alert */}
-              <div className="max-w-md mx-auto bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-4 text-center">
-                <p className="text-xs text-brand-primary font-medium">
-                  💡 Chat Transmission Feature Placeholder
-                </p>
-                <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">
-                  Real-time WebSocket event listeners, database models, and chat history
-                  synchronization will be implemented in the next phase.
-                </p>
-                {/* TODO: Implement real-time websocket connection and state sync here */}
-              </div>
-
-              {/* Mock Chat bubble (Incoming) */}
-              <div className="flex items-start gap-3 max-w-[80%]">
-                <Avatar username={activeChat.user.name} size="sm" />
-                <div className="flex flex-col items-start">
-                  <div className="px-4 py-2.5 rounded-2xl bg-[#A2B0C4] text-sm text-white rounded-tl-sm">
-                    {activeChat.lastMessage}
-                  </div>
-                  <span className="text-[9px] text-gray-600 mt-1 pl-1">
-                    {activeChat.time}
-                  </span>
+              {loadingMessages ? (
+                <div className="flex items-center justify-center py-20 text-xs text-gray-500">
+                  Loading message history...
                 </div>
-              </div>
-
-              {/* Mock Chat bubble (Outgoing) */}
-              <div className="flex items-start gap-3 max-w-[80%] self-end flex-row-reverse">
-                <div className="flex flex-col items-end">
-                  <div className="px-4 py-2.5 rounded-2xl bg-brand-primary text-sm text-white rounded-tr-sm shadow-md">
-                    Got it! Talk to you soon.
-                  </div>
-                  <span className="text-[9px] text-gray-600 mt-1 pr-1">
-                    10:44 AM
-                  </span>
+              ) : messages.length === 0 ? (
+                <div className="text-center text-xs text-gray-600 py-20">
+                  Send a message to start the conversation!
                 </div>
-              </div>
+              ) : (
+                messages.map((msg) => {
+                  const isOutgoing = msg.senderId === user?.id;
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`flex items-start gap-3 max-w-[80%] ${
+                        isOutgoing ? "self-end flex-row-reverse" : ""
+                      }`}
+                    >
+                      {!isOutgoing && <Avatar username={activeChat.user.name} size="sm" />}
+                      <div className={`flex flex-col ${isOutgoing ? "items-end" : "items-start"}`}>
+                        <div
+                          className={`px-4 py-2.5 rounded-2xl text-sm text-white shadow-md ${
+                            isOutgoing
+                              ? "bg-brand-primary rounded-tr-sm"
+                              : "bg-[#A2B0C4] rounded-tl-sm"
+                          }`}
+                        >
+                          {msg.text}
+                        </div>
+                        <span className="text-[9px] text-gray-600 mt-1 px-1">
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+              <div ref={messagesEndRef} />
             </div>
 
-            {/* Chat Input footer mockup */}
-            <div className="p-4 border-t border-zinc-800/80 bg-brand-surface/10 flex items-center gap-3">
+            {/* Chat Input footer */}
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-zinc-800/80 bg-brand-surface/10 flex items-center gap-3">
               <input
-                disabled
                 type="text"
-                placeholder="Chat input is disabled (Placeholders only)"
-                className="flex-1 px-4 py-3 rounded-xl bg-zinc-950 border border-zinc-850 text-xs text-gray-500 cursor-not-allowed focus:outline-none"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type a message..."
+                className="flex-1 px-4 py-3 rounded-xl bg-zinc-950 border border-zinc-850 text-xs text-white focus:outline-none focus:border-brand-primary"
               />
-              <Button disabled variant="primary" className="py-2.5 px-4">
+              <Button type="submit" variant="primary" className="py-2.5 px-4" disabled={!inputText.trim()}>
                 <Send size={14} />
               </Button>
-            </div>
+            </form>
           </div>
         ) : (
           <EmptyState
@@ -242,9 +451,7 @@ const Chat = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  alert("Create group or conversation popup placeholder");
-                }}
+                onClick={() => setIsSearchOpen(true)}
                 iconBefore={<Plus size={14} />}
               >
                 New Conversation
@@ -253,6 +460,51 @@ const Chat = () => {
           />
         )}
       </div>
+
+      {/* User Search Modal */}
+      <Modal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        title="Start New Conversation"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+            <input
+              type="text"
+              placeholder="Search by name or username..."
+              value={userSearchQuery}
+              onChange={(e) => setUserSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-surface border border-zinc-850 text-xs text-white focus:outline-none focus:border-brand-primary"
+            />
+          </div>
+
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            {searching ? (
+              <div className="text-center py-4 text-xs text-gray-500">Searching...</div>
+            ) : searchResults.length === 0 ? (
+              <div className="text-center py-4 text-xs text-gray-500">
+                {userSearchQuery ? "No users found" : "Type to search users"}
+              </div>
+            ) : (
+              searchResults.map((searchUser) => (
+                <div
+                  key={searchUser.id}
+                  onClick={() => handleStartChatWithUser(searchUser)}
+                  className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-zinc-800/50 cursor-pointer transition-colors"
+                >
+                  <Avatar username={searchUser.name} size="md" />
+                  <div>
+                    <div className="text-sm font-semibold text-white">{searchUser.name}</div>
+                    <div className="text-xs text-gray-500">@{searchUser.username}</div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

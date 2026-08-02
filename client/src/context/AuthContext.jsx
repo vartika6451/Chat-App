@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import api from "../utils/api.js";
 
 const AuthContext = createContext(null);
 
@@ -9,72 +10,87 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user credentials are saved in localStorage
-    const savedUser = localStorage.getItem("blink_user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    const checkAuth = async () => {
+      const token = localStorage.getItem("blink_token");
+      if (token) {
+        try {
+          console.log("🔐 [AUTH] Restoring session from local storage...");
+          const res = await api.get("/auth/me");
+          if (res.data.success) {
+            setUser(res.data.user);
+            localStorage.setItem("blink_user", JSON.stringify(res.data.user));
+          } else {
+            logout();
+          }
+        } catch (error) {
+          console.error("❌ [AUTH] Failed to restore session:", error);
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+
+    checkAuth();
   }, []);
 
   const login = async (email, password) => {
     setLoading(true);
-    // Simulate API request delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    const mockUser = {
-      id: "usr-1",
-      name: "Vartika Sharma",
-      username: "vartikasharma",
-      email: email,
-      bio: "Creating beautiful pixels and code.",
-      avatar: "",
-      stats: {
-        friends: 42,
-        cardsCreated: 12,
-        messages: 1337,
-      },
-    };
-
-    setUser(mockUser);
-    localStorage.setItem("blink_user", JSON.stringify(mockUser));
-    setLoading(false);
-    return mockUser;
+    try {
+      const res = await api.post("/auth/login", { email, password });
+      if (res.data.success) {
+        const { user, token } = res.data;
+        setUser(user);
+        localStorage.setItem("blink_token", token);
+        localStorage.setItem("blink_user", JSON.stringify(user));
+        setLoading(false);
+        return user;
+      }
+    } catch (error) {
+      setLoading(false);
+      const errMsg = error.response?.data?.message || "Failed to log in";
+      throw new Error(errMsg);
+    }
   };
 
   const signup = async (name, username, email, password) => {
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    const mockUser = {
-      id: "usr-" + Math.floor(Math.random() * 1000),
-      name,
-      username,
-      email,
-      bio: "Hey there! I am using Blink.",
-      avatar: "",
-      stats: {
-        friends: 0,
-        cardsCreated: 0,
-        messages: 0,
-      },
-    };
-
-    setUser(mockUser);
-    localStorage.setItem("blink_user", JSON.stringify(mockUser));
-    setLoading(false);
-    return mockUser;
+    try {
+      const res = await api.post("/auth/register", { name, username, email, password });
+      if (res.data.success) {
+        const { user, token } = res.data;
+        setUser(user);
+        localStorage.setItem("blink_token", token);
+        localStorage.setItem("blink_user", JSON.stringify(user));
+        setLoading(false);
+        return user;
+      }
+    } catch (error) {
+      setLoading(false);
+      const errMsg = error.response?.data?.message || "Failed to sign up";
+      throw new Error(errMsg);
+    }
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("blink_token");
     localStorage.removeItem("blink_user");
   };
 
-  const updateUserProfile = (updatedData) => {
-    const updatedUser = { ...user, ...updatedData };
-    setUser(updatedUser);
-    localStorage.setItem("blink_user", JSON.stringify(updatedUser));
+  const updateUserProfile = async (updatedData) => {
+    try {
+      const res = await api.put("/users/profile", updatedData);
+      if (res.data.success) {
+        const updatedUser = res.data.user;
+        setUser((prev) => ({ ...prev, ...updatedUser }));
+        localStorage.setItem("blink_user", JSON.stringify({ ...user, ...updatedUser }));
+        return updatedUser;
+      }
+    } catch (error) {
+      console.error("❌ [AUTH] Profile update error:", error);
+      const errMsg = error.response?.data?.message || "Failed to update profile";
+      throw new Error(errMsg);
+    }
   };
 
   return (

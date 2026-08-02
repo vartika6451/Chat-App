@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
@@ -13,7 +13,10 @@ const Modal = ({
   size = "md",
   closeOnOverlayClick = true,
 }) => {
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -31,7 +34,7 @@ const Modal = ({
     xl: "max-w-2xl",
   };
 
-  const modalRoot = document.getElementById("root");
+  if (!mounted) return null;
 
   const modalContent = (
     <AnimatePresence>
@@ -79,7 +82,7 @@ const Modal = ({
     </AnimatePresence>
   );
 
-  return modalRoot ? createPortal(modalContent, modalRoot) : null;
+  return createPortal(modalContent, document.body);
 };
 
 export default Modal;

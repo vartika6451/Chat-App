@@ -104,7 +104,7 @@ self.__SERVER_FILES_MANIFEST={
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/vartikasharma/Documents/chat-App/client",
+    "outputFileTracingRoot": "/Users/vartikasharma/Documents/Blink",
     "cacheComponents": false,
     "cacheLife": {
       "default": {
@@ -304,12 +304,12 @@ self.__SERVER_FILES_MANIFEST={
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.mjs",
     "turbopack": {
-      "root": "/Users/vartikasharma/Documents/chat-App/client"
+      "root": "/Users/vartikasharma/Documents/Blink"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "/Users/vartikasharma/Documents/chat-App/client",
-  "relativeAppDir": "",
+  "appDir": "/Users/vartikasharma/Documents/Blink/client",
+  "relativeAppDir": "client",
   "files": [
     ".next/package.json",
     ".next/routes-manifest.json",
