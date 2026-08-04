@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma.js";
 import { sendMessageToUser, clients, triggerAIReplyIfNeeded } from "../socket/socketHandler.js";
+import { classifyEmotion } from "../utils/emotionClassifier.js";
 
 export const getConversations = async (req, res) => {
   const userId = req.user.id;
@@ -464,4 +465,50 @@ export const deleteScheduledCall = async (req, res) => {
     });
   }
 };
+
+export const getConversationEmotion = async (req, res) => {
+  const { conversationId } = req.params;
+  try {
+    const messages = await prisma.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: "desc" },
+      take: 15,
+      include: {
+        sender: {
+          select: { name: true }
+        }
+      }
+    });
+
+    if (messages.length === 0) {
+      return res.status(200).json({
+        success: true,
+        emotion: "friendly",
+        confidence: 1.0
+      });
+    }
+
+    const formattedHistory = messages
+      .reverse()
+      .map((msg) => ({
+        sender: msg.sender.name,
+        text: msg.text
+      }));
+
+    const result = await classifyEmotion(formattedHistory);
+
+    return res.status(200).json({
+      success: true,
+      emotion: result.emotion,
+      confidence: result.confidence
+    });
+  } catch (error) {
+    console.error("❌ [GET CONVERSATION EMOTION ERROR]", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error classifying conversation emotion",
+    });
+  }
+};
+
 

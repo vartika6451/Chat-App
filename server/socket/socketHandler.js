@@ -2,6 +2,8 @@
 import { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { prisma } from "../config/prisma.js";
+import { classifyEmotion } from "../utils/emotionClassifier.js";
+
 
 // Map to store active user connections (userId -> ws)
 export const clients = new Map();
@@ -125,6 +127,9 @@ export const initSocket = (server) => {
           participants.forEach((p) => {
             sendMessageToUser(p.userId, broadcastPayload);
           });
+
+          // Trigger emotion classification broadcast
+          broadcastEmotionUpdate(conversationId);
 
           // Trigger simulated AI reply if conversation contains an AI bot
           triggerAIReplyIfNeeded(conversationId, text, userId);
@@ -263,6 +268,9 @@ export const triggerAIReplyIfNeeded = async (conversationId, userMessageText, se
           sendMessageToUser(p.userId, broadcastPayload);
         });
 
+        // Trigger emotion classification broadcast after AI reply
+        broadcastEmotionUpdate(conversationId);
+
         console.log(`🤖 [AI BOT] ${botUser.username} replied in conversation: ${conversationId}`);
       } catch (err) {
         console.error("❌ [AI BOT REPLY ERROR]", err);
@@ -272,3 +280,54 @@ export const triggerAIReplyIfNeeded = async (conversationId, userMessageText, se
     console.error("❌ [AI BOT CHECK ERROR]", err);
   }
 };
+
+/**
+ * Broadcasts conversation sentiment to all online participants
+ */
+export const broadcastEmotionUpdate = async (conversationId) => {
+  try {
+    const messages = await prisma.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: "desc" },
+      take: 15,
+      include: {
+        sender: {
+          select: { name: true }
+        }
+      }
+    });
+
+    if (messages.length === 0) return;
+
+    const formattedHistory = messages
+      .reverse()
+      .map((msg) => ({
+        sender: msg.sender.name,
+        text: msg.text
+      }));
+
+    const result = await classifyEmotion(formattedHistory);
+
+    const participants = await prisma.conversationParticipant.findMany({
+      where: { conversationId },
+    });
+
+    const broadcastPayload = {
+      type: "EMOTION_UPDATE",
+      payload: {
+        conversationId,
+        emotion: result.emotion,
+        confidence: result.confidence
+      }
+    };
+
+    participants.forEach((p) => {
+      sendMessageToUser(p.userId, broadcastPayload);
+    });
+
+    console.log(`📡 [SOCKET EMOTION] Broadcasted emotion: ${result.emotion} (${result.confidence}) for conversation: ${conversationId}`);
+  } catch (err) {
+    console.error("❌ [SOCKET EMOTION BROADCAST ERROR]", err);
+  }
+};
+

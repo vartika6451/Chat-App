@@ -20,10 +20,10 @@ const Sidebar = () => {
   };
 
   const navItems = [
-    { name: "CHAT", path: "/chat", icon: <MessageSquare size={24} className="text-[#C85B7C]" /> },
-    { name: "FILES", path: "/friends", icon: <Users size={24} className="text-[#C85B7C]" /> },
-    { name: "STUDIO", path: "/cards", icon: <Sparkles size={24} className="text-[#C85B7C]" /> },
-    { name: "SETTINGS", path: "/settings", icon: <Settings size={24} className="text-[#C85B7C]" /> },
+    { name: "CHAT", path: "/chat", icon: <MessageSquare size={24} className="text-[var(--color-brand-border)]" /> },
+    { name: "FILES", path: "/friends", icon: <Users size={24} className="text-[var(--color-brand-border)]" /> },
+    { name: "STUDIO", path: "/cards", icon: <Sparkles size={24} className="text-[var(--color-brand-border)]" /> },
+    { name: "SETTINGS", path: "/settings", icon: <Settings size={24} className="text-[var(--color-brand-border)]" /> },
   ];
 
   const handleLogout = () => {
@@ -32,14 +32,14 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-28 h-screen bg-brand-surface border-r-3 border-[#C85B7C] flex flex-col justify-between shrink-0 select-none z-10">
+    <aside className="w-28 h-screen bg-brand-surface border-r-3 border-[var(--color-brand-border)] flex flex-col justify-between shrink-0 select-none z-10">
       {/* Top Section - Brand Logo */}
-      <div className="p-3 border-b-3 border-[#C85B7C] flex flex-col items-center justify-center bg-[#FFF1C5]">
+      <div className="p-3 border-b-3 border-[var(--color-brand-border)] flex flex-col items-center justify-center bg-brand-accent">
         <Link href="/chat" className="flex flex-col items-center gap-1 cursor-pointer">
-          <span className="font-retro text-lg font-black text-[#C85B7C] tracking-wide leading-none">
+          <span className="font-retro text-lg font-black text-[var(--color-brand-border)] tracking-wide leading-none">
             BLINK
           </span>
-          <span className="text-[9px] font-bold text-[#C85B7C]">v1.0.exe</span>
+          <span className="text-[9px] font-bold text-[var(--color-brand-border)]">v1.0.exe</span>
         </Link>
       </div>
 
@@ -54,15 +54,15 @@ const Sidebar = () => {
               className="flex flex-col items-center gap-1 group cursor-pointer w-full px-2"
             >
               <div
-                className={`w-16 h-16 rounded-2xl flex items-center justify-center border-3 border-[#C85B7C] transition-all duration-150 ${
+                className={`w-16 h-16 rounded-2xl flex items-center justify-center border-3 border-[var(--color-brand-border)] transition-all duration-150 ${
                   isActive
-                    ? "bg-[#FFE4EC] shadow-[0px_0px_0px_0px_#C85B7C] translate-x-[2px] translate-y-[2px]"
-                    : "bg-brand-surface shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#C85B7C]"
+                    ? "bg-brand-primary-light shadow-[0px_0px_0px_0px_var(--color-brand-border)] translate-x-[2px] translate-y-[2px]"
+                    : "bg-brand-surface shadow-[3px_3px_0px_0px_var(--color-brand-border)] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_var(--color-brand-border)]"
                 }`}
               >
                 {item.icon}
               </div>
-              <span className="font-retro text-[10px] font-extrabold text-[#C85B7C] tracking-widest mt-1">
+              <span className="font-retro text-[10px] font-extrabold text-[var(--color-brand-border)] tracking-widest mt-1">
                 {item.name}
               </span>
             </Link>
@@ -71,7 +71,7 @@ const Sidebar = () => {
       </nav>
 
       {/* Bottom Section - Profile & Logout */}
-      <div className="p-2 border-t-3 border-[#C85B7C] flex flex-col items-center gap-3 bg-[#E6FCE8]/80 dark:bg-brand-accent/30">
+      <div className="p-2 border-t-3 border-[var(--color-brand-border)] flex flex-col items-center gap-3 bg-[#E6FCE8]/80 dark:bg-brand-accent/30">
         {/* User Profile Preview */}
         <div
           onClick={() => router.push("/profile")}
@@ -82,9 +82,9 @@ const Sidebar = () => {
             src={currentUser.profileImage}
             status="online"
             size="sm"
-            className="border-2 border-[#C85B7C] rounded-full"
+            className="border-2 border-[var(--color-brand-border)] rounded-full"
           />
-          <span className="font-retro text-[9px] font-bold text-[#C85B7C] truncate w-full text-center max-w-[80px]">
+          <span className="font-retro text-[9px] font-bold text-[var(--color-brand-border)] truncate w-full text-center max-w-[80px]">
             {currentUser.name.split(" ")[0].toUpperCase()}
           </span>
         </div>
@@ -92,10 +92,10 @@ const Sidebar = () => {
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="w-10 h-10 rounded-xl bg-brand-surface border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center text-gray-500 hover:text-[#C85B7C] transition-all cursor-pointer"
+          className="w-10 h-10 rounded-xl bg-brand-surface border-2 border-[var(--color-brand-border)] shadow-[2px_2px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] flex items-center justify-center text-gray-500 hover:text-[var(--color-brand-border)] transition-all cursor-pointer"
           title="Logout"
         >
-          <LogOut size={16} className="text-[#C85B7C]" />
+          <LogOut size={16} className="text-[var(--color-brand-border)]" />
         </button>
       </div>
     </aside>

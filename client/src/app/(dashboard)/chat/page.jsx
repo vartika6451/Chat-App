@@ -10,9 +10,12 @@ import EmptyState from "../../../components/EmptyState";
 import Button from "../../../components/Button";
 import Modal from "../../../components/Modal";
 import { toast } from "react-hot-toast";
+import { useTheme } from "../../../context/ThemeContext";
+import AmbientEffects from "../../../components/AmbientEffects";
 
 const Chat = () => {
   const { user } = useAuth();
+  const { themeMode, activeEmotion, setActiveEmotion, updateEmotion, lockedTheme } = useTheme();
   
   const [conversations, setConversations] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
@@ -201,9 +204,22 @@ const Chat = () => {
         }
       };
 
+      const fetchInitialEmotion = async () => {
+        try {
+          const res = await api.get(`/chat/conversation/${activeChat.id}/emotion`);
+          if (res.data.success) {
+            updateEmotion(res.data.emotion, res.data.confidence);
+          }
+        } catch (err) {
+          console.error("Error fetching conversation emotion:", err);
+        }
+      };
+
       fetchMessages();
+      fetchInitialEmotion();
     } else {
       setMessages([]);
+      setActiveEmotion("friendly");
     }
   }, [activeChat]);
 
@@ -258,6 +274,11 @@ const Chat = () => {
               return prev;
             }
           });
+        } else if (data.type === "EMOTION_UPDATE") {
+          const { conversationId, emotion, confidence } = data.payload;
+          if (activeChatRef.current && activeChatRef.current.id === conversationId) {
+            updateEmotion(emotion, confidence);
+          }
         } else if (data.type === "CALL_STARTED") {
           const callData = data.payload;
           toast.success(`Incoming call: "${callData.title}" from ${callData.hostName}!`, {
@@ -407,22 +428,22 @@ const Chat = () => {
       {/* Left Section: Chat List Window */}
       <div className="w-80 flex flex-col h-full retro-window">
         {/* Window Title Bar */}
-        <div className="px-4 py-2 bg-[#C5F8C7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
-          <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider">CHAT.EXE</span>
+        <div className="px-4 py-2 bg-brand-success border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
+          <span className="font-retro text-[10px] font-black text-[var(--color-brand-border)] tracking-wider">CHAT.EXE</span>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FFCCD7] border border-[#C85B7C]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FFF1C5] border border-[#C85B7C]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-danger border border-[var(--color-brand-border)]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-accent border border-[var(--color-brand-border)]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-success border border-[var(--color-brand-border)]" />
           </div>
         </div>
 
         {/* Search & Header */}
         <div className="p-4 border-b-2 border-zinc-200 dark:border-zinc-800 bg-brand-surface flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="font-retro text-base font-black text-[#C85B7C] tracking-wide">MESSAGES</h1>
+            <h1 className="font-retro text-base font-black text-[var(--color-brand-border)] tracking-wide">MESSAGES</h1>
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="w-7 h-7 rounded-lg bg-[#FFE4EC] border-2 border-[#C85B7C] flex items-center justify-center text-[#C85B7C] hover:scale-105 transition-transform cursor-pointer"
+              className="w-7 h-7 rounded-lg bg-brand-primary-light border-2 border-[var(--color-brand-border)] flex items-center justify-center text-[var(--color-brand-border)] hover:scale-105 transition-transform cursor-pointer"
             >
               <Plus size={14} strokeWidth={3} />
             </button>
@@ -437,7 +458,7 @@ const Chat = () => {
               placeholder="Search chats..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
+              className="w-full pl-9 pr-3 py-2 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
             />
           </div>
         </div>
@@ -455,7 +476,7 @@ const Chat = () => {
                 onClick={() => setActiveChat(chat)}
                 className={`flex items-center justify-between p-2.5 rounded-2xl cursor-pointer transition-all duration-150 border-2 select-none ${
                   activeChat?.id === chat.id
-                    ? "bg-[#FFE4EC]/70 border-[#C85B7C]"
+                    ? "bg-brand-primary-light border-[var(--color-brand-border)]"
                     : "bg-brand-surface border-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
@@ -464,10 +485,10 @@ const Chat = () => {
                     username={chat.user.name}
                     status={chat.user.status}
                     size="md"
-                    className="border-2 border-[#C85B7C] rounded-full"
+                    className="border-2 border-[var(--color-brand-border)] rounded-full"
                   />
                   <div className="overflow-hidden">
-                    <h4 className="font-retro text-xs font-black text-[#C85B7C] truncate">
+                    <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)] truncate">
                       {chat.user.name.toUpperCase()}
                     </h4>
                     <p className="text-[10px] text-gray-500 truncate mt-0.5 font-medium">
@@ -483,7 +504,7 @@ const Chat = () => {
                     })}
                   </span>
                   {chat.unread > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-[#FE7B9B] border border-[#C85B7C] text-[9px] font-bold text-white flex items-center justify-center">
+                    <span className="w-4 h-4 rounded-full bg-[#FE7B9B] border border-[var(--color-brand-border)] text-[9px] font-bold text-white flex items-center justify-center">
                       {chat.unread}
                     </span>
                   )}
@@ -502,14 +523,14 @@ const Chat = () => {
               isScheduledDrawerOpen ? "mr-72" : ""
             }`}>
             {/* Window Title Bar */}
-            <div className="px-4 py-2 bg-[#FFCCD7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
-              <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider uppercase">
+            <div className="px-4 py-2 bg-brand-danger border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
+              <span className="font-retro text-[10px] font-black text-[var(--color-brand-border)] tracking-wider uppercase">
                 {activeChat.user.name}.exe
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FFCCD7] border border-[#C85B7C]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FFF1C5] border border-[#C85B7C]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-brand-danger border border-[var(--color-brand-border)]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-brand-accent border border-[var(--color-brand-border)]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-brand-success border border-[var(--color-brand-border)]" />
               </div>
             </div>
 
@@ -520,10 +541,10 @@ const Chat = () => {
                   username={activeChat.user.name}
                   status={activeChat.user.status}
                   size="md"
-                  className="border-2 border-[#C85B7C] rounded-full"
+                  className="border-2 border-[var(--color-brand-border)] rounded-full"
                 />
                 <div>
-                  <h3 className="font-retro text-sm font-black text-[#C85B7C] leading-none uppercase">
+                  <h3 className="font-retro text-sm font-black text-[var(--color-brand-border)] leading-none uppercase">
                     {activeChat.user.name}
                   </h3>
                   <span className="text-[9px] font-bold text-[#8E7A82] mt-1 block">
@@ -534,12 +555,12 @@ const Chat = () => {
               <div className="flex items-center gap-2 text-zinc-500">
                 <button
                   onClick={() => setIsScheduledDrawerOpen(prev => !prev)}
-                  className={`p-2 rounded-xl border-2 border-[#C85B7C] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer ${
-                    isScheduledDrawerOpen ? "bg-[#FFE4EC]" : "bg-brand-surface"
+                  className={`p-2 rounded-xl border-2 border-[var(--color-brand-border)] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer ${
+                    isScheduledDrawerOpen ? "bg-brand-primary-light" : "bg-brand-surface"
                   }`}
                   title="View Scheduled Messages & Calls"
                 >
-                  <Calendar size={14} className="text-[#C85B7C]" />
+                  <Calendar size={14} className="text-[var(--color-brand-border)]" />
                 </button>
                 <button
                   onClick={() => {
@@ -547,10 +568,10 @@ const Chat = () => {
                     setScheduledCallType("audio");
                     setIsCallModalOpen(true);
                   }}
-                  className="p-2 rounded-xl bg-brand-surface border-2 border-[#C85B7C] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
+                  className="p-2 rounded-xl bg-brand-surface border-2 border-[var(--color-brand-border)] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                   title="Voice Call / Schedule"
                 >
-                  <Phone size={14} className="text-[#C85B7C]" />
+                  <Phone size={14} className="text-[var(--color-brand-border)]" />
                 </button>
                 <button
                   onClick={() => {
@@ -558,60 +579,63 @@ const Chat = () => {
                     setScheduledCallType("video");
                     setIsCallModalOpen(true);
                   }}
-                  className="p-2 rounded-xl bg-brand-surface border-2 border-[#C85B7C] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
+                  className="p-2 rounded-xl bg-brand-surface border-2 border-[var(--color-brand-border)] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                   title="Video Call / Schedule"
                 >
-                  <Video size={14} className="text-[#C85B7C]" />
+                  <Video size={14} className="text-[var(--color-brand-border)]" />
                 </button>
-                <button className="p-2 rounded-xl bg-brand-surface border-2 border-[#C85B7C] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
-                  <Info size={14} className="text-[#C85B7C]" />
+                <button className="p-2 rounded-xl bg-brand-surface border-2 border-[var(--color-brand-border)] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
+                  <Info size={14} className="text-[var(--color-brand-border)]" />
                 </button>
               </div>
             </div>
 
-            {/* Messages Feed Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-brand-surface/70">
-              {loadingMessages ? (
-                <div className="flex items-center justify-center py-20 text-xs text-gray-500 font-medium">
-                  Loading message history...
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="text-center text-xs text-gray-600 py-20 font-medium">
-                  Send a sticker or message to start chatting!
-                </div>
-              ) : (
-                messages.map((msg) => {
-                  const isOutgoing = msg.senderId === user?.id;
-                  return (
-                    <div
-                      key={msg.id}
-                      className={`flex items-start gap-3 max-w-[80%] ${
-                        isOutgoing ? "self-end flex-row-reverse" : ""
-                      }`}
-                    >
-                      {!isOutgoing && <Avatar username={activeChat.user.name} size="sm" className="border-2 border-[#C85B7C] rounded-full" />}
-                      <div className={`flex flex-col ${isOutgoing ? "items-end" : "items-start"}`}>
-                        <div
-                          className={`px-4 py-2 rounded-2xl text-xs font-bold border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] ${
-                            isOutgoing
-                              ? "bg-[#FFE4EC] text-[#C85B7C] rounded-tr-sm"
-                              : "bg-[#FFF1C5] text-[#C85B7C] rounded-tl-sm"
-                          }`}
-                        >
-                          {msg.text}
+            {/* Messages Feed Area Wrapper (viewport-locked overlay container) */}
+            <div className="flex-1 relative overflow-hidden flex flex-col bg-brand-surface/20">
+              <AmbientEffects emotion={themeMode === "disabled" ? "none" : (themeMode === "manual" ? lockedTheme : activeEmotion)} />
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-transparent relative z-10 messages-feed-bg">
+                {loadingMessages ? (
+                  <div className="flex items-center justify-center py-20 text-xs text-gray-500 font-medium">
+                    Loading message history...
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="text-center text-xs text-gray-600 py-20 font-medium">
+                    Send a sticker or message to start chatting!
+                  </div>
+                ) : (
+                  messages.map((msg) => {
+                    const isOutgoing = msg.senderId === user?.id;
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`flex items-start gap-3 max-w-[80%] relative z-10 ${
+                          isOutgoing ? "self-end flex-row-reverse" : ""
+                        }`}
+                      >
+                        {!isOutgoing && <Avatar username={activeChat.user.name} size="sm" className="border-2 border-[var(--color-brand-border)] rounded-full" />}
+                        <div className={`flex flex-col ${isOutgoing ? "items-end" : "items-start"}`}>
+                          <div
+                            className={`px-4 py-2 rounded-2xl text-xs font-bold border-2 border-[var(--color-brand-border)] shadow-[2px_2px_0px_0px_var(--color-brand-border)] ${
+                              isOutgoing
+                                ? "bg-brand-primary-light text-[var(--color-brand-border)] rounded-tr-sm"
+                                : "bg-brand-accent text-[var(--color-brand-border)] rounded-tl-sm"
+                            }`}
+                          >
+                            {msg.text}
+                          </div>
+                          <span className="text-[9px] font-bold text-gray-400 mt-1 px-1">
+                            {new Date(msg.createdAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
                         </div>
-                        <span className="text-[9px] font-bold text-gray-400 mt-1 px-1">
-                          {new Date(msg.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
                       </div>
-                    </div>
-                  );
-                })
-              )}
-              <div ref={messagesEndRef} />
+                    );
+                  })
+                )}
+                <div ref={messagesEndRef} />
+              </div>
             </div>
 
             {/* Chat Input footer */}
@@ -626,7 +650,7 @@ const Chat = () => {
                   setScheduledMsgText(inputText);
                   setIsScheduleMsgOpen(true);
                 }}
-                className="p-2.5 bg-[#FFF1C5] border-2 border-[#C85B7C] rounded-xl text-[#C85B7C] hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_#C85B7C] flex items-center justify-center cursor-pointer"
+                className="p-2.5 bg-brand-accent border-2 border-[var(--color-brand-border)] rounded-xl text-[var(--color-brand-border)] hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_var(--color-brand-border)] flex items-center justify-center cursor-pointer"
                 title="Schedule Message"
               >
                 <Clock size={14} />
@@ -636,12 +660,12 @@ const Chat = () => {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 px-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="py-2.5 px-4 bg-[#FFE4EC] border-2 border-[#C85B7C] rounded-xl text-[#C85B7C] font-bold hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center cursor-pointer"
+                className="py-2.5 px-4 bg-brand-primary-light border-2 border-[var(--color-brand-border)] rounded-xl text-[var(--color-brand-border)] font-bold hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] flex items-center justify-center cursor-pointer"
               >
                 <Send size={14} strokeWidth={2.5} />
               </button>
@@ -650,14 +674,14 @@ const Chat = () => {
 
           {/* Scheduled Drawer Panel */}
           {isScheduledDrawerOpen && (
-            <div className="absolute right-0 top-0 bottom-0 w-72 bg-brand-surface border-l-3 border-[#C85B7C] shadow-2xl flex flex-col z-20">
-              <div className="px-4 py-2 bg-[#FFF1C5] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
-                <span className="font-retro text-[9px] font-black text-[#C85B7C] tracking-wider uppercase">
+            <div className="absolute right-0 top-0 bottom-0 w-72 bg-brand-surface border-l-3 border-[var(--color-brand-border)] shadow-2xl flex flex-col z-20">
+              <div className="px-4 py-2 bg-brand-accent border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
+                <span className="font-retro text-[9px] font-black text-[var(--color-brand-border)] tracking-wider uppercase">
                   SCHEDULED.LOG
                 </span>
                 <button
                   onClick={() => setIsScheduledDrawerOpen(false)}
-                  className="p-1 text-[#C85B7C] hover:bg-black/5 rounded cursor-pointer"
+                  className="p-1 text-[var(--color-brand-border)] hover:bg-black/5 rounded cursor-pointer"
                 >
                   <X size={12} strokeWidth={2.5} />
                 </button>
@@ -666,7 +690,7 @@ const Chat = () => {
               <div className="flex-1 overflow-y-auto p-4 space-y-5">
                 {/* Scheduled Messages List */}
                 <div>
-                  <h5 className="text-[10px] font-black text-[#C85B7C] uppercase tracking-wider mb-2 border-b border-zinc-200 pb-1 flex items-center gap-1.5 font-bold">
+                  <h5 className="text-[10px] font-black text-[var(--color-brand-border)] uppercase tracking-wider mb-2 border-b border-zinc-200 pb-1 flex items-center gap-1.5 font-bold">
                     <Clock size={11} /> Scheduled Messages
                   </h5>
                   {scheduledMessages.length === 0 ? (
@@ -674,7 +698,7 @@ const Chat = () => {
                   ) : (
                     <div className="space-y-2">
                       {scheduledMessages.map((msg) => (
-                        <div key={msg.id} className="p-2.5 rounded-xl border border-zinc-200 bg-[#FFE4EC]/20 flex flex-col gap-1">
+                        <div key={msg.id} className="p-2.5 rounded-xl border border-zinc-200 bg-brand-primary-light/20 flex flex-col gap-1">
                           <p className="text-[11px] text-[#2E2A25] font-semibold break-all leading-tight">
                             "{msg.text}"
                           </p>
@@ -705,7 +729,7 @@ const Chat = () => {
 
                 {/* Scheduled Calls List */}
                 <div>
-                  <h5 className="text-[10px] font-black text-[#C85B7C] uppercase tracking-wider mb-2 border-b border-zinc-200 pb-1 flex items-center gap-1.5 font-bold font-retro">
+                  <h5 className="text-[10px] font-black text-[var(--color-brand-border)] uppercase tracking-wider mb-2 border-b border-zinc-200 pb-1 flex items-center gap-1.5 font-bold font-retro">
                     <Phone size={11} /> Scheduled Calls
                   </h5>
                   {scheduledCalls.length === 0 ? (
@@ -715,7 +739,7 @@ const Chat = () => {
                       {scheduledCalls.map((call) => (
                         <div key={call.id} className="p-2.5 rounded-xl border border-zinc-200 bg-[#E6FCE8]/45 flex flex-col gap-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black text-[#C85B7C] uppercase truncate max-w-[120px]">
+                            <span className="text-[10px] font-black text-[var(--color-brand-border)] uppercase truncate max-w-[120px]">
                               {call.title}
                             </span>
                             <span className="text-[8px] font-black text-zinc-400 uppercase bg-brand-surface border border-zinc-200 dark:border-zinc-800 px-1 rounded-md">
@@ -753,23 +777,23 @@ const Chat = () => {
         ) : (
           /* Retro Welcome / Error Style dialog box in the middle */
           <div className="w-[380px] mx-auto retro-window flex flex-col">
-            <div className="px-4 py-1.5 bg-[#FFCCD7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
-              <span className="font-retro text-[9px] font-black text-[#C85B7C] tracking-wider">ALERT.EXE</span>
-              <span className="w-2 h-2 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
+            <div className="px-4 py-1.5 bg-brand-danger border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
+              <span className="font-retro text-[9px] font-black text-[var(--color-brand-border)] tracking-wider">ALERT.EXE</span>
+              <span className="w-2 h-2 rounded-full bg-brand-success border border-[var(--color-brand-border)]" />
             </div>
             <div className="p-6 bg-brand-surface flex flex-col items-center gap-4 text-center">
-              <div className="w-12 h-12 rounded-xl bg-[#FFF1C5] border-2 border-[#C85B7C] flex items-center justify-center">
-                <MessageSquare size={24} className="text-[#C85B7C]" />
+              <div className="w-12 h-12 rounded-xl bg-brand-accent border-2 border-[var(--color-brand-border)] flex items-center justify-center">
+                <MessageSquare size={24} className="text-[var(--color-brand-border)]" />
               </div>
               <div className="space-y-1">
-                <h4 className="font-retro text-sm font-black text-[#C85B7C] tracking-wide">NO CHAT OPEN</h4>
+                <h4 className="font-retro text-sm font-black text-[var(--color-brand-border)] tracking-wide">NO CHAT OPEN</h4>
                 <p className="text-[10px] text-gray-500 font-bold max-w-[260px] leading-relaxed">
                   Choose a conversation from the left pane or click '+' to search and add dynamic stickers!
                 </p>
               </div>
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="mt-2 px-6 py-2 bg-[#E6FCE8] border-2 border-[#C85B7C] rounded-xl font-retro text-xs font-black text-[#C85B7C] shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] cursor-pointer"
+                className="mt-2 px-6 py-2 bg-[#E6FCE8] border-2 border-[var(--color-brand-border)] rounded-xl font-retro text-xs font-black text-[var(--color-brand-border)] shadow-[3px_3px_0px_0px_var(--color-brand-border)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] cursor-pointer"
               >
                 OK
               </button>
@@ -793,7 +817,7 @@ const Chat = () => {
               placeholder="Search by name or username..."
               value={userSearchQuery}
               onChange={(e) => setUserSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none"
             />
           </div>
 
@@ -809,11 +833,11 @@ const Chat = () => {
                 <div
                   key={searchUser.id}
                   onClick={() => handleStartChatWithUser(searchUser)}
-                  className="flex items-center gap-3 p-2.5 rounded-xl border border-zinc-200/60 hover:bg-[#FFE4EC]/55 cursor-pointer transition-colors"
+                  className="flex items-center gap-3 p-2.5 rounded-xl border border-zinc-200/60 hover:bg-brand-primary-light/55 cursor-pointer transition-colors"
                 >
-                  <Avatar username={searchUser.name} size="md" className="border border-[#C85B7C] rounded-full" />
+                  <Avatar username={searchUser.name} size="md" className="border border-[var(--color-brand-border)] rounded-full" />
                   <div>
-                    <div className="text-xs font-black text-[#C85B7C]">{searchUser.name}</div>
+                    <div className="text-xs font-black text-[var(--color-brand-border)]">{searchUser.name}</div>
                     <div className="text-[10px] text-gray-500 font-bold">@{searchUser.username}</div>
                   </div>
                 </div>
@@ -863,7 +887,7 @@ const Chat = () => {
               value={scheduledMsgText}
               onChange={(e) => setScheduledMsgText(e.target.value)}
               placeholder="Type your message to schedule..."
-              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none resize-none"
+              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none resize-none"
               rows={3}
               required
             />
@@ -874,7 +898,7 @@ const Chat = () => {
               type="datetime-local"
               value={scheduledMsgTime}
               onChange={(e) => setScheduledMsgTime(e.target.value)}
-              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none cursor-pointer"
               required
             />
           </div>
@@ -898,8 +922,8 @@ const Chat = () => {
       >
         <div className="space-y-6">
           {/* Instant Call Row */}
-          <div className="p-4 rounded-2xl bg-[#FFE4EC]/40 border-2 border-dashed border-[#C85B7C] flex flex-col items-center gap-3 text-center">
-            <h4 className="font-retro text-xs font-black text-[#C85B7C]">START INSTANT TRANSMISSION</h4>
+          <div className="p-4 rounded-2xl bg-brand-primary-light/40 border-2 border-dashed border-[var(--color-brand-border)] flex flex-col items-center gap-3 text-center">
+            <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)]">START INSTANT TRANSMISSION</h4>
             <p className="text-[10px] text-gray-500 font-semibold max-w-[300px]">
               Instantly connect with a secure audio or video stream to {activeChat?.user?.name}.
             </p>
@@ -976,7 +1000,7 @@ const Chat = () => {
                 value={scheduledCallTitle}
                 onChange={(e) => setScheduledCallTitle(e.target.value)}
                 placeholder="Weekly Sync, Brainstorming, etc."
-                className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none"
+                className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none"
                 required
               />
             </div>
@@ -986,7 +1010,7 @@ const Chat = () => {
                 <select
                   value={scheduledCallType}
                   onChange={(e) => setScheduledCallType(e.target.value)}
-                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none cursor-pointer"
                 >
                   <option value="audio">Audio Connection</option>
                   <option value="video">Video Stream</option>
@@ -998,7 +1022,7 @@ const Chat = () => {
                   type="datetime-local"
                   value={scheduledCallTime}
                   onChange={(e) => setScheduledCallTime(e.target.value)}
-                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none cursor-pointer"
                   required
                 />
               </div>
@@ -1030,7 +1054,7 @@ const Chat = () => {
             </p>
           </div>
 
-          <div className="flex-1 flex items-center justify-center relative w-full max-w-xl aspect-video rounded-3xl border-3 border-[#C85B7C] bg-zinc-950 overflow-hidden shadow-2xl">
+          <div className="flex-1 flex items-center justify-center relative w-full max-w-xl aspect-video rounded-3xl border-3 border-[var(--color-brand-border)] bg-zinc-950 overflow-hidden shadow-2xl">
             <div className="absolute top-[20%] left-[25%] w-48 h-48 rounded-full bg-brand-primary/20 blur-[60px]" />
             <div className="absolute bottom-[20%] right-[25%] w-48 h-48 rounded-full bg-brand-accent/20 blur-[60px]" />
 
@@ -1180,13 +1204,13 @@ const Chat = () => {
 
       {/* Incoming Call Ringing Dialog */}
       {incomingCall && (
-        <div className="fixed bottom-6 right-6 retro-window w-80 bg-brand-surface p-5 shadow-2xl z-50 flex flex-col gap-4 border-3 border-[#C85B7C] animate-bounce">
+        <div className="fixed bottom-6 right-6 retro-window w-80 bg-brand-surface p-5 shadow-2xl z-50 flex flex-col gap-4 border-3 border-[var(--color-brand-border)] animate-bounce">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FFE4EC] border-2 border-[#C85B7C] flex items-center justify-center text-[#C85B7C] animate-pulse">
+            <div className="w-10 h-10 rounded-xl bg-brand-primary-light border-2 border-[var(--color-brand-border)] flex items-center justify-center text-[var(--color-brand-border)] animate-pulse">
               <Phone size={18} />
             </div>
             <div>
-              <h4 className="font-retro text-xs font-black text-[#C85B7C]">INCOMING CALL...</h4>
+              <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)]">INCOMING CALL...</h4>
               <p className="text-[10px] text-gray-500 font-bold">
                 {incomingCall.hostName} is calling you ({incomingCall.callType})
               </p>

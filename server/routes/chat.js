@@ -9,7 +9,8 @@ import {
   deleteScheduledMessage,
   scheduleCall,
   getScheduledCalls,
-  deleteScheduledCall
+  deleteScheduledCall,
+  getConversationEmotion
 } from "../controllers/chatController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router.get("/conversations", protect, getConversations);
 router.get("/messages/:conversationId", protect, getMessages);
+router.get("/conversation/:conversationId/emotion", protect, getConversationEmotion);
 router.post("/message", protect, sendMessage);
 
 // Scheduled Messages Routes

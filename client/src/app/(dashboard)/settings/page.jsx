@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Palette, Bell, Shield, LogOut } from "lucide-react";
+import { Palette, Bell, Shield, LogOut, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../../context/AuthContext";
@@ -12,7 +12,7 @@ import Card from "../../../components/Card";
 
 const Settings = () => {
   const { logout } = useAuth();
-  const { isDark: darkMode, toggleTheme } = useTheme();
+  const { isDark: darkMode, toggleTheme, themeMode, setThemeMode, lockedTheme, lockTheme } = useTheme();
   const router = useRouter();
 
   // Settings State Mock
@@ -86,6 +86,71 @@ const Settings = () => {
                 />
               ))}
             </div>
+          </div>
+        </Card>
+
+        {/* AI Theme Engine Settings */}
+        <Card variant="glass" className="p-6 border-white/5 space-y-4">
+          <h3 className="text-sm font-bold text-zinc-900 tracking-wider uppercase flex items-center gap-2">
+            <Sparkles size={16} className="text-[#C85B7C]" />
+            <span>AI Sentiment Themes</span>
+          </h3>
+
+          <div className="flex flex-col gap-4 text-xs">
+            {/* Mode selection switches */}
+            <div className="flex flex-col gap-1.5">
+              <label className="font-semibold text-zinc-800">Theme Engine Control Mode</label>
+              <div className="flex gap-2.5 mt-1">
+                {[
+                  { mode: "auto", label: "Auto (AI Sentiment)" },
+                  { mode: "manual", label: "Manual Theme Lock" },
+                  { mode: "disabled", label: "Disable AI Themes" }
+                ].map((item) => (
+                  <button
+                    key={item.mode}
+                    onClick={() => setThemeMode(item.mode)}
+                    className={`px-3 py-2 border-2 rounded-xl font-bold cursor-pointer transition-all ${
+                      themeMode === item.mode
+                        ? "bg-[#FFE4EC] border-[#C85B7C] text-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C]"
+                        : "bg-white border-zinc-200 text-zinc-600 hover:border-[#C85B7C]/40"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Locked theme selection dropdown - visible only in manual mode */}
+            {themeMode === "manual" && (
+              <div className="flex flex-col gap-1.5 pt-2 animate-fade-in">
+                <label className="font-semibold text-zinc-800">Select locked emotion theme</label>
+                <select
+                  value={lockedTheme}
+                  onChange={(e) => lockTheme(e.target.value)}
+                  className="w-full max-w-xs px-3 py-2 bg-white border-2 border-[#C85B7C] text-zinc-800 font-bold rounded-xl focus:outline-none cursor-pointer"
+                >
+                  {[
+                    { value: "friendly", label: "Friendly (Default Retro)" },
+                    { value: "romantic", label: "Romantic ❤️" },
+                    { value: "funny", label: "Funny 😂" },
+                    { value: "angry", label: "Angry 😠" },
+                    { value: "sad", label: "Sad 😢" },
+                    { value: "excited", label: "Excited 🎉" },
+                    { value: "calm", label: "Calm 🌿" },
+                    { value: "motivational", label: "Motivational 🚀" },
+                    { value: "celebration", label: "Celebration 🥳" },
+                    { value: "professional", label: "Professional 💼" },
+                    { value: "horror", label: "Horror 💀" },
+                    { value: "fantasy", label: "Fantasy 🪄" }
+                  ].map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </Card>
 

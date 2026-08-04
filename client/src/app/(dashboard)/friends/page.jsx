@@ -152,15 +152,15 @@ const Friends = () => {
       {/* Outer Window Panel */}
       <div className="w-full flex flex-col h-full retro-window min-h-[600px]">
         {/* Window Title Bar */}
-        <div className="px-4 py-2 bg-[#FFF1C5] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
+        <div className="px-4 py-2 bg-brand-accent border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
           <div className="flex items-center gap-2">
-            <Users size={14} className="text-[#C85B7C]" />
-            <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider">FRIENDS_CLUB.EXE</span>
+            <Users size={14} className="text-[var(--color-brand-border)]" />
+            <span className="font-retro text-[10px] font-black text-[var(--color-brand-border)] tracking-wider">FRIENDS_CLUB.EXE</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FFCCD7] border border-[#C85B7C]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FFF1C5] border border-[#C85B7C]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-danger border border-[var(--color-brand-border)]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-accent border border-[var(--color-brand-border)]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-success border border-[var(--color-brand-border)]" />
           </div>
         </div>
 
@@ -169,12 +169,12 @@ const Friends = () => {
           {/* Header section in the window */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-zinc-200 pb-4 mb-6">
             <div>
-              <h2 className="font-retro text-lg font-black text-[#C85B7C] tracking-wide">FRIENDS DIRECTORY</h2>
+              <h2 className="font-retro text-lg font-black text-[var(--color-brand-border)] tracking-wide">FRIENDS DIRECTORY</h2>
               <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">Interact and manage your stickers club connections</p>
             </div>
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2.5 bg-[#FFE4EC] border-3 border-[#C85B7C] rounded-xl text-[#C85B7C] font-retro text-xs font-black shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center gap-2 cursor-pointer w-fit"
+              className="px-4 py-2.5 bg-brand-primary-light border-3 border-[var(--color-brand-border)] rounded-xl text-[var(--color-brand-border)] font-retro text-xs font-black shadow-[3px_3px_0px_0px_var(--color-brand-border)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] flex items-center gap-2 cursor-pointer w-fit"
             >
               <UserPlus size={14} strokeWidth={2.5} />
               <span>ADD NEW FRIEND</span>
@@ -187,10 +187,10 @@ const Friends = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-xl border-3 border-[#C85B7C] font-retro text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                className={`px-4 py-2 rounded-xl border-3 border-[var(--color-brand-border)] font-retro text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                   activeTab === tab
-                    ? "bg-[#FFE4EC] text-[#C85B7C] shadow-[0px_0px_0px_0px_#C85B7C] translate-x-[2px] translate-y-[2px]"
-                    : "bg-white text-zinc-500 shadow-[2.5px_2.5px_0px_0px_#C85B7C] hover:translate-y-[-1px] hover:shadow-[3.5px_3.5px_0px_0px_#C85B7C]"
+                    ? "bg-brand-primary-light text-[var(--color-brand-border)] shadow-[0px_0px_0px_0px_var(--color-brand-border)] translate-x-[2px] translate-y-[2px]"
+                    : "bg-white text-zinc-500 shadow-[2.5px_2.5px_0px_0px_var(--color-brand-border)] hover:translate-y-[-1px] hover:shadow-[3.5px_3.5px_0px_0px_var(--color-brand-border)]"
                 }`}
               >
                 {tab === "requests" ? `Requests (${requests.length})` : tab}
@@ -207,7 +207,7 @@ const Friends = () => {
                 placeholder="Search friends..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
               />
             </div>
           )}
@@ -223,26 +223,26 @@ const Friends = () => {
                 requests.map((req) => (
                   <div
                     key={req.id}
-                    className="p-3.5 bg-white border-3 border-[#C85B7C] shadow-[3px_3px_0px_0px_#C85B7C] rounded-2xl flex items-center justify-between"
+                    className="p-3.5 bg-white border-3 border-[var(--color-brand-border)] shadow-[3px_3px_0px_0px_var(--color-brand-border)] rounded-2xl flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar username={req.name} size="md" className="border-2 border-[#C85B7C] rounded-full" />
+                      <Avatar username={req.name} size="md" className="border-2 border-[var(--color-brand-border)] rounded-full" />
                       <div>
-                        <h4 className="font-retro text-xs font-black text-[#C85B7C] uppercase">{req.name}</h4>
+                        <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)] uppercase">{req.name}</h4>
                         <p className="text-[10px] text-gray-500 font-bold mt-0.5">@{req.username} • {req.mutuals} mutuals</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleAcceptRequest(req)}
-                        className="p-2 rounded-xl bg-[#E6FCE8] border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] text-[#C85B7C] flex items-center justify-center cursor-pointer"
+                        className="p-2 rounded-xl bg-[#E6FCE8] border-2 border-[var(--color-brand-border)] shadow-[2px_2px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] text-[var(--color-brand-border)] flex items-center justify-center cursor-pointer"
                         title="Accept"
                       >
                         <Check size={14} strokeWidth={3} />
                       </button>
                       <button
                         onClick={() => handleDeclineRequest(req.id)}
-                        className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] text-gray-400 hover:text-brand-danger flex items-center justify-center cursor-pointer"
+                        className="p-2 rounded-xl bg-white border-2 border-[var(--color-brand-border)] shadow-[2px_2px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] text-gray-400 hover:text-brand-danger flex items-center justify-center cursor-pointer"
                         title="Decline"
                       >
                         <X size={14} strokeWidth={3} />
@@ -262,23 +262,23 @@ const Friends = () => {
                 filteredFriends.map((friend) => (
                   <div
                     key={friend.id}
-                    className="p-3.5 bg-white border-3 border-[#C85B7C] shadow-[3px_3px_0px_0px_#C85B7C] rounded-2xl flex items-center justify-between hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#C85B7C] transition-all duration-150 group"
+                    className="p-3.5 bg-white border-3 border-[var(--color-brand-border)] shadow-[3px_3px_0px_0px_var(--color-brand-border)] rounded-2xl flex items-center justify-between hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_var(--color-brand-border)] transition-all duration-150 group"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar
                         username={friend.name}
                         status={friend.status}
                         size="md"
-                        className="border-2 border-[#C85B7C] rounded-full"
+                        className="border-2 border-[var(--color-brand-border)] rounded-full"
                       />
                       <div>
-                        <h4 className="font-retro text-xs font-black text-[#C85B7C] uppercase">{friend.name}</h4>
+                        <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)] uppercase">{friend.name}</h4>
                         <p className="text-[10px] text-gray-500 font-bold mt-0.5">@{friend.username} • {friend.mutuals} mutuals</p>
                       </div>
                     </div>
                     <button
                       onClick={() => router.push("/chat")}
-                      className="p-2.5 rounded-xl bg-[#FFE4EC]/50 border-2 border-[#C85B7C] text-[#C85B7C] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[2px_2px_0px_0px_#C85B7C]"
+                      className="p-2.5 rounded-xl bg-brand-primary-light border-2 border-[var(--color-brand-border)] text-[var(--color-brand-border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[2px_2px_0px_0px_var(--color-brand-border)]"
                     >
                       <MessageSquare size={14} strokeWidth={2.5} />
                     </button>
@@ -313,14 +313,14 @@ const Friends = () => {
               placeholder="Search by name or @username..."
               value={modalSearchQuery}
               onChange={(e) => setModalSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none"
             />
           </div>
 
           <div className="mt-2 space-y-2.5 max-h-[300px] overflow-y-auto">
             {modalSearching ? (
               <div className="flex items-center justify-center py-8 text-gray-500 gap-2 font-bold text-xs uppercase">
-                <Loader2 size={14} className="animate-spin text-[#C85B7C]" />
+                <Loader2 size={14} className="animate-spin text-[var(--color-brand-border)]" />
                 <span>Searching stickers...</span>
               </div>
             ) : modalSearchQuery.trim() === "" ? (
@@ -337,23 +337,23 @@ const Friends = () => {
                 return (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-[#FFFBFD] border-2 border-[#C85B7C] hover:bg-[#FFE4EC]/40 transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl bg-[#FFFBFD] border-2 border-[var(--color-brand-border)] hover:bg-brand-primary-light/40 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar username={user.name} src={user.profileImage} size="md" className="border border-[#C85B7C] rounded-full" />
+                      <Avatar username={user.name} src={user.profileImage} size="md" className="border border-[var(--color-brand-border)] rounded-full" />
                       <div>
-                        <h5 className="font-retro text-xs font-black text-[#C85B7C] uppercase">{user.name}</h5>
+                        <h5 className="font-retro text-xs font-black text-[var(--color-brand-border)] uppercase">{user.name}</h5>
                         <p className="text-[9px] text-gray-500 font-bold">@{user.username}</p>
                       </div>
                     </div>
                     {isFriend ? (
-                      <span className="text-[9px] uppercase font-black text-[#C85B7C] tracking-wider bg-[#FFE4EC] border-2 border-[#C85B7C] px-2.5 py-1 rounded-lg">
+                      <span className="text-[9px] uppercase font-black text-[var(--color-brand-border)] tracking-wider bg-brand-primary-light border-2 border-[var(--color-brand-border)] px-2.5 py-1 rounded-lg">
                         Friends
                       </span>
                     ) : (
                       <button
                         onClick={() => handleAddFriend(user)}
-                        className="px-3.5 py-1.5 bg-[#E6FCE8] border-2 border-[#C85B7C] text-[#C85B7C] font-retro text-[10px] font-black rounded-xl hover:scale-105 active:scale-95 shadow-[1.5px_1.5px_0px_0px_#C85B7C] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-[0px_0px_0px_0px_#C85B7C] cursor-pointer"
+                        className="px-3.5 py-1.5 bg-[#E6FCE8] border-2 border-[var(--color-brand-border)] text-[var(--color-brand-border)] font-retro text-[10px] font-black rounded-xl hover:scale-105 active:scale-95 shadow-[1.5px_1.5px_0px_0px_var(--color-brand-border)] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] cursor-pointer"
                       >
                         ADD
                       </button>

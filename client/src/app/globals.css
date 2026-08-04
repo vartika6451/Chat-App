@@ -1,11 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --color-brand-bg: #FFF9FA;
   --color-brand-surface: #FFFFFF;
   --color-brand-card: #FFFFFF;
   --color-brand-primary: #FE7B9B;
+  --color-brand-primary-light: #FFE4EC;
   --color-brand-accent: #FFF1C5;
   --color-brand-success: #C5F8C7;
   --color-brand-danger: #FFA4A4;
@@ -22,6 +25,7 @@
   --color-brand-surface: #1B171D;
   --color-brand-card: #1B171D;
   --color-brand-primary: #FE7B9B;
+  --color-brand-primary-light: #2A1D22;
   --color-brand-accent: #2C2630;
   --color-brand-success: #1E3023;
   --color-brand-danger: #3B1F23;
@@ -33,15 +37,177 @@
   color-scheme: dark;
 }
 
+/* Emotion-Adaptive Themes */
+
+.theme-romantic {
+  --color-brand-bg: #FFF0F3;
+  --color-brand-surface: #FFF5F7;
+  --color-brand-card: #FFF6F8;
+  --color-brand-primary: #FD6B8F;
+  --color-brand-primary-light: #FFE2E8;
+  --color-brand-accent: #EADCF8;
+  --color-brand-border: #E3587A;
+  --color-brand-body-text: #4D2C34;
+  --color-brand-grid: rgba(227, 88, 122, 0.08);
+}
+
+.theme-funny {
+  --color-brand-bg: #FFFDF0;
+  --color-brand-surface: #FFFFEB;
+  --color-brand-card: #FFFBE0;
+  --color-brand-primary: #FFB000;
+  --color-brand-primary-light: #FFF4C2;
+  --color-brand-accent: #C3EEFF;
+  --color-brand-border: #E09200;
+  --color-brand-body-text: #4A3505;
+  --color-brand-grid: rgba(224, 146, 0, 0.08);
+}
+
+.theme-angry {
+  --color-brand-bg: #241113;
+  --color-brand-surface: #301A1C;
+  --color-brand-card: #3D2123;
+  --color-brand-primary: #E53E3E;
+  --color-brand-primary-light: #5C2023;
+  --color-brand-accent: #FFA5A5;
+  --color-brand-border: #C53030;
+  --color-brand-body-text: #FFEBEB;
+  --color-brand-grid: rgba(197, 48, 48, 0.12);
+}
+
+.theme-sad {
+  --color-brand-bg: #1E2530;
+  --color-brand-surface: #273142;
+  --color-brand-card: #2D394D;
+  --color-brand-primary: #5C7CFA;
+  --color-brand-primary-light: #2F3E57;
+  --color-brand-accent: #A5D8FF;
+  --color-brand-border: #4263EB;
+  --color-brand-body-text: #EDF2FF;
+  --color-brand-grid: rgba(66, 99, 235, 0.10);
+}
+
+.theme-excited {
+  --color-brand-bg: #0F0C1B;
+  --color-brand-surface: #18132E;
+  --color-brand-card: #201A3D;
+  --color-brand-primary: #9C27B0;
+  --color-brand-primary-light: #3C134A;
+  --color-brand-accent: #00E5FF;
+  --color-brand-border: #E040FB;
+  --color-brand-body-text: #F5F0FF;
+  --color-brand-grid: rgba(224, 64, 251, 0.15);
+}
+
+.theme-calm {
+  --color-brand-bg: #F3FDF5;
+  --color-brand-surface: #F5FDF7;
+  --color-brand-card: #EBF8EE;
+  --color-brand-primary: #38A169;
+  --color-brand-primary-light: #C6F6D5;
+  --color-brand-accent: #FDF6E2;
+  --color-brand-border: #2F855A;
+  --color-brand-body-text: #1C3D27;
+  --color-brand-grid: rgba(47, 133, 90, 0.08);
+}
+
+.theme-motivational {
+  --color-brand-bg: #FDF8F5;
+  --color-brand-surface: #FFF8F5;
+  --color-brand-card: #FFF2EB;
+  --color-brand-primary: #DD6B20;
+  --color-brand-primary-light: #FEEBC8;
+  --color-brand-accent: #BEE3F8;
+  --color-brand-border: #C05621;
+  --color-brand-body-text: #432616;
+  --color-brand-grid: rgba(192, 86, 33, 0.08);
+}
+
+.theme-celebration {
+  --color-brand-bg: #FFF5FA;
+  --color-brand-surface: #FFF5FA;
+  --color-brand-card: #FFE6F3;
+  --color-brand-primary: #ED64A6;
+  --color-brand-primary-light: #FED7E2;
+  --color-brand-accent: #FEFCBF;
+  --color-brand-border: #D53F8C;
+  --color-brand-body-text: #4A1525;
+  --color-brand-grid: rgba(213, 63, 140, 0.08);
+}
+
+.theme-friendly {
+  --color-brand-bg: #FFF9FA;
+  --color-brand-surface: #FFFBFC;
+  --color-brand-card: #FFFFFF;
+  --color-brand-primary: #FE7B9B;
+  --color-brand-primary-light: #FFE4EC;
+  --color-brand-accent: #FFF1C5;
+  --color-brand-border: #C85B7C;
+  --color-brand-body-text: #2E2A25;
+  --color-brand-grid: rgba(200, 91, 124, 0.08);
+}
+
+.theme-professional {
+  --color-brand-bg: #F7FAFC;
+  --color-brand-surface: #F8FAFC;
+  --color-brand-card: #EDF2F7;
+  --color-brand-primary: #4A5568;
+  --color-brand-primary-light: #E2E8F0;
+  --color-brand-accent: #CBD5E0;
+  --color-brand-border: #2D3748;
+  --color-brand-body-text: #1A202C;
+  --color-brand-grid: rgba(45, 55, 72, 0.08);
+}
+
+.theme-horror {
+  --color-brand-bg: #140E0F;
+  --color-brand-surface: #1F1416;
+  --color-brand-card: #2B1A1C;
+  --color-brand-primary: #9B2C2C;
+  --color-brand-primary-light: #3F191B;
+  --color-brand-accent: #718096;
+  --color-brand-border: #822727;
+  --color-brand-body-text: #E5E7EB;
+  --color-brand-grid: rgba(130, 39, 39, 0.15);
+}
+
+.theme-fantasy {
+  --color-brand-bg: #F7F5FF;
+  --color-brand-surface: #FAF9FF;
+  --color-brand-card: #F0EBFF;
+  --color-brand-primary: #7B2CBF;
+  --color-brand-primary-light: #E0AAFF;
+  --color-brand-accent: #FFF3C4;
+  --color-brand-border: #5A189A;
+  --color-brand-body-text: #240046;
+  --color-brand-grid: rgba(90, 24, 154, 0.08);
+}
+
+/* Global Transition Rules for Adaptive Theme crossfade */
+body, 
+.retro-window, 
+.glass-panel, 
+aside, 
+nav, 
+.chat-window-panel, 
+.messages-feed-bg {
+  transition: background-color 650ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 650ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 650ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 650ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @theme {
   --color-brand-bg: var(--color-brand-bg);
   --color-brand-surface: var(--color-brand-surface);
   --color-brand-card: var(--color-brand-card);
   --color-brand-primary: var(--color-brand-primary);
+  --color-brand-primary-light: var(--color-brand-primary-light);
   --color-brand-accent: var(--color-brand-accent);
   --color-brand-success: var(--color-brand-success);
   --color-brand-danger: var(--color-brand-danger);
   --color-brand-text-secondary: var(--color-brand-text-secondary);
+  --color-brand-border: var(--color-brand-border);
   
   --radius-2xl: 16px;
   
