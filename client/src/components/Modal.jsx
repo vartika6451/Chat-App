@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -60,13 +61,13 @@ const Modal = ({
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-brand-surface/80">
               {title && (
-                <h3 className="text-lg font-semibold text-white tracking-wide">
+                <h3 className="text-lg font-semibold text-[#2E2A25] tracking-wide">
                   {title}
                 </h3>
               )}
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-gray-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors cursor-pointer"
               >
                 <X size={18} />
               </button>

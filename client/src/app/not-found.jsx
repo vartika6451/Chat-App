@@ -10,7 +10,7 @@ const NotFound = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-brand-bg text-white flex flex-col justify-center items-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-brand-bg text-[#2E2A25] flex flex-col justify-center items-center px-4 relative overflow-hidden">
       {/* Glow backgrounds */}
       <div className="absolute top-[30%] left-[30%] w-80 h-80 rounded-full bg-brand-danger/5 blur-[120px]" />
 
@@ -24,10 +24,10 @@ const NotFound = () => {
           <AlertCircle size={36} />
         </div>
 
-        <h1 className="text-8xl font-black tracking-tight text-white mb-2 select-none">
+        <h1 className="text-8xl font-black tracking-tight text-[#2E2A25] mb-2 select-none">
           404
         </h1>
-        <h2 className="text-xl font-bold text-white mb-4">
+        <h2 className="text-xl font-bold text-[#2E2A25] mb-4">
           Lost in transmission
         </h2>
         <p className="text-sm text-brand-text-secondary leading-relaxed mb-8">

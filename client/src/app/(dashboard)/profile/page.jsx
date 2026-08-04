@@ -78,7 +78,7 @@ const Profile = () => {
             status="online"
             className="mb-4"
           />
-          <h2 className="text-xl font-bold text-white tracking-tight">{user?.name || "Blink User"}</h2>
+          <h2 className="text-xl font-bold text-zinc-900 tracking-tight">{user?.name || "Blink User"}</h2>
           <p className="text-sm text-brand-primary font-semibold mt-0.5">@{user?.username || "username"}</p>
 
           <p className="text-xs text-brand-text-secondary leading-relaxed mt-4 px-2">
@@ -102,7 +102,7 @@ const Profile = () => {
 
         {/* Stats and Achievements Panel */}
         <div className="md:col-span-2 space-y-6">
-          <h3 className="text-lg font-bold text-white tracking-tight">Your Metrics</h3>
+          <h3 className="text-lg font-bold text-zinc-900 tracking-tight">Your Metrics</h3>
 
           {/* Stats grid */}
           <div className="grid grid-cols-3 gap-4">
@@ -110,7 +110,7 @@ const Profile = () => {
               <div className="w-10 h-10 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center text-brand-primary mb-3">
                 <Users size={18} />
               </div>
-              <span className="text-2xl font-extrabold text-white tracking-tight">
+              <span className="text-2xl font-extrabold text-zinc-900 tracking-tight">
                 {user?.stats?.friends ?? 42}
               </span>
               <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider mt-1">Friends</span>
@@ -120,7 +120,7 @@ const Profile = () => {
               <div className="w-10 h-10 rounded-xl bg-brand-accent/10 border border-brand-accent/20 flex items-center justify-center text-brand-accent mb-3">
                 <Sparkles size={18} />
               </div>
-              <span className="text-2xl font-extrabold text-white tracking-tight">
+              <span className="text-2xl font-extrabold text-zinc-900 tracking-tight">
                 {user?.stats?.cardsCreated ?? 12}
               </span>
               <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider mt-1">Cards Generated</span>
@@ -130,7 +130,7 @@ const Profile = () => {
               <div className="w-10 h-10 rounded-xl bg-brand-success/10 border border-brand-success/20 flex items-center justify-center text-brand-success mb-3">
                 <MessageSquare size={18} />
               </div>
-              <span className="text-2xl font-extrabold text-white tracking-tight">
+              <span className="text-2xl font-extrabold text-zinc-900 tracking-tight">
                 {user?.stats?.messages ?? 1337}
               </span>
               <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider mt-1">Total Messages</span>
@@ -138,14 +138,14 @@ const Profile = () => {
           </div>
 
           {/* Dummy account activities section */}
-          <h3 className="text-base font-bold text-white tracking-tight pt-2">Recent Activities</h3>
+          <h3 className="text-base font-bold text-zinc-900 tracking-tight pt-2">Recent Activities</h3>
           <Card variant="default" className="p-6 border-zinc-850 space-y-4 bg-brand-surface/20">
             <div className="flex gap-4 items-start text-xs border-b border-zinc-800/40 pb-4">
               <div className="w-8 h-8 rounded-full bg-brand-accent/10 flex items-center justify-center text-brand-accent mt-0.5 shrink-0">
                 <Sparkles size={14} />
               </div>
               <div>
-                <p className="text-gray-300 font-medium">Generated the &quot;Cyberpunk Birthday&quot; template using AI</p>
+                <p className="text-zinc-700 font-medium">Generated the &quot;Cyberpunk Birthday&quot; template using AI</p>
                 <span className="text-[10px] text-gray-500 mt-1 block">2 hours ago</span>
               </div>
             </div>
@@ -154,7 +154,7 @@ const Profile = () => {
                 <User size={14} />
               </div>
               <div>
-                <p className="text-gray-300 font-medium">Accepted friend request from Mark Zuckerberg</p>
+                <p className="text-zinc-700 font-medium">Accepted friend request from Mark Zuckerberg</p>
                 <span className="text-[10px] text-gray-500 mt-1 block">Yesterday</span>
               </div>
             </div>
@@ -198,7 +198,7 @@ const Profile = () => {
               placeholder="Tell us about yourself..."
               rows={3}
               disabled={loading}
-              className="w-full px-4 py-3 rounded-xl bg-brand-surface border border-zinc-800 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all duration-200 resize-none disabled:opacity-50"
+              className="w-full px-4 py-3 rounded-xl bg-brand-surface border border-zinc-800 text-sm text-zinc-800 placeholder-gray-500 focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all duration-200 resize-none disabled:opacity-50"
             />
           </div>
 

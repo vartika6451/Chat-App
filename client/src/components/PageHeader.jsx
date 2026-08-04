@@ -6,7 +6,7 @@ const PageHeader = ({ title, description, actions, className = "" }) => {
       className={`flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-zinc-800/80 mb-6 ${className}`}
     >
       <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-bold text-[#2E2A25] tracking-tight">{title}</h1>
         {description && (
           <p className="text-sm text-brand-text-secondary mt-1">
             {description}

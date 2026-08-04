@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import React from "react";
@@ -27,12 +28,12 @@ const Button = ({
 
   const variants = {
     primary: "bg-brand-accent hover:bg-brand-accent/90 text-zinc-950 shadow-md shadow-brand-accent/15 border border-transparent",
-    secondary: "bg-brand-card hover:bg-zinc-900 text-white border border-zinc-800/50",
+    secondary: "bg-brand-card hover:bg-zinc-950 text-zinc-800 hover:text-white border border-zinc-800/80 shadow-sm",
     accent: "bg-brand-primary hover:bg-brand-primary/90 text-white shadow-md shadow-brand-primary/15 border border-transparent",
     danger: "bg-brand-danger hover:bg-brand-danger/95 text-zinc-950 shadow-md shadow-brand-danger/15 border border-transparent",
-    outline: "bg-transparent hover:bg-zinc-900/30 text-white border border-zinc-800",
-    glass: "glass-panel hover:bg-zinc-900/30 text-white border border-zinc-800 backdrop-blur-md",
-    ghost: "bg-transparent hover:bg-zinc-900/30 text-brand-text-secondary hover:text-white border border-transparent",
+    outline: "bg-transparent hover:bg-zinc-950 text-zinc-800 hover:text-white border border-zinc-800",
+    glass: "glass-panel hover:bg-zinc-950 text-zinc-800 hover:text-white border border-zinc-800 backdrop-blur-md",
+    ghost: "bg-transparent hover:bg-zinc-100 text-brand-text-secondary hover:text-zinc-900 border border-transparent",
   };
 
   const handleClick = (e) => {

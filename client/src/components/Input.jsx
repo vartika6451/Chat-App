@@ -36,7 +36,7 @@ const Input = React.forwardRef(
             id={inputId}
             ref={ref}
             type={type}
-            className={`w-full px-4 py-3 rounded-xl bg-brand-surface border border-zinc-800 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all duration-200
+            className={`w-full px-4 py-3 rounded-xl bg-brand-surface border border-zinc-800 text-zinc-800 text-sm placeholder-gray-500 focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all duration-200
               ${icon ? "pl-11" : ""}
               ${error ? "border-brand-danger focus:border-brand-danger focus:ring-brand-danger/20" : ""}
               ${className}

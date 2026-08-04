@@ -49,14 +49,14 @@ const Settings = () => {
       <div className="space-y-6">
         {/* Appearance Settings */}
         <Card variant="glass" className="p-6 border-white/5 space-y-4">
-          <h3 className="text-sm font-bold text-white tracking-wider uppercase flex items-center gap-2">
+          <h3 className="text-sm font-bold text-zinc-900 tracking-wider uppercase flex items-center gap-2">
             <Palette size={16} className="text-brand-primary" />
             <span>Appearance & Theme</span>
           </h3>
 
           <div className="flex items-center justify-between text-xs py-2 border-b border-zinc-800/40">
             <div>
-              <h4 className="font-semibold text-gray-200">Force Dark Mode</h4>
+              <h4 className="font-semibold text-zinc-800">Force Dark Mode</h4>
               <p className="text-gray-500 mt-0.5">Toggle default interface color palette</p>
             </div>
             <button
@@ -100,14 +100,14 @@ const Settings = () => {
 
         {/* Notification Settings */}
         <Card variant="glass" className="p-6 border-white/5 space-y-4">
-          <h3 className="text-sm font-bold text-white tracking-wider uppercase flex items-center gap-2">
+          <h3 className="text-sm font-bold text-zinc-900 tracking-wider uppercase flex items-center gap-2">
             <Bell size={16} className="text-brand-accent" />
             <span>Notifications</span>
           </h3>
 
           <div className="flex items-center justify-between text-xs py-2">
             <div>
-              <h4 className="font-semibold text-gray-200">Desktop Push Notifications</h4>
+              <h4 className="font-semibold text-zinc-800">Desktop Push Notifications</h4>
               <p className="text-gray-500 mt-0.5">Show notifications on incoming messages</p>
             </div>
             <button
@@ -127,14 +127,14 @@ const Settings = () => {
 
         {/* Privacy Settings */}
         <Card variant="glass" className="p-6 border-white/5 space-y-4">
-          <h3 className="text-sm font-bold text-white tracking-wider uppercase flex items-center gap-2">
+          <h3 className="text-sm font-bold text-zinc-900 tracking-wider uppercase flex items-center gap-2">
             <Shield size={16} className="text-brand-success" />
             <span>Security & Privacy</span>
           </h3>
 
           <div className="flex items-center justify-between text-xs py-2 border-b border-zinc-800/40">
             <div>
-              <h4 className="font-semibold text-gray-200">Send Read Receipts</h4>
+              <h4 className="font-semibold text-zinc-800">Send Read Receipts</h4>
               <p className="text-gray-500 mt-0.5">Let contacts see when you read messages</p>
             </div>
             <button
@@ -153,7 +153,7 @@ const Settings = () => {
 
           <div className="flex items-center justify-between text-xs py-2">
             <div>
-              <h4 className="font-semibold text-gray-200">Discoverable via email</h4>
+              <h4 className="font-semibold text-zinc-800">Discoverable via email</h4>
               <p className="text-gray-500 mt-0.5">Let users search for your profile by email</p>
             </div>
             <button

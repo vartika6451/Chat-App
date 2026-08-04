@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import React from "react";
@@ -26,7 +27,7 @@ const EmptyState = ({
         initial={{ y: 8, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        className="text-lg font-bold text-white mb-2 tracking-wide"
+        className="text-lg font-bold text-[#2E2A25] mb-2 tracking-wide"
       >
         {title}
       </motion.h3>

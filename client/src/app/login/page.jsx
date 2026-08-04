@@ -73,7 +73,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-brand-bg text-white flex flex-col justify-center items-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-brand-bg text-[#2E2A25] flex flex-col justify-center items-center px-4 relative overflow-hidden">
       {/* Floating Gradients */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-primary/10 rounded-full blur-[120px]" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-brand-accent/10 rounded-full blur-[120px]" />
@@ -90,7 +90,7 @@ const Login = () => {
             <div className="w-10 h-10 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center">
               <Radio className="text-brand-primary" size={20} />
             </div>
-            <span className="text-2xl font-bold tracking-tight text-white">
+            <span className="text-2xl font-bold tracking-tight text-[#2E2A25]">
               Blink<span className="text-brand-primary">.</span>
             </span>
           </Link>

@@ -202,7 +202,7 @@ const Landing = () => {
           >
             <motion.h1
               variants={itemVariants}
-              className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6 text-white"
+              className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6 text-zinc-900"
             >
               Chat. Create. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-indigo-400 to-brand-accent">
