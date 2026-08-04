@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&display=swap');
 @import "tailwindcss";
 
-@theme {
+:root {
   --color-brand-bg: #FFF9FA;
   --color-brand-surface: #FFFFFF;
   --color-brand-card: #FFFFFF;
@@ -10,6 +10,38 @@
   --color-brand-success: #C5F8C7;
   --color-brand-danger: #FFA4A4;
   --color-brand-text-secondary: #8E7A82;
+  --color-brand-border: #C85B7C;
+  --color-brand-body-text: #2E2A25;
+  --color-brand-grid: rgba(200, 91, 124, 0.08);
+  
+  color-scheme: light;
+}
+
+.dark {
+  --color-brand-bg: #110E12;
+  --color-brand-surface: #1B171D;
+  --color-brand-card: #1B171D;
+  --color-brand-primary: #FE7B9B;
+  --color-brand-accent: #2C2630;
+  --color-brand-success: #1E3023;
+  --color-brand-danger: #3B1F23;
+  --color-brand-text-secondary: #BAA6AF;
+  --color-brand-border: #E58AA4;
+  --color-brand-body-text: #F5EAEF;
+  --color-brand-grid: rgba(229, 138, 164, 0.05);
+
+  color-scheme: dark;
+}
+
+@theme {
+  --color-brand-bg: var(--color-brand-bg);
+  --color-brand-surface: var(--color-brand-surface);
+  --color-brand-card: var(--color-brand-card);
+  --color-brand-primary: var(--color-brand-primary);
+  --color-brand-accent: var(--color-brand-accent);
+  --color-brand-success: var(--color-brand-success);
+  --color-brand-danger: var(--color-brand-danger);
+  --color-brand-text-secondary: var(--color-brand-text-secondary);
   
   --radius-2xl: 16px;
   
@@ -31,9 +63,8 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light;
-  color: #2E2A25;
-  background-color: #FFF9FA;
+  color: var(--color-brand-body-text);
+  background-color: var(--color-brand-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -45,8 +76,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #FFF9FA;
-  color: #2E2A25;
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-body-text);
   overflow-x: hidden;
 }
 
@@ -61,38 +92,38 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FFE4EC;
-  border: 2px solid #FFF9FA;
+  background: var(--color-brand-accent);
+  border: 2px solid var(--color-brand-bg);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FE7B9B;
+  background: var(--color-brand-primary);
 }
 
 /* Cute graph grid pattern */
 .retro-grid-bg {
-  background-color: #FFFBFD;
-  background-image: linear-gradient(rgba(200, 91, 124, 0.08) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(200, 91, 124, 0.08) 1px, transparent 1px);
+  background-color: var(--color-brand-bg);
+  background-image: linear-gradient(var(--color-brand-grid) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--color-brand-grid) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
 /* Retro Window Frame */
 .retro-window {
-  background-color: #FFFFFF;
-  border: 3px solid #C85B7C;
+  background-color: var(--color-brand-surface);
+  border: 3px solid var(--color-brand-border);
   border-radius: 16px;
-  box-shadow: 4px 4px 0px 0px #C85B7C;
+  box-shadow: 4px 4px 0px 0px var(--color-brand-border);
   overflow: hidden;
 }
 
 /* Glassmorphism utility */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.95);
-  border: 3px solid #C85B7C;
+  background: var(--color-brand-surface);
+  border: 3px solid var(--color-brand-border);
   border-radius: 16px;
-  box-shadow: 4px 4px 0px 0px #C85B7C;
+  box-shadow: 4px 4px 0px 0px var(--color-brand-border);
 }
 
 .glass-panel-hover {
@@ -101,7 +132,7 @@ body {
 
 .glass-panel-hover:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #C85B7C;
+  box-shadow: 6px 6px 0px 0px var(--color-brand-border);
 }
 
 /* Animated gradient background */
@@ -126,5 +157,5 @@ body {
 /* Selection Highlight */
 ::selection {
   background: rgba(254, 123, 155, 0.3);
-  color: #C85B7C;
+  color: var(--color-brand-border);
 }

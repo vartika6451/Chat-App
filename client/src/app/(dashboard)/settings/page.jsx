@@ -5,27 +5,21 @@ import { Palette, Bell, Shield, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../../context/AuthContext";
+import { useTheme } from "../../../context/ThemeContext";
 import PageHeader from "../../../components/PageHeader";
 import Button from "../../../components/Button";
 import Card from "../../../components/Card";
 
 const Settings = () => {
   const { logout } = useAuth();
+  const { isDark: darkMode, toggleTheme } = useTheme();
   const router = useRouter();
 
   // Settings State Mock
-  const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [readReceipts, setReadReceipts] = useState(true);
   const [profileSearchable, setProfileSearchable] = useState(true);
   const [chatTheme, setChatTheme] = useState("indigo");
-
-  const handleToggleDarkMode = () => {
-    toast.success("Blink is fully optimized for Dark Mode! Light theme is coming soon.", {
-      style: { background: "#18181B", color: "#fff", border: "1px solid #27272A" },
-      icon: "🌓",
-    });
-  };
 
   const handleSaveSettings = () => {
     toast.success("Settings saved successfully!", {
@@ -60,10 +54,7 @@ const Settings = () => {
               <p className="text-gray-500 mt-0.5">Toggle default interface color palette</p>
             </div>
             <button
-              onClick={() => {
-                setDarkMode(!darkMode);
-                handleToggleDarkMode();
-              }}
+              onClick={toggleTheme}
               className={`w-11 h-6 rounded-full transition-all cursor-pointer relative ${
                 darkMode ? "bg-brand-primary" : "bg-zinc-800"
               }`}

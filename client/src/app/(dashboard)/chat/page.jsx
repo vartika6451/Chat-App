@@ -417,7 +417,7 @@ const Chat = () => {
         </div>
 
         {/* Search & Header */}
-        <div className="p-4 border-b-2 border-zinc-200 bg-white flex flex-col gap-4">
+        <div className="p-4 border-b-2 border-zinc-200 dark:border-zinc-800 bg-brand-surface flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h1 className="font-retro text-base font-black text-[#C85B7C] tracking-wide">MESSAGES</h1>
             <button
@@ -443,7 +443,7 @@ const Chat = () => {
         </div>
 
         {/* Chat List Scrollable */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1.5 bg-white">
+        <div className="flex-1 overflow-y-auto p-2 space-y-1.5 bg-brand-surface">
           {filteredChats.length === 0 ? (
             <div className="text-center text-xs text-gray-600 py-10 font-medium">
               No chats found
@@ -456,7 +456,7 @@ const Chat = () => {
                 className={`flex items-center justify-between p-2.5 rounded-2xl cursor-pointer transition-all duration-150 border-2 select-none ${
                   activeChat?.id === chat.id
                     ? "bg-[#FFE4EC]/70 border-[#C85B7C]"
-                    : "bg-white border-transparent hover:bg-zinc-50"
+                    : "bg-brand-surface border-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 <div className="flex items-center gap-3 overflow-hidden">
@@ -514,7 +514,7 @@ const Chat = () => {
             </div>
 
             {/* Chat header panel */}
-            <div className="px-6 py-3 border-b-2 border-zinc-200 bg-white flex items-center justify-between">
+            <div className="px-6 py-3 border-b-2 border-zinc-200 dark:border-zinc-800 bg-brand-surface flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Avatar
                   username={activeChat.user.name}
@@ -534,8 +534,8 @@ const Chat = () => {
               <div className="flex items-center gap-2 text-zinc-500">
                 <button
                   onClick={() => setIsScheduledDrawerOpen(prev => !prev)}
-                  className={`p-2 rounded-xl border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer ${
-                    isScheduledDrawerOpen ? "bg-[#FFE4EC]" : "bg-white"
+                  className={`p-2 rounded-xl border-2 border-[#C85B7C] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer ${
+                    isScheduledDrawerOpen ? "bg-[#FFE4EC]" : "bg-brand-surface"
                   }`}
                   title="View Scheduled Messages & Calls"
                 >
@@ -547,7 +547,7 @@ const Chat = () => {
                     setScheduledCallType("audio");
                     setIsCallModalOpen(true);
                   }}
-                  className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
+                  className="p-2 rounded-xl bg-brand-surface border-2 border-[#C85B7C] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                   title="Voice Call / Schedule"
                 >
                   <Phone size={14} className="text-[#C85B7C]" />
@@ -558,19 +558,19 @@ const Chat = () => {
                     setScheduledCallType("video");
                     setIsCallModalOpen(true);
                   }}
-                  className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
+                  className="p-2 rounded-xl bg-brand-surface border-2 border-[#C85B7C] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                   title="Video Call / Schedule"
                 >
                   <Video size={14} className="text-[#C85B7C]" />
                 </button>
-                <button className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
+                <button className="p-2 rounded-xl bg-brand-surface border-2 border-[#C85B7C] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
                   <Info size={14} className="text-[#C85B7C]" />
                 </button>
               </div>
             </div>
 
             {/* Messages Feed Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white/70">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-brand-surface/70">
               {loadingMessages ? (
                 <div className="flex items-center justify-center py-20 text-xs text-gray-500 font-medium">
                   Loading message history...
@@ -615,7 +615,7 @@ const Chat = () => {
             </div>
 
             {/* Chat Input footer */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t-2 border-zinc-250 bg-white flex items-center gap-3">
+            <form onSubmit={handleSendMessage} className="p-4 border-t-2 border-zinc-200 dark:border-zinc-800 bg-brand-surface flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => {
@@ -650,7 +650,7 @@ const Chat = () => {
 
           {/* Scheduled Drawer Panel */}
           {isScheduledDrawerOpen && (
-            <div className="absolute right-0 top-0 bottom-0 w-72 bg-white border-l-3 border-[#C85B7C] shadow-2xl flex flex-col z-20">
+            <div className="absolute right-0 top-0 bottom-0 w-72 bg-brand-surface border-l-3 border-[#C85B7C] shadow-2xl flex flex-col z-20">
               <div className="px-4 py-2 bg-[#FFF1C5] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
                 <span className="font-retro text-[9px] font-black text-[#C85B7C] tracking-wider uppercase">
                   SCHEDULED.LOG
@@ -718,7 +718,7 @@ const Chat = () => {
                             <span className="text-[10px] font-black text-[#C85B7C] uppercase truncate max-w-[120px]">
                               {call.title}
                             </span>
-                            <span className="text-[8px] font-black text-zinc-400 uppercase bg-white border px-1 rounded-md">
+                            <span className="text-[8px] font-black text-zinc-400 uppercase bg-brand-surface border border-zinc-200 dark:border-zinc-800 px-1 rounded-md">
                               {call.callType}
                             </span>
                           </div>
@@ -757,7 +757,7 @@ const Chat = () => {
               <span className="font-retro text-[9px] font-black text-[#C85B7C] tracking-wider">ALERT.EXE</span>
               <span className="w-2 h-2 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
             </div>
-            <div className="p-6 bg-white flex flex-col items-center gap-4 text-center">
+            <div className="p-6 bg-brand-surface flex flex-col items-center gap-4 text-center">
               <div className="w-12 h-12 rounded-xl bg-[#FFF1C5] border-2 border-[#C85B7C] flex items-center justify-center">
                 <MessageSquare size={24} className="text-[#C85B7C]" />
               </div>
@@ -1180,7 +1180,7 @@ const Chat = () => {
 
       {/* Incoming Call Ringing Dialog */}
       {incomingCall && (
-        <div className="fixed bottom-6 right-6 retro-window w-80 bg-white p-5 shadow-2xl z-50 flex flex-col gap-4 border-3 border-[#C85B7C] animate-bounce">
+        <div className="fixed bottom-6 right-6 retro-window w-80 bg-brand-surface p-5 shadow-2xl z-50 flex flex-col gap-4 border-3 border-[#C85B7C] animate-bounce">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#FFE4EC] border-2 border-[#C85B7C] flex items-center justify-center text-[#C85B7C] animate-pulse">
               <Phone size={18} />

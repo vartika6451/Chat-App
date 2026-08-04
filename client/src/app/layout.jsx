@@ -1,5 +1,6 @@
 import "./globals.css";
 import { AuthProvider } from "../context/AuthContext";
+import { ThemeProvider } from "../context/ThemeContext";
 import { Toaster } from "react-hot-toast";
 
 export const metadata = {
@@ -18,22 +19,24 @@ export default function RootLayout({ children }) {
         <link rel="preload" href="/logo.png?v=4" as="image" />
       </head>
       <body className="antialiased bg-brand-bg text-[#2E2A25]">
-        <AuthProvider>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 3500,
-              style: {
-                background: "#18181B",
-                color: "#FFFFFF",
-                border: "1px solid #27272A",
-                borderRadius: "12px",
-                fontSize: "13px",
-              },
-            }}
-          />
-          {children}
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 3500,
+                style: {
+                  background: "#18181B",
+                  color: "#FFFFFF",
+                  border: "1px solid #27272A",
+                  borderRadius: "12px",
+                  fontSize: "13px",
+                },
+              }}
+            />
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

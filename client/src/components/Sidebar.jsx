@@ -32,7 +32,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-28 h-screen bg-white border-r-3 border-[#C85B7C] flex flex-col justify-between shrink-0 select-none z-10">
+    <aside className="w-28 h-screen bg-brand-surface border-r-3 border-[#C85B7C] flex flex-col justify-between shrink-0 select-none z-10">
       {/* Top Section - Brand Logo */}
       <div className="p-3 border-b-3 border-[#C85B7C] flex flex-col items-center justify-center bg-[#FFF1C5]">
         <Link href="/chat" className="flex flex-col items-center gap-1 cursor-pointer">
@@ -44,7 +44,7 @@ const Sidebar = () => {
       </div>
 
       {/* Mid Section - Navigation Items (Sticker Style) */}
-      <nav className="flex-1 py-4 flex flex-col items-center gap-6 overflow-y-auto bg-white/50">
+      <nav className="flex-1 py-4 flex flex-col items-center gap-6 overflow-y-auto bg-brand-surface/50">
         {navItems.map((item) => {
           const isActive = pathname === item.path;
           return (
@@ -57,7 +57,7 @@ const Sidebar = () => {
                 className={`w-16 h-16 rounded-2xl flex items-center justify-center border-3 border-[#C85B7C] transition-all duration-150 ${
                   isActive
                     ? "bg-[#FFE4EC] shadow-[0px_0px_0px_0px_#C85B7C] translate-x-[2px] translate-y-[2px]"
-                    : "bg-white shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#C85B7C]"
+                    : "bg-brand-surface shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#C85B7C]"
                 }`}
               >
                 {item.icon}
@@ -71,11 +71,11 @@ const Sidebar = () => {
       </nav>
 
       {/* Bottom Section - Profile & Logout */}
-      <div className="p-2 border-t-3 border-[#C85B7C] flex flex-col items-center gap-3 bg-[#E6FCE8]/80">
+      <div className="p-2 border-t-3 border-[#C85B7C] flex flex-col items-center gap-3 bg-[#E6FCE8]/80 dark:bg-brand-accent/30">
         {/* User Profile Preview */}
         <div
           onClick={() => router.push("/profile")}
-          className="flex flex-col items-center gap-1.5 cursor-pointer p-1.5 w-full rounded-xl hover:bg-white/60 transition-colors"
+          className="flex flex-col items-center gap-1.5 cursor-pointer p-1.5 w-full rounded-xl hover:bg-brand-surface/60 transition-colors"
         >
           <Avatar
             username={currentUser.name}
@@ -92,7 +92,7 @@ const Sidebar = () => {
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="w-10 h-10 rounded-xl bg-white border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center text-gray-500 hover:text-[#C85B7C] transition-all cursor-pointer"
+          className="w-10 h-10 rounded-xl bg-brand-surface border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center text-gray-500 hover:text-[#C85B7C] transition-all cursor-pointer"
           title="Logout"
         >
           <LogOut size={16} className="text-[#C85B7C]" />
