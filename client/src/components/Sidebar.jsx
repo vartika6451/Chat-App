@@ -20,7 +20,7 @@ const Sidebar = () => {
   };
 
   const navItems = [
-    { name: "MAIL", path: "/chat", icon: <MessageSquare size={24} className="text-[#C85B7C]" /> },
+    { name: "CHAT", path: "/chat", icon: <MessageSquare size={24} className="text-[#C85B7C]" /> },
     { name: "FILES", path: "/friends", icon: <Users size={24} className="text-[#C85B7C]" /> },
     { name: "STUDIO", path: "/cards", icon: <Sparkles size={24} className="text-[#C85B7C]" /> },
     { name: "SETTINGS", path: "/settings", icon: <Settings size={24} className="text-[#C85B7C]" /> },

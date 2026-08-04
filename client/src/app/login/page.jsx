@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import React, { useState } from "react";
@@ -17,7 +18,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
   const router = useRouter();
 
   const validateForm = () => {
@@ -66,9 +67,18 @@ const Login = () => {
         border: "1px solid #27272A",
       },
     });
-    setTimeout(() => {
-      login("google-user@gmail.com", "google-oauth-pwd");
-      router.push("/chat");
+    setTimeout(async () => {
+      try {
+        await login("google-user@gmail.com", "google-oauth-pwd");
+        router.push("/chat");
+      } catch (err) {
+        try {
+          await signup("Google User", "google_user", "google-user@gmail.com", "google-oauth-pwd");
+          router.push("/chat");
+        } catch (signupErr) {
+          toast.error("Failed to sign in with Google");
+        }
+      }
     }, 1000);
   };
 

@@ -408,7 +408,7 @@ const Chat = () => {
       <div className="w-80 flex flex-col h-full retro-window">
         {/* Window Title Bar */}
         <div className="px-4 py-2 bg-[#C5F8C7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
-          <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider">MAILBOX.EXE</span>
+          <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider">CHAT.EXE</span>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-[#FFCCD7] border border-[#C85B7C]" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#FFF1C5] border border-[#C85B7C]" />
@@ -446,7 +446,7 @@ const Chat = () => {
         <div className="flex-1 overflow-y-auto p-2 space-y-1.5 bg-white">
           {filteredChats.length === 0 ? (
             <div className="text-center text-xs text-gray-600 py-10 font-medium">
-              No mailboxes found
+              No chats found
             </div>
           ) : (
             filteredChats.map((chat) => (
@@ -762,9 +762,9 @@ const Chat = () => {
                 <MessageSquare size={24} className="text-[#C85B7C]" />
               </div>
               <div className="space-y-1">
-                <h4 className="font-retro text-sm font-black text-[#C85B7C] tracking-wide">NO MAILBOX OPEN</h4>
+                <h4 className="font-retro text-sm font-black text-[#C85B7C] tracking-wide">NO CHAT OPEN</h4>
                 <p className="text-[10px] text-gray-500 font-bold max-w-[260px] leading-relaxed">
-                  Choose an inbox from the left pane or click '+' to search and add dynamic stickers!
+                  Choose a conversation from the left pane or click '+' to search and add dynamic stickers!
                 </p>
               </div>
               <button
