@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
         <link rel="preload" href="/logo_open.png?v=4" as="image" />
         <link rel="preload" href="/logo.png?v=4" as="image" />
       </head>
-      <body className="antialiased bg-brand-bg text-white">
+      <body className="antialiased bg-brand-bg text-[#2E2A25]">
         <AuthProvider>
           <Toaster
             position="top-right"

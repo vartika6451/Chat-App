@@ -25,12 +25,12 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-brand-bg text-white font-sans">
+    <div className="flex h-screen w-screen overflow-hidden bg-brand-bg text-[#2E2A25] font-sans">
       {/* App Sidebar */}
       <Sidebar />
 
       {/* Primary view content */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden bg-zinc-950/80">
+      <main className="flex-1 flex flex-col h-full overflow-hidden retro-grid-bg">
         {children}
       </main>
     </div>

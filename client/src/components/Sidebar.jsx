@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { MessageSquare, Users, Sparkles, Settings, LogOut, Radio, User } from "lucide-react";
+import { MessageSquare, Users, Sparkles, Settings, LogOut, FileText, Save, Trash } from "lucide-react";
 import Avatar from "./Avatar";
 import { useAuth } from "../context/AuthContext";
 
@@ -20,11 +20,10 @@ const Sidebar = () => {
   };
 
   const navItems = [
-    { name: "Chats", path: "/chat", icon: <MessageSquare size={20} /> },
-    { name: "Friends", path: "/friends", icon: <Users size={20} /> },
-    { name: "Greeting Studio", path: "/cards", icon: <Sparkles size={20} /> },
-    { name: "Profile", path: "/profile", icon: <User size={20} /> },
-    { name: "Settings", path: "/settings", icon: <Settings size={20} /> },
+    { name: "MAIL", path: "/chat", icon: <MessageSquare size={24} className="text-[#C85B7C]" /> },
+    { name: "FILES", path: "/friends", icon: <Users size={24} className="text-[#C85B7C]" /> },
+    { name: "STUDIO", path: "/cards", icon: <Sparkles size={24} className="text-[#C85B7C]" /> },
+    { name: "SETTINGS", path: "/settings", icon: <Settings size={24} className="text-[#C85B7C]" /> },
   ];
 
   const handleLogout = () => {
@@ -33,72 +32,70 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 h-screen bg-brand-surface border-r border-zinc-800 flex flex-col justify-between shrink-0">
+    <aside className="w-28 h-screen bg-white border-r-3 border-[#C85B7C] flex flex-col justify-between shrink-0 select-none z-10">
       {/* Top Section - Brand Logo */}
-      <div className="p-6 border-b border-zinc-800/80">
-        <Link href="/chat" className="flex items-center gap-3 group select-none cursor-pointer">
-          <img
-            src="/logo.png?v=4"
-            alt="Blink Logo"
-            className="w-14 h-14 object-cover rounded-2xl border border-zinc-800/10 group-hover:scale-105 transition-transform duration-300"
-          />
-          <span className="font-logo text-[42px] font-medium text-brand-accent pt-2 leading-none">
-            Blink
+      <div className="p-3 border-b-3 border-[#C85B7C] flex flex-col items-center justify-center bg-[#FFF1C5]">
+        <Link href="/chat" className="flex flex-col items-center gap-1 cursor-pointer">
+          <span className="font-retro text-lg font-black text-[#C85B7C] tracking-wide leading-none">
+            BLINK
           </span>
+          <span className="text-[9px] font-bold text-[#C85B7C]">v1.0.exe</span>
         </Link>
       </div>
 
-      {/* Mid Section - Navigation Items */}
-      <nav className="flex-1 py-6 px-4 space-y-1.5 overflow-y-auto">
+      {/* Mid Section - Navigation Items (Sticker Style) */}
+      <nav className="flex-1 py-4 flex flex-col items-center gap-6 overflow-y-auto bg-white/50">
         {navItems.map((item) => {
           const isActive = pathname === item.path;
           return (
             <Link
               key={item.name}
               href={item.path}
-              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 select-none group cursor-pointer ${
-                isActive
-                  ? "bg-brand-accent/10 text-brand-accent border-l-2 border-brand-accent pl-3.5"
-                  : "text-gray-400 hover:text-white hover:bg-zinc-900/50"
-              }`}
+              className="flex flex-col items-center gap-1 group cursor-pointer w-full px-2"
             >
-              <span className="transition-transform group-hover:scale-105 duration-200">
+              <div
+                className={`w-16 h-16 rounded-2xl flex items-center justify-center border-3 border-[#C85B7C] transition-all duration-150 ${
+                  isActive
+                    ? "bg-[#FFE4EC] shadow-[0px_0px_0px_0px_#C85B7C] translate-x-[2px] translate-y-[2px]"
+                    : "bg-white shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#C85B7C]"
+                }`}
+              >
                 {item.icon}
+              </div>
+              <span className="font-retro text-[10px] font-extrabold text-[#C85B7C] tracking-widest mt-1">
+                {item.name}
               </span>
-              <span>{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
       {/* Bottom Section - Profile & Logout */}
-      <div className="p-4 border-t border-zinc-800/80 flex flex-col gap-2.5 bg-zinc-900/20">
+      <div className="p-2 border-t-3 border-[#C85B7C] flex flex-col items-center gap-3 bg-[#E6FCE8]/80">
         {/* User Profile Preview */}
         <div
           onClick={() => router.push("/profile")}
-          className="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-800/50 cursor-pointer transition-colors"
+          className="flex flex-col items-center gap-1.5 cursor-pointer p-1.5 w-full rounded-xl hover:bg-white/60 transition-colors"
         >
           <Avatar
             username={currentUser.name}
             src={currentUser.profileImage}
             status="online"
-            size="md"
+            size="sm"
+            className="border-2 border-[#C85B7C] rounded-full"
           />
-          <div className="overflow-hidden">
-            <h4 className="text-sm font-semibold text-white truncate">
-              {currentUser.name}
-            </h4>
-            <p className="text-xs text-gray-500 truncate">@{currentUser.username}</p>
-          </div>
+          <span className="font-retro text-[9px] font-bold text-[#C85B7C] truncate w-full text-center max-w-[80px]">
+            {currentUser.name.split(" ")[0].toUpperCase()}
+          </span>
         </div>
 
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 hover:text-brand-danger hover:bg-brand-danger/5 rounded-xl transition-all duration-200 cursor-pointer"
+          className="w-10 h-10 rounded-xl bg-white border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center text-gray-500 hover:text-[#C85B7C] transition-all cursor-pointer"
+          title="Logout"
         >
-          <LogOut size={18} />
-          <span>Logout</span>
+          <LogOut size={16} className="text-[#C85B7C]" />
         </button>
       </div>
     </aside>

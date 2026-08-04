@@ -299,50 +299,60 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex-1 flex h-full overflow-hidden">
-      {/* Middle Section: Chat List */}
-      <div className="w-80 border-r border-zinc-800/80 flex flex-col h-full bg-zinc-950/40">
+    <div className="flex-1 flex h-full overflow-hidden p-6 gap-6">
+      {/* Left Section: Chat List Window */}
+      <div className="w-80 flex flex-col h-full retro-window">
+        {/* Window Title Bar */}
+        <div className="px-4 py-2 bg-[#C5F8C7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
+          <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider">MAILBOX.EXE</span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFCCD7] border border-[#C85B7C]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFF1C5] border border-[#C85B7C]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
+          </div>
+        </div>
+
         {/* Search & Header */}
-        <div className="p-4 border-b border-zinc-800/80 flex flex-col gap-4">
+        <div className="p-4 border-b-2 border-zinc-200 bg-white flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-white tracking-tight">Messages</h1>
+            <h1 className="font-retro text-base font-black text-[#C85B7C] tracking-wide">MESSAGES</h1>
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer"
+              className="w-7 h-7 rounded-lg bg-[#FFE4EC] border-2 border-[#C85B7C] flex items-center justify-center text-[#C85B7C] hover:scale-105 transition-transform cursor-pointer"
             >
-              <Plus size={16} />
+              <Plus size={14} strokeWidth={3} />
             </button>
           </div>
           <div className="relative">
             <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"
-              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+              size={14}
             />
             <input
               type="text"
-              placeholder="Search conversations..."
+              placeholder="Search chats..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-surface border border-zinc-850 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-primary transition-colors"
+              className="w-full pl-9 pr-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
             />
           </div>
         </div>
 
         {/* Chat List Scrollable */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div className="flex-1 overflow-y-auto p-2 space-y-1.5 bg-white">
           {filteredChats.length === 0 ? (
-            <div className="text-center text-xs text-gray-600 py-10">
-              No conversations found
+            <div className="text-center text-xs text-gray-600 py-10 font-medium">
+              No mailboxes found
             </div>
           ) : (
             filteredChats.map((chat) => (
               <div
                 key={chat.id}
                 onClick={() => setActiveChat(chat)}
-                className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 select-none ${
+                className={`flex items-center justify-between p-2.5 rounded-2xl cursor-pointer transition-all duration-150 border-2 select-none ${
                   activeChat?.id === chat.id
-                    ? "bg-brand-accent/10 border-l-2 border-brand-accent pl-2.5"
-                    : "hover:bg-zinc-900/50 pl-3"
+                    ? "bg-[#FFE4EC]/70 border-[#C85B7C]"
+                    : "bg-white border-transparent hover:bg-zinc-50"
                 }`}
               >
                 <div className="flex items-center gap-3 overflow-hidden">
@@ -350,25 +360,26 @@ const Chat = () => {
                     username={chat.user.name}
                     status={chat.user.status}
                     size="md"
+                    className="border-2 border-[#C85B7C] rounded-full"
                   />
                   <div className="overflow-hidden">
-                    <h4 className="text-sm font-semibold text-white truncate">
-                      {chat.user.name}
+                    <h4 className="font-retro text-xs font-black text-[#C85B7C] truncate">
+                      {chat.user.name.toUpperCase()}
                     </h4>
-                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                    <p className="text-[10px] text-gray-500 truncate mt-0.5 font-medium">
                       {chat.lastMessage}
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1.5 shrink-0">
-                  <span className="text-[10px] text-gray-600">
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className="text-[9px] font-bold text-gray-400">
                     {new Date(chat.updatedAt).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </span>
                   {chat.unread > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-brand-primary text-[9px] font-bold text-white flex items-center justify-center">
+                    <span className="w-4 h-4 rounded-full bg-[#FE7B9B] border border-[#C85B7C] text-[9px] font-bold text-white flex items-center justify-center">
                       {chat.unread}
                     </span>
                   )}
@@ -379,49 +390,62 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Right Section: Active Chat or Empty State */}
-      <div className="flex-1 flex flex-col h-full bg-zinc-950/20">
+      {/* Right Section: Active Chat Window or Welcome Dialog */}
+      <div className="flex-1 flex flex-col h-full justify-center">
         {activeChat ? (
-          <div className="flex-1 flex flex-col h-full overflow-hidden">
-            {/* Chat header */}
-            <div className="px-6 py-4 border-b border-zinc-800/80 bg-brand-surface/20 flex items-center justify-between">
+          <div className="flex-1 flex flex-col h-full retro-window">
+            {/* Window Title Bar */}
+            <div className="px-4 py-2 bg-[#FFCCD7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
+              <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider uppercase">
+                {activeChat.user.name}.exe
+              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FFCCD7] border border-[#C85B7C]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FFF1C5] border border-[#C85B7C]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
+              </div>
+            </div>
+
+            {/* Chat header panel */}
+            <div className="px-6 py-3 border-b-2 border-zinc-200 bg-white flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Avatar
                   username={activeChat.user.name}
                   status={activeChat.user.status}
                   size="md"
+                  className="border-2 border-[#C85B7C] rounded-full"
                 />
                 <div>
-                  <h3 className="text-sm font-semibold text-white leading-none">
+                  <h3 className="font-retro text-sm font-black text-[#C85B7C] leading-none uppercase">
                     {activeChat.user.name}
                   </h3>
-                  <span className="text-[10px] text-brand-text-secondary mt-1 block">
+                  <span className="text-[9px] font-bold text-[#8E7A82] mt-1 block">
                     @{activeChat.user.username} • {activeChat.user.status}
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <button className="p-2 rounded-lg hover:bg-zinc-900 hover:text-white transition-colors cursor-pointer">
-                  <Phone size={16} />
+              <div className="flex items-center gap-2 text-zinc-500">
+                <button className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
+                  <Phone size={14} className="text-[#C85B7C]" />
                 </button>
-                <button className="p-2 rounded-lg hover:bg-zinc-900 hover:text-white transition-colors cursor-pointer">
-                  <Video size={16} />
+                <button className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
+                  <Video size={14} className="text-[#C85B7C]" />
                 </button>
-                <button className="p-2 rounded-lg hover:bg-zinc-900 hover:text-white transition-colors cursor-pointer">
-                  <Info size={16} />
+                <button className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
+                  <Info size={14} className="text-[#C85B7C]" />
                 </button>
               </div>
             </div>
 
             {/* Messages Feed Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white/70">
               {loadingMessages ? (
-                <div className="flex items-center justify-center py-20 text-xs text-gray-500">
+                <div className="flex items-center justify-center py-20 text-xs text-gray-500 font-medium">
                   Loading message history...
                 </div>
               ) : messages.length === 0 ? (
-                <div className="text-center text-xs text-gray-600 py-20">
-                  Send a message to start the conversation!
+                <div className="text-center text-xs text-gray-600 py-20 font-medium">
+                  Send a sticker or message to start chatting!
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -433,18 +457,18 @@ const Chat = () => {
                         isOutgoing ? "self-end flex-row-reverse" : ""
                       }`}
                     >
-                      {!isOutgoing && <Avatar username={activeChat.user.name} size="sm" />}
+                      {!isOutgoing && <Avatar username={activeChat.user.name} size="sm" className="border-2 border-[#C85B7C] rounded-full" />}
                       <div className={`flex flex-col ${isOutgoing ? "items-end" : "items-start"}`}>
                         <div
-                          className={`px-4 py-2.5 rounded-2xl text-sm text-white shadow-md ${
+                          className={`px-4 py-2 rounded-2xl text-xs font-bold border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] ${
                             isOutgoing
-                              ? "bg-brand-primary rounded-tr-sm"
-                              : "bg-[#A2B0C4] rounded-tl-sm"
+                              ? "bg-[#FFE4EC] text-[#C85B7C] rounded-tr-sm"
+                              : "bg-[#FFF1C5] text-[#C85B7C] rounded-tl-sm"
                           }`}
                         >
                           {msg.text}
                         </div>
-                        <span className="text-[9px] text-gray-600 mt-1 px-1">
+                        <span className="text-[9px] font-bold text-gray-400 mt-1 px-1">
                           {new Date(msg.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -459,35 +483,48 @@ const Chat = () => {
             </div>
 
             {/* Chat Input footer */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-zinc-800/80 bg-brand-surface/10 flex items-center gap-3">
+            <form onSubmit={handleSendMessage} className="p-4 border-t-2 border-zinc-250 bg-white flex items-center gap-3">
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 px-4 py-3 rounded-xl bg-zinc-950 border border-zinc-850 text-xs text-white focus:outline-none focus:border-brand-primary"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
               />
-              <Button type="submit" variant="primary" className="py-2.5 px-4" disabled={!inputText.trim()}>
-                <Send size={14} />
-              </Button>
+              <button
+                type="submit"
+                disabled={!inputText.trim()}
+                className="py-2.5 px-4 bg-[#FFE4EC] border-2 border-[#C85B7C] rounded-xl text-[#C85B7C] font-bold hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center cursor-pointer"
+              >
+                <Send size={14} strokeWidth={2.5} />
+              </button>
             </form>
           </div>
         ) : (
-          <EmptyState
-            title="Select a Conversation"
-            description="Choose a chat from the sidebar or search for friends to start blinking."
-            icon={<MessageSquare className="text-brand-primary" size={28} />}
-            action={
-              <Button
-                variant="outline"
-                size="sm"
+          /* Retro Welcome / Error Style dialog box in the middle */
+          <div className="w-[380px] mx-auto retro-window flex flex-col">
+            <div className="px-4 py-1.5 bg-[#FFCCD7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
+              <span className="font-retro text-[9px] font-black text-[#C85B7C] tracking-wider">ALERT.EXE</span>
+              <span className="w-2 h-2 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
+            </div>
+            <div className="p-6 bg-white flex flex-col items-center gap-4 text-center">
+              <div className="w-12 h-12 rounded-xl bg-[#FFF1C5] border-2 border-[#C85B7C] flex items-center justify-center">
+                <MessageSquare size={24} className="text-[#C85B7C]" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="font-retro text-sm font-black text-[#C85B7C] tracking-wide">NO MAILBOX OPEN</h4>
+                <p className="text-[10px] text-gray-500 font-bold max-w-[260px] leading-relaxed">
+                  Choose an inbox from the left pane or click '+' to search and add dynamic stickers!
+                </p>
+              </div>
+              <button
                 onClick={() => setIsSearchOpen(true)}
-                iconBefore={<Plus size={14} />}
+                className="mt-2 px-6 py-2 bg-[#E6FCE8] border-2 border-[#C85B7C] rounded-xl font-retro text-xs font-black text-[#C85B7C] shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] cursor-pointer"
               >
-                New Conversation
-              </Button>
-            }
-          />
+                OK
+              </button>
+            </div>
+          </div>
         )}
       </div>
 
@@ -506,7 +543,7 @@ const Chat = () => {
               placeholder="Search by name or username..."
               value={userSearchQuery}
               onChange={(e) => setUserSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-surface border border-zinc-850 text-xs text-white focus:outline-none focus:border-brand-primary"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none"
             />
           </div>
 
@@ -522,12 +559,12 @@ const Chat = () => {
                 <div
                   key={searchUser.id}
                   onClick={() => handleStartChatWithUser(searchUser)}
-                  className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-zinc-800/50 cursor-pointer transition-colors"
+                  className="flex items-center gap-3 p-2.5 rounded-xl border border-zinc-200/60 hover:bg-[#FFE4EC]/55 cursor-pointer transition-colors"
                 >
-                  <Avatar username={searchUser.name} size="md" />
+                  <Avatar username={searchUser.name} size="md" className="border border-[#C85B7C] rounded-full" />
                   <div>
-                    <div className="text-sm font-semibold text-white">{searchUser.name}</div>
-                    <div className="text-xs text-gray-500">@{searchUser.username}</div>
+                    <div className="text-xs font-black text-[#C85B7C]">{searchUser.name}</div>
+                    <div className="text-[10px] text-gray-500 font-bold">@{searchUser.username}</div>
                   </div>
                 </div>
               ))

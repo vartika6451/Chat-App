@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { UserPlus, Search, Check, X, MessageSquare, Loader2 } from "lucide-react";
+import { UserPlus, Search, Check, X, MessageSquare, Loader2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import PageHeader from "../../../components/PageHeader";
 import Avatar from "../../../components/Avatar";
@@ -148,117 +148,147 @@ const Friends = () => {
   );
 
   return (
-    <div className="flex-1 p-6 overflow-y-auto max-w-5xl mx-auto w-full">
-      <PageHeader
-        title="Friends"
-        description="Interact and manage your connections on Blink"
-        actions={
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsAddModalOpen(true)}
-            iconBefore={<UserPlus size={16} />}
-          >
-            Add Friend
-          </Button>
-        }
-      />
+    <div className="flex-1 p-6 overflow-y-auto max-w-5xl mx-auto w-full flex flex-col justify-center">
+      {/* Outer Window Panel */}
+      <div className="w-full flex flex-col h-full retro-window min-h-[600px]">
+        {/* Window Title Bar */}
+        <div className="px-4 py-2 bg-[#FFF1C5] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
+          <div className="flex items-center gap-2">
+            <Users size={14} className="text-[#C85B7C]" />
+            <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider">FRIENDS_CLUB.EXE</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFCCD7] border border-[#C85B7C]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFF1C5] border border-[#C85B7C]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
+          </div>
+        </div>
 
-      {/* Tabs Menu */}
-      <div className="flex items-center gap-2 border-b border-zinc-800 pb-3 mb-6">
-        {["all", "online", "requests"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
-              activeTab === tab
-                ? "bg-brand-primary/10 text-brand-primary border border-brand-primary/20"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            {tab === "requests" ? `Requests (${requests.length})` : tab}
-          </button>
-        ))}
+        {/* Inner Content Area */}
+        <div className="flex-1 p-6 bg-white overflow-y-auto flex flex-col">
+          {/* Header section in the window */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-zinc-200 pb-4 mb-6">
+            <div>
+              <h2 className="font-retro text-lg font-black text-[#C85B7C] tracking-wide">FRIENDS DIRECTORY</h2>
+              <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">Interact and manage your stickers club connections</p>
+            </div>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-4 py-2.5 bg-[#FFE4EC] border-3 border-[#C85B7C] rounded-xl text-[#C85B7C] font-retro text-xs font-black shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center gap-2 cursor-pointer w-fit"
+            >
+              <UserPlus size={14} strokeWidth={2.5} />
+              <span>ADD NEW FRIEND</span>
+            </button>
+          </div>
+
+          {/* Tabs Menu */}
+          <div className="flex items-center gap-2 mb-6 select-none">
+            {["all", "online", "requests"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded-xl border-3 border-[#C85B7C] font-retro text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                  activeTab === tab
+                    ? "bg-[#FFE4EC] text-[#C85B7C] shadow-[0px_0px_0px_0px_#C85B7C] translate-x-[2px] translate-y-[2px]"
+                    : "bg-white text-zinc-500 shadow-[2.5px_2.5px_0px_0px_#C85B7C] hover:translate-y-[-1px] hover:shadow-[3.5px_3.5px_0px_0px_#C85B7C]"
+                }`}
+              >
+                {tab === "requests" ? `Requests (${requests.length})` : tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Input for Friends */}
+          {activeTab !== "requests" && (
+            <div className="relative mb-6 max-w-sm">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
+              <input
+                type="text"
+                placeholder="Search friends..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
+              />
+            </div>
+          )}
+
+          {/* Friends list grids */}
+          {activeTab === "requests" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {requests.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-xs text-gray-500 font-bold uppercase">
+                  No pending friend requests.
+                </div>
+              ) : (
+                requests.map((req) => (
+                  <div
+                    key={req.id}
+                    className="p-3.5 bg-white border-3 border-[#C85B7C] shadow-[3px_3px_0px_0px_#C85B7C] rounded-2xl flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar username={req.name} size="md" className="border-2 border-[#C85B7C] rounded-full" />
+                      <div>
+                        <h4 className="font-retro text-xs font-black text-[#C85B7C] uppercase">{req.name}</h4>
+                        <p className="text-[10px] text-gray-500 font-bold mt-0.5">@{req.username} • {req.mutuals} mutuals</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleAcceptRequest(req)}
+                        className="p-2 rounded-xl bg-[#E6FCE8] border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] text-[#C85B7C] flex items-center justify-center cursor-pointer"
+                        title="Accept"
+                      >
+                        <Check size={14} strokeWidth={3} />
+                      </button>
+                      <button
+                        onClick={() => handleDeclineRequest(req.id)}
+                        className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] text-gray-400 hover:text-brand-danger flex items-center justify-center cursor-pointer"
+                        title="Decline"
+                      >
+                        <X size={14} strokeWidth={3} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredFriends.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-xs text-gray-500 font-bold uppercase">
+                  No friends found matching requirements.
+                </div>
+              ) : (
+                filteredFriends.map((friend) => (
+                  <div
+                    key={friend.id}
+                    className="p-3.5 bg-white border-3 border-[#C85B7C] shadow-[3px_3px_0px_0px_#C85B7C] rounded-2xl flex items-center justify-between hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#C85B7C] transition-all duration-150 group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar
+                        username={friend.name}
+                        status={friend.status}
+                        size="md"
+                        className="border-2 border-[#C85B7C] rounded-full"
+                      />
+                      <div>
+                        <h4 className="font-retro text-xs font-black text-[#C85B7C] uppercase">{friend.name}</h4>
+                        <p className="text-[10px] text-gray-500 font-bold mt-0.5">@{friend.username} • {friend.mutuals} mutuals</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => router.push("/chat")}
+                      className="p-2.5 rounded-xl bg-[#FFE4EC]/50 border-2 border-[#C85B7C] text-[#C85B7C] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[2px_2px_0px_0px_#C85B7C]"
+                    >
+                      <MessageSquare size={14} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Search Input for Friends */}
-      {activeTab !== "requests" && (
-        <div className="relative mb-6 max-w-sm">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
-          <input
-            type="text"
-            placeholder="Search friends..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-surface border border-zinc-800 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-primary"
-          />
-        </div>
-      )}
-
-      {/* Friends list grids */}
-      {activeTab === "requests" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {requests.length === 0 ? (
-            <div className="col-span-full text-center py-10 text-xs text-gray-500">
-              No pending friend requests.
-            </div>
-          ) : (
-            requests.map((req) => (
-              <Card key={req.id} variant="default" className="p-4 flex items-center justify-between border-zinc-850 bg-brand-surface/40">
-                <div className="flex items-center gap-3">
-                  <Avatar username={req.name} size="md" />
-                  <div>
-                    <h4 className="text-sm font-semibold text-white">{req.name}</h4>
-                    <p className="text-xs text-gray-500">@{req.username} • {req.mutuals} mutual friends</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleAcceptRequest(req)}
-                    className="p-2 rounded-lg bg-brand-primary/10 hover:bg-brand-primary text-brand-primary hover:text-white transition-colors cursor-pointer"
-                  >
-                    <Check size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDeclineRequest(req.id)}
-                    className="p-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-gray-400 hover:text-brand-danger transition-colors cursor-pointer"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              </Card>
-            ))
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredFriends.length === 0 ? (
-            <div className="col-span-full text-center py-10 text-xs text-gray-500">
-              No friends found matching requirements.
-            </div>
-          ) : (
-            filteredFriends.map((friend) => (
-              <Card key={friend.id} variant="default" className="p-4 flex items-center justify-between border-zinc-850 hover:border-zinc-850 bg-brand-surface/40 transition-colors">
-                <div className="flex items-center gap-3">
-                  <Avatar username={friend.name} status={friend.status} size="md" />
-                  <div>
-                    <h4 className="text-sm font-semibold text-white">{friend.name}</h4>
-                    <p className="text-xs text-gray-500">@{friend.username} • {friend.mutuals} mutuals</p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.push("/chat")}
-                  className="p-2 min-w-0"
-                >
-                  <MessageSquare size={16} />
-                </Button>
-              </Card>
-            ))
-          )}
-        </div>
-      )}
 
       {/* Add Friend Modal */}
       <Modal
@@ -272,33 +302,33 @@ const Friends = () => {
         size="md"
       >
         <div className="flex flex-col gap-4">
-          <p className="text-xs text-gray-400 leading-relaxed">
+          <p className="text-[10px] text-[#8E7A82] leading-relaxed font-bold uppercase">
             Search by name or username to add friends and start chatting with other users on Blink.
           </p>
 
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
             <input
               type="text"
               placeholder="Search by name or @username..."
               value={modalSearchQuery}
               onChange={(e) => setModalSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-surface border border-zinc-800 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-primary"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none"
             />
           </div>
 
-          <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto">
+          <div className="mt-2 space-y-2.5 max-h-[300px] overflow-y-auto">
             {modalSearching ? (
-              <div className="flex items-center justify-center py-8 text-gray-500 gap-2">
-                <Loader2 size={16} className="animate-spin text-brand-primary" />
-                <span className="text-xs">Searching users...</span>
+              <div className="flex items-center justify-center py-8 text-gray-500 gap-2 font-bold text-xs uppercase">
+                <Loader2 size={14} className="animate-spin text-[#C85B7C]" />
+                <span>Searching stickers...</span>
               </div>
             ) : modalSearchQuery.trim() === "" ? (
-              <div className="text-center py-8 text-xs text-gray-600">
+              <div className="text-center py-8 text-[10px] text-gray-400 font-bold uppercase">
                 Type a name to begin searching.
               </div>
             ) : modalSearchResults.length === 0 ? (
-              <div className="text-center py-8 text-xs text-gray-600">
+              <div className="text-center py-8 text-[10px] text-gray-400 font-bold uppercase">
                 No users found.
               </div>
             ) : (
@@ -307,28 +337,26 @@ const Friends = () => {
                 return (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/30 border border-zinc-800/40 hover:border-zinc-800 transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl bg-[#FFFBFD] border-2 border-[#C85B7C] hover:bg-[#FFE4EC]/40 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar username={user.name} src={user.profileImage} size="md" />
+                      <Avatar username={user.name} src={user.profileImage} size="md" className="border border-[#C85B7C] rounded-full" />
                       <div>
-                        <h5 className="text-sm font-semibold text-white">{user.name}</h5>
-                        <p className="text-xs text-gray-500">@{user.username}</p>
+                        <h5 className="font-retro text-xs font-black text-[#C85B7C] uppercase">{user.name}</h5>
+                        <p className="text-[9px] text-gray-500 font-bold">@{user.username}</p>
                       </div>
                     </div>
                     {isFriend ? (
-                      <span className="text-[10px] uppercase font-semibold text-brand-primary tracking-wider bg-brand-primary/10 px-2.5 py-1 rounded-lg">
+                      <span className="text-[9px] uppercase font-black text-[#C85B7C] tracking-wider bg-[#FFE4EC] border-2 border-[#C85B7C] px-2.5 py-1 rounded-lg">
                         Friends
                       </span>
                     ) : (
-                      <Button
-                        variant="primary"
-                        size="xs"
+                      <button
                         onClick={() => handleAddFriend(user)}
-                        iconBefore={<UserPlus size={12} />}
+                        className="px-3.5 py-1.5 bg-[#E6FCE8] border-2 border-[#C85B7C] text-[#C85B7C] font-retro text-[10px] font-black rounded-xl hover:scale-105 active:scale-95 shadow-[1.5px_1.5px_0px_0px_#C85B7C] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-[0px_0px_0px_0px_#C85B7C] cursor-pointer"
                       >
-                        Add
-                      </Button>
+                        ADD
+                      </button>
                     )}
                   </div>
                 );
