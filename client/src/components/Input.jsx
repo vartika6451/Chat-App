@@ -14,7 +14,7 @@ const Input = React.forwardRef(
     },
     ref
   ) => {
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const inputId = id || `input-${Math.random().toString(36).substring(2, 9)}`;
 
     return (
       <div className={`flex flex-col w-full gap-1.5 ${containerClassName}`}>

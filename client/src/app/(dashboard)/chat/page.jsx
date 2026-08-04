@@ -1,7 +1,8 @@
+/* eslint-disable */
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Search, MessageSquare, Plus, Send, Phone, Video, Info } from "lucide-react";
+import { Search, MessageSquare, Plus, Send, Phone, Video, Info, Clock, Calendar, X, VideoOff } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import api from "../../../utils/api";
 import Avatar from "../../../components/Avatar";
@@ -25,6 +26,102 @@ const Chat = () => {
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
+
+  // Message Scheduling States
+  const [isScheduleMsgOpen, setIsScheduleMsgOpen] = useState(false);
+  const [scheduledMsgText, setScheduledMsgText] = useState("");
+  const [scheduledMsgTime, setScheduledMsgTime] = useState("");
+
+  // Call Modal / Overlay States
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [scheduledCallTitle, setScheduledCallTitle] = useState("");
+  const [scheduledCallType, setScheduledCallType] = useState("video");
+  const [scheduledCallTime, setScheduledCallTime] = useState("");
+
+  // Active Call Screen Mockup State
+  const [activeCall, setActiveCall] = useState(null);
+  const [callTimer, setCallTimer] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isCameraOff, setIsCameraOff] = useState(false);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [incomingCall, setIncomingCall] = useState(null);
+
+  // Scheduled Items Drawer State
+  const [isScheduledDrawerOpen, setIsScheduledDrawerOpen] = useState(false);
+  const [scheduledMessages, setScheduledMessages] = useState([]);
+  const [scheduledCalls, setScheduledCalls] = useState([]);
+
+  // Fetch Scheduled messages & calls
+  const fetchScheduledItems = async (conversationId) => {
+    if (!conversationId) return;
+    try {
+      const [msgRes, callRes] = await Promise.all([
+        api.get(`/chat/scheduled-messages/${conversationId}`),
+        api.get(`/chat/scheduled-calls/${conversationId}`)
+      ]);
+      if (msgRes.data.success) {
+        setScheduledMessages(msgRes.data.scheduledMessages);
+      }
+      if (callRes.data.success) {
+        setScheduledCalls(callRes.data.scheduledCalls);
+      }
+    } catch (err) {
+      console.error("❌ Error fetching scheduled items:", err);
+    }
+  };
+
+  // Sync scheduled items
+  useEffect(() => {
+    if (activeChat && activeChat.id) {
+      fetchScheduledItems(activeChat.id);
+    } else {
+      setScheduledMessages([]);
+      setScheduledCalls([]);
+    }
+  }, [activeChat, isScheduledDrawerOpen]);
+
+  // Call handling functions
+  const handleStartInstantCall = (type) => {
+    setActiveCall({
+      id: Math.random().toString(36).substr(2, 9),
+      title: type === "video" ? "Video Sync" : "Voice Session",
+      type,
+      status: "CONNECTED",
+    });
+    setCallTimer(0);
+    toast.success(`Calling ${activeChat?.user?.name || "Blink User"}...`);
+
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(
+        JSON.stringify({
+          type: "SEND_MESSAGE",
+          payload: {
+            conversationId: activeChat.id,
+            text: `📞 Started an instant ${type} call. Join now!`,
+          },
+        })
+      );
+    }
+  };
+
+  // Timer useEffect for active call duration
+  useEffect(() => {
+    let interval;
+    if (activeCall && activeCall.status === "CONNECTED") {
+      interval = setInterval(() => {
+        setCallTimer((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setCallTimer(0);
+    }
+    return () => clearInterval(interval);
+  }, [activeCall]);
+
+  const formatDuration = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
   const socketRef = useRef(null);
   const activeChatRef = useRef(activeChat);
@@ -161,6 +258,13 @@ const Chat = () => {
               return prev;
             }
           });
+        } else if (data.type === "CALL_STARTED") {
+          const callData = data.payload;
+          toast.success(`Incoming call: "${callData.title}" from ${callData.hostName}!`, {
+            duration: 8000,
+            icon: "📞"
+          });
+          setIncomingCall(callData);
         }
       } catch (err) {
         console.error("❌ [SOCKET MESSAGE PARSE ERROR]", err);
@@ -393,7 +497,10 @@ const Chat = () => {
       {/* Right Section: Active Chat Window or Welcome Dialog */}
       <div className="flex-1 flex flex-col h-full justify-center">
         {activeChat ? (
-          <div className="flex-1 flex flex-col h-full retro-window">
+          <div className="flex-1 flex h-full relative overflow-hidden">
+            <div className={`flex-grow flex flex-col h-full retro-window transition-all duration-300 ${
+              isScheduledDrawerOpen ? "mr-72" : ""
+            }`}>
             {/* Window Title Bar */}
             <div className="px-4 py-2 bg-[#FFCCD7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
               <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider uppercase">
@@ -425,10 +532,35 @@ const Chat = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2 text-zinc-500">
-                <button className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
+                <button
+                  onClick={() => setIsScheduledDrawerOpen(prev => !prev)}
+                  className={`p-2 rounded-xl border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer ${
+                    isScheduledDrawerOpen ? "bg-[#FFE4EC]" : "bg-white"
+                  }`}
+                  title="View Scheduled Messages & Calls"
+                >
+                  <Calendar size={14} className="text-[#C85B7C]" />
+                </button>
+                <button
+                  onClick={() => {
+                    setScheduledCallTitle("Sync Session");
+                    setScheduledCallType("audio");
+                    setIsCallModalOpen(true);
+                  }}
+                  className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
+                  title="Voice Call / Schedule"
+                >
                   <Phone size={14} className="text-[#C85B7C]" />
                 </button>
-                <button className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
+                <button
+                  onClick={() => {
+                    setScheduledCallTitle("Video Sync");
+                    setScheduledCallType("video");
+                    setIsCallModalOpen(true);
+                  }}
+                  className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
+                  title="Video Call / Schedule"
+                >
                   <Video size={14} className="text-[#C85B7C]" />
                 </button>
                 <button className="p-2 rounded-xl bg-white border-2 border-[#C85B7C] hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
@@ -484,6 +616,21 @@ const Chat = () => {
 
             {/* Chat Input footer */}
             <form onSubmit={handleSendMessage} className="p-4 border-t-2 border-zinc-250 bg-white flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!activeChat || !activeChat.id) {
+                    toast.error("Open a conversation to schedule a message!");
+                    return;
+                  }
+                  setScheduledMsgText(inputText);
+                  setIsScheduleMsgOpen(true);
+                }}
+                className="p-2.5 bg-[#FFF1C5] border-2 border-[#C85B7C] rounded-xl text-[#C85B7C] hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_#C85B7C] flex items-center justify-center cursor-pointer"
+                title="Schedule Message"
+              >
+                <Clock size={14} />
+              </button>
               <input
                 type="text"
                 value={inputText}
@@ -500,6 +647,109 @@ const Chat = () => {
               </button>
             </form>
           </div>
+
+          {/* Scheduled Drawer Panel */}
+          {isScheduledDrawerOpen && (
+            <div className="absolute right-0 top-0 bottom-0 w-72 bg-white border-l-3 border-[#C85B7C] shadow-2xl flex flex-col z-20">
+              <div className="px-4 py-2 bg-[#FFF1C5] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
+                <span className="font-retro text-[9px] font-black text-[#C85B7C] tracking-wider uppercase">
+                  SCHEDULED.LOG
+                </span>
+                <button
+                  onClick={() => setIsScheduledDrawerOpen(false)}
+                  className="p-1 text-[#C85B7C] hover:bg-black/5 rounded cursor-pointer"
+                >
+                  <X size={12} strokeWidth={2.5} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 space-y-5">
+                {/* Scheduled Messages List */}
+                <div>
+                  <h5 className="text-[10px] font-black text-[#C85B7C] uppercase tracking-wider mb-2 border-b border-zinc-200 pb-1 flex items-center gap-1.5 font-bold">
+                    <Clock size={11} /> Scheduled Messages
+                  </h5>
+                  {scheduledMessages.length === 0 ? (
+                    <p className="text-[10px] text-gray-400 font-semibold italic text-center py-4">No scheduled messages</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {scheduledMessages.map((msg) => (
+                        <div key={msg.id} className="p-2.5 rounded-xl border border-zinc-200 bg-[#FFE4EC]/20 flex flex-col gap-1">
+                          <p className="text-[11px] text-[#2E2A25] font-semibold break-all leading-tight">
+                            "{msg.text}"
+                          </p>
+                          <div className="flex justify-between items-center mt-1">
+                            <span className="text-[9px] font-bold text-gray-400">
+                              {new Date(msg.scheduledAt).toLocaleString()}
+                            </span>
+                            <button
+                              onClick={async () => {
+                                try {
+                                  await api.delete(`/chat/scheduled-messages/${msg.id}`);
+                                  toast.success("Scheduled message deleted");
+                                  fetchScheduledItems(activeChat.id);
+                                } catch (err) {
+                                  toast.error("Failed to delete");
+                                }
+                              }}
+                              className="text-[9px] font-black text-brand-primary hover:text-indigo-400 uppercase cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Scheduled Calls List */}
+                <div>
+                  <h5 className="text-[10px] font-black text-[#C85B7C] uppercase tracking-wider mb-2 border-b border-zinc-200 pb-1 flex items-center gap-1.5 font-bold font-retro">
+                    <Phone size={11} /> Scheduled Calls
+                  </h5>
+                  {scheduledCalls.length === 0 ? (
+                    <p className="text-[10px] text-gray-400 font-semibold italic text-center py-4">No scheduled calls</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {scheduledCalls.map((call) => (
+                        <div key={call.id} className="p-2.5 rounded-xl border border-zinc-200 bg-[#E6FCE8]/45 flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black text-[#C85B7C] uppercase truncate max-w-[120px]">
+                              {call.title}
+                            </span>
+                            <span className="text-[8px] font-black text-zinc-400 uppercase bg-white border px-1 rounded-md">
+                              {call.callType}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center mt-1">
+                            <span className="text-[9px] font-bold text-gray-400">
+                              {new Date(call.scheduledAt).toLocaleString()}
+                            </span>
+                            <button
+                              onClick={async () => {
+                                try {
+                                  await api.delete(`/chat/scheduled-calls/${call.id}`);
+                                  toast.success("Scheduled call cancelled");
+                                  fetchScheduledItems(activeChat.id);
+                                } catch (err) {
+                                  toast.error("Failed to cancel");
+                                }
+                              }}
+                              className="text-[9px] font-black text-brand-primary hover:text-indigo-400 uppercase cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
         ) : (
           /* Retro Welcome / Error Style dialog box in the middle */
           <div className="w-[380px] mx-auto retro-window flex flex-col">
@@ -572,6 +822,407 @@ const Chat = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Schedule Message Modal */}
+      <Modal
+        isOpen={isScheduleMsgOpen}
+        onClose={() => setIsScheduleMsgOpen(false)}
+        title="Schedule Message"
+        size="md"
+      >
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!scheduledMsgText.trim() || !scheduledMsgTime) {
+              toast.error("Message text and time are required");
+              return;
+            }
+            try {
+              const res = await api.post("/chat/scheduled-messages", {
+                conversationId: activeChat.id,
+                text: scheduledMsgText.trim(),
+                scheduledAt: new Date(scheduledMsgTime).toISOString(),
+              });
+              if (res.data.success) {
+                toast.success("Message scheduled successfully!");
+                setIsScheduleMsgOpen(false);
+                setScheduledMsgText("");
+                setScheduledMsgTime("");
+                fetchScheduledItems(activeChat.id);
+              }
+            } catch (err) {
+              console.error("Error scheduling message:", err);
+              toast.error("Failed to schedule message");
+            }
+          }}
+          className="space-y-4"
+        >
+          <div>
+            <label className="text-xs font-semibold text-gray-500 uppercase">Message Text</label>
+            <textarea
+              value={scheduledMsgText}
+              onChange={(e) => setScheduledMsgText(e.target.value)}
+              placeholder="Type your message to schedule..."
+              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none resize-none"
+              rows={3}
+              required
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-500 uppercase">Send Time</label>
+            <input
+              type="datetime-local"
+              value={scheduledMsgTime}
+              onChange={(e) => setScheduledMsgTime(e.target.value)}
+              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="outline" onClick={() => setIsScheduleMsgOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary">
+              Schedule Message
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Call Options Modal (Start Instant or Schedule Call) */}
+      <Modal
+        isOpen={isCallModalOpen}
+        onClose={() => setIsCallModalOpen(false)}
+        title="Call Options"
+        size="md"
+      >
+        <div className="space-y-6">
+          {/* Instant Call Row */}
+          <div className="p-4 rounded-2xl bg-[#FFE4EC]/40 border-2 border-dashed border-[#C85B7C] flex flex-col items-center gap-3 text-center">
+            <h4 className="font-retro text-xs font-black text-[#C85B7C]">START INSTANT TRANSMISSION</h4>
+            <p className="text-[10px] text-gray-500 font-semibold max-w-[300px]">
+              Instantly connect with a secure audio or video stream to {activeChat?.user?.name}.
+            </p>
+            <div className="flex gap-2.5">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setIsCallModalOpen(false);
+                  handleStartInstantCall("audio");
+                }}
+                iconBefore={<Phone size={14} />}
+              >
+                Instant Audio
+              </Button>
+              <Button
+                variant="accent"
+                onClick={() => {
+                  setIsCallModalOpen(false);
+                  handleStartInstantCall("video");
+                }}
+                iconBefore={<Video size={14} />}
+              >
+                Instant Video
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative flex py-1 items-center">
+            <div className="flex-grow border-t border-zinc-200"></div>
+            <span className="flex-shrink mx-4 text-xs font-bold text-gray-400">OR SCHEDULE CALL</span>
+            <div className="flex-grow border-t border-zinc-200"></div>
+          </div>
+
+          {/* Schedule Call Form */}
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!scheduledCallTitle.trim() || !scheduledCallTime) {
+                toast.error("Call title and time are required");
+                return;
+              }
+              try {
+                const res = await api.post("/chat/scheduled-calls", {
+                  conversationId: activeChat.id,
+                  title: scheduledCallTitle.trim(),
+                  callType: scheduledCallType,
+                  scheduledAt: new Date(scheduledCallTime).toISOString(),
+                });
+                if (res.data.success) {
+                  toast.success("Call scheduled successfully!");
+                  setIsCallModalOpen(false);
+                  setScheduledCallTitle("");
+                  setScheduledCallTime("");
+                  fetchScheduledItems(activeChat.id);
+                  // Refresh messages feed to see the "scheduled call" notice
+                  if (activeChat.id) {
+                    const msgRes = await api.get(`/chat/messages/${activeChat.id}`);
+                    if (msgRes.data.success) {
+                      setMessages(msgRes.data.messages);
+                    }
+                  }
+                }
+              } catch (err) {
+                console.error("Error scheduling call:", err);
+                toast.error("Failed to schedule call");
+              }
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <label className="text-xs font-semibold text-gray-500 uppercase">Call Topic/Title</label>
+              <input
+                type="text"
+                value={scheduledCallTitle}
+                onChange={(e) => setScheduledCallTitle(e.target.value)}
+                placeholder="Weekly Sync, Brainstorming, etc."
+                className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase">Call Type</label>
+                <select
+                  value={scheduledCallType}
+                  onChange={(e) => setScheduledCallType(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+                >
+                  <option value="audio">Audio Connection</option>
+                  <option value="video">Video Stream</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase">Scheduled Time</label>
+                <input
+                  type="datetime-local"
+                  value={scheduledCallTime}
+                  onChange={(e) => setScheduledCallTime(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+                  required
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setIsCallModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary">
+                Schedule Call
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      {/* Active Call Overlay */}
+      {activeCall && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-between p-8 z-50 animate-fade-in font-sans text-white">
+          <div className="text-center mt-6">
+            <span className="text-[9px] tracking-widest font-black uppercase text-brand-primary bg-brand-primary/10 border border-brand-primary/20 px-2 py-0.5 rounded-md">
+              SECURE BLINK STREAM ({activeCall.type.toUpperCase()})
+            </span>
+            <h2 className="text-xl font-bold tracking-tight text-white mt-3 uppercase">
+              {activeCall.title}
+            </h2>
+            <p className="text-xs text-brand-text-secondary mt-1">
+              With {activeChat?.user?.name || "Blink Friend"} • {formatDuration(callTimer)}
+            </p>
+          </div>
+
+          <div className="flex-1 flex items-center justify-center relative w-full max-w-xl aspect-video rounded-3xl border-3 border-[#C85B7C] bg-zinc-950 overflow-hidden shadow-2xl">
+            <div className="absolute top-[20%] left-[25%] w-48 h-48 rounded-full bg-brand-primary/20 blur-[60px]" />
+            <div className="absolute bottom-[20%] right-[25%] w-48 h-48 rounded-full bg-brand-accent/20 blur-[60px]" />
+
+            {activeCall.type === "video" && !isCameraOff ? (
+              <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-tr from-zinc-900 to-indigo-950/80">
+                {isScreenSharing ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 rounded-2xl bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center text-brand-primary animate-pulse">
+                      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs font-semibold text-zinc-400">Sharing your screen...</span>
+                  </div>
+                ) : (
+                  <div className="relative w-full h-full">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-30 select-none">
+                      <div className="w-20 h-20 rounded-full border border-white/10 flex items-center justify-center">
+                        <Video size={40} className="text-zinc-500" />
+                      </div>
+                    </div>
+
+                    <div className="absolute bottom-4 right-4 w-32 aspect-video rounded-xl border border-zinc-700 bg-zinc-900 overflow-hidden shadow-md flex items-center justify-center text-[10px] font-bold text-zinc-500">
+                      Local Cam
+                    </div>
+
+                    <div className="absolute top-4 left-4 flex items-center gap-1.5 px-2 py-0.5 bg-black/60 border border-zinc-700 rounded-md text-[9px] font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-danger animate-pulse" /> LIVE STREAM
+                    </div>
+
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                      <Avatar
+                        username={activeChat?.user?.name || "Blink"}
+                        size="lg"
+                        className="w-24 h-24 border-3 border-brand-primary rounded-full shadow-lg"
+                      />
+                      <span className="text-xs font-bold text-white tracking-wide bg-black/40 px-3 py-1 rounded-full border border-white/5">
+                        {activeChat?.user?.name}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-6">
+                <div className="relative flex items-center justify-center">
+                  <span className="absolute inline-flex h-32 w-32 rounded-full bg-brand-primary/20 animate-ping opacity-75" />
+                  <span className="absolute inline-flex h-24 w-24 rounded-full bg-brand-accent/20 animate-pulse" />
+                  
+                  <Avatar
+                    username={activeChat?.user?.name || "Blink"}
+                    size="lg"
+                    className="w-20 h-20 border-3 border-brand-primary rounded-full relative z-10"
+                  />
+                </div>
+
+                <div className="flex items-center gap-1 h-6">
+                  {[...Array(6)].map((_, i) => (
+                    <span
+                      key={i}
+                      className="w-1.5 bg-brand-primary rounded-full animate-bounce"
+                      style={{
+                        height: `${30 + Math.random() * 70}%`,
+                        animationDuration: `${0.6 + i * 0.1}s`
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="mb-6 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center gap-4 shadow-xl">
+            <button
+              onClick={() => {
+                setIsMuted(!isMuted);
+                toast.success(isMuted ? "Microphone active" : "Microphone muted");
+              }}
+              className={`p-3.5 rounded-xl border border-zinc-800 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer ${
+                isMuted ? "bg-brand-danger text-zinc-950" : "bg-zinc-950 text-white"
+              }`}
+              title={isMuted ? "Unmute Mic" : "Mute Mic"}
+            >
+              {isMuted ? (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+              )}
+            </button>
+
+            {activeCall.type === "video" && (
+              <button
+                onClick={() => {
+                  setIsCameraOff(!isCameraOff);
+                  toast.success(isCameraOff ? "Camera active" : "Camera turned off");
+                }}
+                className={`p-3.5 rounded-xl border border-zinc-800 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer ${
+                  isCameraOff ? "bg-brand-danger text-zinc-950" : "bg-zinc-950 text-white"
+                }`}
+                title={isCameraOff ? "Camera On" : "Camera Off"}
+              >
+                {isCameraOff ? <VideoOff size={20} /> : <Video size={20} />}
+              </button>
+            )}
+
+            {activeCall.type === "video" && (
+              <button
+                onClick={() => {
+                  setIsScreenSharing(!isScreenSharing);
+                  toast.success(isScreenSharing ? "Screen sharing ended" : "Sharing screen stream");
+                }}
+                className={`p-3.5 rounded-xl border border-zinc-800 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer ${
+                  isScreenSharing ? "bg-brand-primary text-zinc-950" : "bg-zinc-950 text-white"
+                }`}
+                title={isScreenSharing ? "Stop Sharing" : "Share Screen"}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                setActiveCall(null);
+                setCallTimer(0);
+                setIsScreenSharing(false);
+                setIsCameraOff(false);
+                setIsMuted(false);
+                toast.error("Call connection terminated");
+              }}
+              className="p-3.5 rounded-xl bg-brand-danger border border-transparent text-zinc-950 flex items-center justify-center hover:scale-110 active:scale-95 transition-all font-bold cursor-pointer"
+              title="Hang Up Call"
+            >
+              <svg className="w-5 h-5 rotate-[135deg]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M21 16.5c0 .38-.21.71-.53.88l-4.87 2.44c-.38.19-.84.1-1.12-.22l-2.07-2.07c-2.82-1.46-5.11-3.75-6.57-6.57l2.07-2.07c.28-.28.37-.74.22-1.12L5.68 3.53C5.51 3.21 5.18 3 4.8 3H3.5C2.67 3 2 3.67 2 4.5 2 13.61 9.39 21 18.5 21c.83 0 1.5-.67 1.5-1.5v-3c0-.38-.21-.71-.53-.88l-4.87-2.44c-.38-.19-.84-.1-1.12.22l-2.07 2.07c-2.82-1.46-5.11-3.75-6.57-6.57l2.07-2.07c.28-.28.37-.74.22-1.12L5.68 3.53c-.15-.31-.48-.53-.86-.53H3.5" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Incoming Call Ringing Dialog */}
+      {incomingCall && (
+        <div className="fixed bottom-6 right-6 retro-window w-80 bg-white p-5 shadow-2xl z-50 flex flex-col gap-4 border-3 border-[#C85B7C] animate-bounce">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#FFE4EC] border-2 border-[#C85B7C] flex items-center justify-center text-[#C85B7C] animate-pulse">
+              <Phone size={18} />
+            </div>
+            <div>
+              <h4 className="font-retro text-xs font-black text-[#C85B7C]">INCOMING CALL...</h4>
+              <p className="text-[10px] text-gray-500 font-bold">
+                {incomingCall.hostName} is calling you ({incomingCall.callType})
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="primary"
+              className="flex-1 text-xs py-2"
+              onClick={() => {
+                setActiveCall({
+                  id: incomingCall.id,
+                  title: incomingCall.title,
+                  type: incomingCall.callType,
+                  status: "CONNECTED"
+                });
+                setCallTimer(0);
+                setIncomingCall(null);
+                toast.success("Call connected successfully!");
+              }}
+            >
+              Accept
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-grow-0 text-xs py-2 text-brand-primary"
+              onClick={() => {
+                setIncomingCall(null);
+                toast.error("Call declined");
+              }}
+            >
+              Decline
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

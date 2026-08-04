@@ -225,3 +225,243 @@ export const sendMessage = async (req, res) => {
     });
   }
 };
+
+// Scheduled Message Controller Handlers
+export const scheduleMessage = async (req, res) => {
+  const { conversationId, text, scheduledAt } = req.body;
+  const senderId = req.user.id;
+
+  console.log(`[CHAT] Scheduling message for senderId=${senderId}, conversationId=${conversationId}, scheduledAt=${scheduledAt}`);
+
+  if (!text || !conversationId || !scheduledAt) {
+    return res.status(400).json({
+      success: false,
+      message: "Text, conversationId, and scheduledAt are required",
+    });
+  }
+
+  try {
+    const scheduledMessage = await prisma.scheduledMessage.create({
+      data: {
+        text,
+        senderId,
+        conversationId,
+        scheduledAt: new Date(scheduledAt),
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          }
+        }
+      }
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Message scheduled successfully",
+      scheduledMessage,
+    });
+  } catch (error) {
+    console.error("❌ [SCHEDULE MESSAGE ERROR]", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error scheduling message",
+    });
+  }
+};
+
+export const getScheduledMessages = async (req, res) => {
+  const { conversationId } = req.params;
+
+  try {
+    const scheduledMessages = await prisma.scheduledMessage.findMany({
+      where: { 
+        conversationId,
+        isSent: false
+      },
+      orderBy: { scheduledAt: "asc" },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          }
+        }
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      scheduledMessages,
+    });
+  } catch (error) {
+    console.error("❌ [GET SCHEDULED MESSAGES ERROR]", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error retrieving scheduled messages",
+    });
+  }
+};
+
+export const deleteScheduledMessage = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.scheduledMessage.delete({
+      where: { id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Scheduled message cancelled successfully",
+    });
+  } catch (error) {
+    console.error("❌ [DELETE SCHEDULED MESSAGE ERROR]", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error deleting scheduled message",
+    });
+  }
+};
+
+// Scheduled Call Controller Handlers
+export const scheduleCall = async (req, res) => {
+  const { conversationId, title, callType, scheduledAt } = req.body;
+  const hostId = req.user.id;
+
+  console.log(`⏰ [CHAT] Scheduling call for hostId=${hostId}, conversationId=${conversationId}, title="${title}", scheduledAt=${scheduledAt}`);
+
+  if (!title || !conversationId || !scheduledAt || !callType) {
+    return res.status(400).json({
+      success: false,
+      message: "Title, conversationId, callType, and scheduledAt are required",
+    });
+  }
+
+  try {
+    const scheduledCall = await prisma.scheduledCall.create({
+      data: {
+        title,
+        callType,
+        hostId,
+        conversationId,
+        scheduledAt: new Date(scheduledAt),
+      },
+      include: {
+        host: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          }
+        }
+      }
+    });
+
+    // Create a live post in the chat stating that a call was scheduled!
+    await prisma.message.create({
+      data: {
+        text: `📅 Scheduled a call: "${title}" (${callType}) for ${new Date(scheduledAt).toLocaleString()}`,
+        senderId: hostId,
+        conversationId,
+      }
+    });
+
+    // Fetch conversation participants
+    const participants = await prisma.conversationParticipant.findMany({
+      where: { conversationId }
+    });
+
+    // Broadcast standard NEW_MESSAGE event so it renders in participants' list
+    const broadcastMessagePayload = {
+      type: "NEW_MESSAGE",
+      payload: {
+        text: `📅 Scheduled a call: "${title}" (${callType}) for ${new Date(scheduledAt).toLocaleString()}`,
+        senderId: hostId,
+        conversationId,
+        createdAt: new Date(),
+        sender: {
+          id: hostId,
+          name: req.user.name,
+          username: req.user.username
+        }
+      }
+    };
+
+    participants.forEach((p) => {
+      sendMessageToUser(p.userId, broadcastMessagePayload);
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Call scheduled successfully",
+      scheduledCall,
+    });
+  } catch (error) {
+    console.error("❌ [SCHEDULE CALL ERROR]", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error scheduling call",
+    });
+  }
+};
+
+export const getScheduledCalls = async (req, res) => {
+  const { conversationId } = req.params;
+
+  try {
+    const scheduledCalls = await prisma.scheduledCall.findMany({
+      where: { 
+        conversationId,
+        status: "SCHEDULED"
+      },
+      orderBy: { scheduledAt: "asc" },
+      include: {
+        host: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          }
+        }
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      scheduledCalls,
+    });
+  } catch (error) {
+    console.error("❌ [GET SCHEDULED CALLS ERROR]", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error retrieving scheduled calls",
+    });
+  }
+};
+
+export const deleteScheduledCall = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.scheduledCall.delete({
+      where: { id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Scheduled call cancelled successfully",
+    });
+  } catch (error) {
+    console.error("❌ [DELETE SCHEDULED CALL ERROR]", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error deleting scheduled call",
+    });
+  }
+};
+

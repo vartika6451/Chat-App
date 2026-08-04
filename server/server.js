@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import { initSocket } from "./socket/socketHandler.js";
+import { initScheduler } from "./utils/scheduler.js";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import chatRoutes from "./routes/chat.js";
@@ -32,6 +33,9 @@ connectDB();
 
 // Initialize WebSocket transmission socket
 initSocket(server);
+
+// Initialize scheduler
+initScheduler();
 
 // Register API Routes
 app.use("/api/auth", authRoutes);
