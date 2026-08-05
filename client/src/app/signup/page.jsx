@@ -68,7 +68,7 @@ const SignUp = () => {
       });
       router.push("/chat");
     } catch (err) {
-      toast.error("Failed to sign up. Please try again.");
+      toast.error(err.message || "Failed to sign up. Please try again.");
     } finally {
       setLoading(false);
     }

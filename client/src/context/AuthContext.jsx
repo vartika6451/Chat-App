@@ -5,6 +5,19 @@ import api from "../utils/api.js";
 
 const AuthContext = createContext(null);
 
+const extractErrorMessage = (error, defaultMsg) => {
+  if (error.response?.data?.message) {
+    return error.response.data.message;
+  }
+  if (error.response?.data?.error) {
+    return error.response.data.error;
+  }
+  if (error.request) {
+    return "Server is unreachable. Please make sure the backend server is running.";
+  }
+  return error.message || defaultMsg;
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,7 +60,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       setLoading(false);
-      const errMsg = error.response?.data?.message || "Failed to log in";
+      const errMsg = extractErrorMessage(error, "Failed to log in");
       throw new Error(errMsg);
     }
   };
@@ -66,7 +79,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       setLoading(false);
-      const errMsg = error.response?.data?.message || "Failed to sign up";
+      const errMsg = extractErrorMessage(error, "Failed to sign up");
       throw new Error(errMsg);
     }
   };
@@ -89,7 +102,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("❌ [AUTH] Profile update error:", error);
-      const errMsg = error.response?.data?.message || "Failed to update profile";
+      const errMsg = extractErrorMessage(error, "Failed to update profile");
       throw new Error(errMsg);
     }
   };

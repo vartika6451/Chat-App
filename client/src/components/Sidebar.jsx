@@ -21,7 +21,7 @@ const Sidebar = () => {
 
   const navItems = [
     { name: "CHAT", path: "/chat", icon: <MessageSquare size={24} className="text-[var(--color-brand-border)]" /> },
-    { name: "FILES", path: "/friends", icon: <Users size={24} className="text-[var(--color-brand-border)]" /> },
+    { name: "CONNECT", path: "/friends", icon: <Users size={24} className="text-[var(--color-brand-border)]" /> },
     { name: "STUDIO", path: "/cards", icon: <Sparkles size={24} className="text-[var(--color-brand-border)]" /> },
     { name: "SETTINGS", path: "/settings", icon: <Settings size={24} className="text-[var(--color-brand-border)]" /> },
   ];

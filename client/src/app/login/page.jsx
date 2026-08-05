@@ -53,7 +53,7 @@ const Login = () => {
       });
       router.push("/chat");
     } catch (err) {
-      toast.error("Failed to login. Please try again.");
+      toast.error(err.message || "Failed to login. Please try again.");
     } finally {
       setLoading(false);
     }

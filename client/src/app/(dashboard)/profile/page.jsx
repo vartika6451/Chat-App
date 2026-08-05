@@ -29,7 +29,7 @@ const Profile = () => {
     try {
       setLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate api call
-      updateUserProfile({
+      await updateUserProfile({
         name: editName,
         username: editUsername,
         bio: editBio,
@@ -39,7 +39,7 @@ const Profile = () => {
       });
       setIsEditing(false);
     } catch (err) {
-      toast.error("Failed to update profile");
+      toast.error(err.message || "Failed to update profile");
     } finally {
       setLoading(false);
     }
