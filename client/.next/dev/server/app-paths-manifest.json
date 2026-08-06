@@ -1,8 +1,5 @@
 {
-  "/(dashboard)/cards/page": "app/(dashboard)/cards/page.js",
   "/(dashboard)/chat/page": "app/(dashboard)/chat/page.js",
-  "/(dashboard)/friends/page": "app/(dashboard)/friends/page.js",
-  "/(dashboard)/settings/page": "app/(dashboard)/settings/page.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js",
   "/signup/page": "app/signup/page.js"
