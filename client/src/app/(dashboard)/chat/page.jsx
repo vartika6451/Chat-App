@@ -424,49 +424,39 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex-1 flex h-full overflow-hidden p-6 gap-6">
+    <div className="flex-1 flex h-full overflow-hidden p-6 pr-8 gap-6">
       {/* Left Section: Chat List Window */}
-      <div className="w-80 flex flex-col h-full retro-window">
-        {/* Window Title Bar */}
-        <div className="px-4 py-2 bg-brand-success border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
-          <span className="font-retro text-[10px] font-black text-[var(--color-brand-border)] tracking-wider">CHAT.EXE</span>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-danger border border-[var(--color-brand-border)]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-accent border border-[var(--color-brand-border)]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-success border border-[var(--color-brand-border)]" />
-          </div>
-        </div>
-
+      <div className="w-80 flex flex-col h-full bg-white dark:bg-zinc-900/60 backdrop-blur-md rounded-[24px] border border-zinc-150 dark:border-zinc-800/60 shadow-[0_4px_20px_rgba(0,0,0,0.015)] overflow-hidden">
         {/* Search & Header */}
-        <div className="p-4 border-b-2 border-zinc-200 dark:border-zinc-800 bg-brand-surface flex flex-col gap-4">
+        <div className="p-4.5 border-b border-zinc-100 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/40 flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="font-retro text-base font-black text-[var(--color-brand-border)] tracking-wide">MESSAGES</h1>
+            <h1 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 tracking-tight">Messages</h1>
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="w-7 h-7 rounded-lg bg-brand-primary-light border-2 border-[var(--color-brand-border)] flex items-center justify-center text-[var(--color-brand-border)] hover:scale-105 transition-transform cursor-pointer"
+              className="w-8 h-8 rounded-full bg-[var(--color-brand-accent-pink-light)]/40 hover:bg-[var(--color-brand-accent-pink-light)]/60 text-[var(--color-brand-accent-pink)] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <Plus size={14} strokeWidth={3} />
+              <Plus size={15} strokeWidth={2.5} />
             </button>
           </div>
           <div className="relative">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={13}
             />
             <input
               type="text"
               placeholder="Search chats..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
+              className="w-full pl-9 pr-3 py-2 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-150 dark:border-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-100 placeholder-gray-400 focus:outline-none focus:border-[var(--color-brand-accent-pink)] focus:ring-1 focus:ring-[var(--color-brand-accent-pink)]/20 transition-all duration-200"
             />
           </div>
         </div>
 
         {/* Chat List Scrollable */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1.5 bg-brand-surface">
+        <div className="flex-1 overflow-y-auto p-2 space-y-1 bg-white dark:bg-zinc-900/10">
           {filteredChats.length === 0 ? (
-            <div className="text-center text-xs text-gray-600 py-10 font-medium">
+            <div className="text-center text-xs text-gray-400 py-12 font-medium">
               No chats found
             </div>
           ) : (
@@ -474,10 +464,10 @@ const Chat = () => {
               <div
                 key={chat.id}
                 onClick={() => setActiveChat(chat)}
-                className={`flex items-center justify-between p-2.5 rounded-2xl cursor-pointer transition-all duration-150 border-2 select-none ${
+                className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all duration-200 border border-transparent select-none ${
                   activeChat?.id === chat.id
-                    ? "bg-brand-primary-light border-[var(--color-brand-border)]"
-                    : "bg-brand-surface border-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    ? "bg-[var(--color-brand-accent-pink-light)]/20 shadow-[0_2px_10px_rgba(238,147,179,0.05)] border-[var(--color-brand-accent-pink-light)]/10"
+                    : "bg-transparent hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
                 }`}
               >
                 <div className="flex items-center gap-3 overflow-hidden">
@@ -485,13 +475,15 @@ const Chat = () => {
                     username={chat.user.name}
                     status={chat.user.status}
                     size="md"
-                    className="border-2 border-[var(--color-brand-border)] rounded-full"
+                    className="rounded-full"
                   />
                   <div className="overflow-hidden">
-                    <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)] truncate">
-                      {chat.user.name.toUpperCase()}
+                    <h4 className={`text-xs font-semibold truncate ${
+                      activeChat?.id === chat.id ? "text-[var(--color-brand-accent-pink)]" : "text-zinc-800 dark:text-zinc-200"
+                    }`}>
+                      {chat.user.name}
                     </h4>
-                    <p className="text-[10px] text-gray-500 truncate mt-0.5 font-medium">
+                    <p className="text-[10px] text-gray-400 dark:text-zinc-500 truncate mt-0.5 font-medium">
                       {chat.lastMessage}
                     </p>
                   </div>
@@ -504,7 +496,7 @@ const Chat = () => {
                     })}
                   </span>
                   {chat.unread > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-[#FE7B9B] border border-[var(--color-brand-border)] text-[9px] font-bold text-white flex items-center justify-center">
+                    <span className="w-4 h-4 rounded-full bg-[var(--color-brand-accent-pink)] text-[8px] font-bold text-white flex items-center justify-center shadow-sm shadow-pink-500/10">
                       {chat.unread}
                     </span>
                   )}
@@ -516,79 +508,69 @@ const Chat = () => {
       </div>
 
       {/* Right Section: Active Chat Window or Welcome Dialog */}
-      <div className="flex-1 flex flex-col h-full justify-center">
+      <div className="flex-grow flex flex-col h-full justify-center">
         {activeChat ? (
           <div className="flex-1 flex h-full relative overflow-hidden">
-            <div className={`flex-grow flex flex-col h-full retro-window transition-all duration-300 ${
+            <div className={`flex-grow flex flex-col h-full bg-white dark:bg-zinc-900/60 backdrop-blur-md rounded-[24px] border border-zinc-150 dark:border-zinc-800/60 shadow-[0_4px_20px_rgba(0,0,0,0.015)] overflow-hidden transition-all duration-300 ${
               isScheduledDrawerOpen ? "mr-72" : ""
             }`}>
-            {/* Window Title Bar */}
-            <div className="px-4 py-2 bg-brand-danger border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
-              <span className="font-retro text-[10px] font-black text-[var(--color-brand-border)] tracking-wider uppercase">
-                {activeChat.user.name}.exe
-              </span>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-brand-danger border border-[var(--color-brand-border)]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-brand-accent border border-[var(--color-brand-border)]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-brand-success border border-[var(--color-brand-border)]" />
-              </div>
-            </div>
-
-            {/* Chat header panel */}
-            <div className="px-6 py-3 border-b-2 border-zinc-200 dark:border-zinc-800 bg-brand-surface flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar
-                  username={activeChat.user.name}
-                  status={activeChat.user.status}
-                  size="md"
-                  className="border-2 border-[var(--color-brand-border)] rounded-full"
-                />
-                <div>
-                  <h3 className="font-retro text-sm font-black text-[var(--color-brand-border)] leading-none uppercase">
-                    {activeChat.user.name}
-                  </h3>
-                  <span className="text-[9px] font-bold text-[#8E7A82] mt-1 block">
-                    @{activeChat.user.username} • {activeChat.user.status}
-                  </span>
+              {/* Chat header panel */}
+              <div className="px-6 py-3.5 border-b border-zinc-100 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/40 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Avatar
+                    username={activeChat.user.name}
+                    status={activeChat.user.status}
+                    size="md"
+                    className="rounded-full"
+                  />
+                  <div>
+                    <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 leading-none">
+                      {activeChat.user.name}
+                    </h3>
+                    <span className="text-[9px] font-bold text-gray-400 dark:text-zinc-500 mt-1 block">
+                      @{activeChat.user.username} • {activeChat.user.status}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-zinc-500">
+                  <button
+                    onClick={() => setIsScheduledDrawerOpen(prev => !prev)}
+                    className={`p-2.5 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-center ${
+                      isScheduledDrawerOpen
+                        ? "bg-[var(--color-brand-accent-pink-light)]/20 text-[var(--color-brand-accent-pink)] border-[var(--color-brand-accent-pink)]"
+                        : "bg-white dark:bg-zinc-900 text-zinc-400 border-zinc-200 dark:border-zinc-800/60 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 hover:scale-105 active:scale-95"
+                    }`}
+                    title="View Scheduled Messages & Calls"
+                  >
+                    <Calendar size={14} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setScheduledCallTitle("Sync Session");
+                      setScheduledCallType("audio");
+                      setIsCallModalOpen(true);
+                    }}
+                    className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/60 text-zinc-400 hover:text-[var(--color-brand-accent-pink)] hover:bg-zinc-50 dark:hover:bg-zinc-800/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center"
+                    title="Voice Call / Schedule"
+                  >
+                    <Phone size={14} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setScheduledCallTitle("Video Sync");
+                      setScheduledCallType("video");
+                      setIsCallModalOpen(true);
+                    }}
+                    className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/60 text-zinc-400 hover:text-[var(--color-brand-accent-pink)] hover:bg-zinc-50 dark:hover:bg-zinc-800/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center"
+                    title="Video Call / Schedule"
+                  >
+                    <Video size={14} />
+                  </button>
+                  <button className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/60 text-zinc-400 hover:text-[var(--color-brand-accent-pink)] hover:bg-zinc-50 dark:hover:bg-zinc-800/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center">
+                    <Info size={14} />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-zinc-500">
-                <button
-                  onClick={() => setIsScheduledDrawerOpen(prev => !prev)}
-                  className={`p-2 rounded-xl border-2 border-[var(--color-brand-border)] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer ${
-                    isScheduledDrawerOpen ? "bg-brand-primary-light" : "bg-brand-surface"
-                  }`}
-                  title="View Scheduled Messages & Calls"
-                >
-                  <Calendar size={14} className="text-[var(--color-brand-border)]" />
-                </button>
-                <button
-                  onClick={() => {
-                    setScheduledCallTitle("Sync Session");
-                    setScheduledCallType("audio");
-                    setIsCallModalOpen(true);
-                  }}
-                  className="p-2 rounded-xl bg-brand-surface border-2 border-[var(--color-brand-border)] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
-                  title="Voice Call / Schedule"
-                >
-                  <Phone size={14} className="text-[var(--color-brand-border)]" />
-                </button>
-                <button
-                  onClick={() => {
-                    setScheduledCallTitle("Video Sync");
-                    setScheduledCallType("video");
-                    setIsCallModalOpen(true);
-                  }}
-                  className="p-2 rounded-xl bg-brand-surface border-2 border-[var(--color-brand-border)] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
-                  title="Video Call / Schedule"
-                >
-                  <Video size={14} className="text-[var(--color-brand-border)]" />
-                </button>
-                <button className="p-2 rounded-xl bg-brand-surface border-2 border-[var(--color-brand-border)] hover:bg-zinc-100 dark:hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer">
-                  <Info size={14} className="text-[var(--color-brand-border)]" />
-                </button>
-              </div>
-            </div>
 
             {/* Messages Feed Area Wrapper (viewport-locked overlay container) */}
             <div className="flex-1 relative overflow-hidden flex flex-col bg-brand-surface/20">
@@ -639,7 +621,7 @@ const Chat = () => {
             </div>
 
             {/* Chat Input footer */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t-2 border-zinc-200 dark:border-zinc-800 bg-brand-surface flex items-center gap-3">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => {
@@ -650,7 +632,7 @@ const Chat = () => {
                   setScheduledMsgText(inputText);
                   setIsScheduleMsgOpen(true);
                 }}
-                className="p-2.5 bg-brand-accent border-2 border-[var(--color-brand-border)] rounded-xl text-[var(--color-brand-border)] hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_var(--color-brand-border)] flex items-center justify-center cursor-pointer"
+                className="p-3 bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-500 hover:text-[var(--color-brand-accent-pink)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
                 title="Schedule Message"
               >
                 <Clock size={14} />
@@ -660,12 +642,12 @@ const Chat = () => {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 px-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
+                className="flex-1 px-4 py-2.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-100 placeholder-gray-400 focus:outline-none focus:border-[var(--color-brand-accent-pink)] focus:ring-1 focus:ring-[var(--color-brand-accent-pink)]/20 transition-all duration-200"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="py-2.5 px-4 bg-brand-primary-light border-2 border-[var(--color-brand-border)] rounded-xl text-[var(--color-brand-border)] font-bold hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] flex items-center justify-center cursor-pointer"
+                className="py-2.5 px-4 bg-gradient-to-r from-[var(--color-brand-accent-pink-light)] to-[var(--color-brand-accent-pink)] hover:opacity-95 text-white font-bold rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-md shadow-pink-500/10 flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send size={14} strokeWidth={2.5} />
               </button>
@@ -674,23 +656,23 @@ const Chat = () => {
 
           {/* Scheduled Drawer Panel */}
           {isScheduledDrawerOpen && (
-            <div className="absolute right-0 top-0 bottom-0 w-72 bg-brand-surface border-l-3 border-[var(--color-brand-border)] shadow-2xl flex flex-col z-20">
-              <div className="px-4 py-2 bg-brand-accent border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
-                <span className="font-retro text-[9px] font-black text-[var(--color-brand-border)] tracking-wider uppercase">
-                  SCHEDULED.LOG
+            <div className="absolute right-0 top-0 bottom-0 w-72 bg-white dark:bg-zinc-900 border-l border-zinc-150 dark:border-zinc-800 shadow-2xl flex flex-col z-20">
+              <div className="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-between shrink-0 select-none">
+                <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 tracking-tight uppercase">
+                  Scheduled Log
                 </span>
                 <button
                   onClick={() => setIsScheduledDrawerOpen(false)}
-                  className="p-1 text-[var(--color-brand-border)] hover:bg-black/5 rounded cursor-pointer"
+                  className="p-1.5 text-zinc-400 hover:text-zinc-650 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl cursor-pointer"
                 >
-                  <X size={12} strokeWidth={2.5} />
+                  <X size={14} strokeWidth={2} />
                 </button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-4 space-y-5">
                 {/* Scheduled Messages List */}
                 <div>
-                  <h5 className="text-[10px] font-black text-[var(--color-brand-border)] uppercase tracking-wider mb-2 border-b border-zinc-200 pb-1 flex items-center gap-1.5 font-bold">
+                  <h5 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 border-b border-zinc-100 dark:border-zinc-800 pb-1 flex items-center gap-1.5">
                     <Clock size={11} /> Scheduled Messages
                   </h5>
                   {scheduledMessages.length === 0 ? (
@@ -698,8 +680,8 @@ const Chat = () => {
                   ) : (
                     <div className="space-y-2">
                       {scheduledMessages.map((msg) => (
-                        <div key={msg.id} className="p-2.5 rounded-xl border border-zinc-200 bg-brand-primary-light/20 flex flex-col gap-1">
-                          <p className="text-[11px] text-[#2E2A25] font-semibold break-all leading-tight">
+                        <div key={msg.id} className="p-2.5 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 flex flex-col gap-1">
+                          <p className="text-[11px] text-zinc-700 dark:text-zinc-300 font-semibold break-all leading-tight">
                             "{msg.text}"
                           </p>
                           <div className="flex justify-between items-center mt-1">
@@ -708,15 +690,15 @@ const Chat = () => {
                             </span>
                             <button
                               onClick={async () => {
-                                try {
-                                  await api.delete(`/chat/scheduled-messages/${msg.id}`);
-                                  toast.success("Scheduled message deleted");
-                                  fetchScheduledItems(activeChat.id);
-                                } catch (err) {
-                                  toast.error("Failed to delete");
-                                }
+                                  try {
+                                    await api.delete(`/chat/scheduled-messages/${msg.id}`);
+                                    toast.success("Scheduled message deleted");
+                                    fetchScheduledItems(activeChat.id);
+                                  } catch (err) {
+                                    toast.error("Failed to delete");
+                                  }
                               }}
-                              className="text-[9px] font-black text-brand-primary hover:text-indigo-400 uppercase cursor-pointer"
+                              className="text-[9px] font-bold text-[var(--color-brand-accent-pink)] hover:text-rose-600 uppercase cursor-pointer"
                             >
                               Cancel
                             </button>
@@ -729,7 +711,7 @@ const Chat = () => {
 
                 {/* Scheduled Calls List */}
                 <div>
-                  <h5 className="text-[10px] font-black text-[var(--color-brand-border)] uppercase tracking-wider mb-2 border-b border-zinc-200 pb-1 flex items-center gap-1.5 font-bold font-retro">
+                  <h5 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 border-b border-zinc-100 dark:border-zinc-800 pb-1 flex items-center gap-1.5">
                     <Phone size={11} /> Scheduled Calls
                   </h5>
                   {scheduledCalls.length === 0 ? (
@@ -737,12 +719,12 @@ const Chat = () => {
                   ) : (
                     <div className="space-y-2">
                       {scheduledCalls.map((call) => (
-                        <div key={call.id} className="p-2.5 rounded-xl border border-zinc-200 bg-[#E6FCE8]/45 flex flex-col gap-1">
+                        <div key={call.id} className="p-2.5 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 flex flex-col gap-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black text-[var(--color-brand-border)] uppercase truncate max-w-[120px]">
+                            <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-355 truncate max-w-[120px]">
                               {call.title}
                             </span>
-                            <span className="text-[8px] font-black text-zinc-400 uppercase bg-brand-surface border border-zinc-200 dark:border-zinc-800 px-1 rounded-md">
+                            <span className="text-[8px] font-bold text-zinc-450 uppercase bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 px-1 rounded-md">
                               {call.callType}
                             </span>
                           </div>
@@ -752,15 +734,15 @@ const Chat = () => {
                             </span>
                             <button
                               onClick={async () => {
-                                try {
-                                  await api.delete(`/chat/scheduled-calls/${call.id}`);
-                                  toast.success("Scheduled call cancelled");
-                                  fetchScheduledItems(activeChat.id);
-                                } catch (err) {
-                                  toast.error("Failed to cancel");
-                                }
+                                  try {
+                                    await api.delete(`/chat/scheduled-calls/${call.id}`);
+                                    toast.success("Scheduled call cancelled");
+                                    fetchScheduledItems(activeChat.id);
+                                  } catch (err) {
+                                    toast.error("Failed to cancel");
+                                  }
                               }}
-                              className="text-[9px] font-black text-brand-primary hover:text-indigo-400 uppercase cursor-pointer"
+                              className="text-[9px] font-bold text-[var(--color-brand-accent-pink)] hover:text-rose-600 uppercase cursor-pointer"
                             >
                               Cancel
                             </button>
@@ -775,27 +757,23 @@ const Chat = () => {
           )}
         </div>
         ) : (
-          /* Retro Welcome / Error Style dialog box in the middle */
-          <div className="w-[380px] mx-auto retro-window flex flex-col">
-            <div className="px-4 py-1.5 bg-brand-danger border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
-              <span className="font-retro text-[9px] font-black text-[var(--color-brand-border)] tracking-wider">ALERT.EXE</span>
-              <span className="w-2 h-2 rounded-full bg-brand-success border border-[var(--color-brand-border)]" />
-            </div>
-            <div className="p-6 bg-brand-surface flex flex-col items-center gap-4 text-center">
-              <div className="w-12 h-12 rounded-xl bg-brand-accent border-2 border-[var(--color-brand-border)] flex items-center justify-center">
-                <MessageSquare size={24} className="text-[var(--color-brand-border)]" />
+          /* Welcome Card in the middle */
+          <div className="w-[360px] mx-auto bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800/60 shadow-[0_8px_30px_rgba(0,0,0,0.02)] rounded-[28px] overflow-hidden flex flex-col">
+            <div className="p-8 flex flex-col items-center gap-5 text-center bg-white dark:bg-zinc-900">
+              <div className="w-14 h-14 rounded-full bg-[var(--color-brand-accent-pink-light)]/20 flex items-center justify-center text-[var(--color-brand-accent-pink)]">
+                <MessageSquare size={24} />
               </div>
-              <div className="space-y-1">
-                <h4 className="font-retro text-sm font-black text-[var(--color-brand-border)] tracking-wide">NO CHAT OPEN</h4>
-                <p className="text-[10px] text-gray-500 font-bold max-w-[260px] leading-relaxed">
-                  Choose a conversation from the left pane or click '+' to search and add dynamic stickers!
+              <div className="space-y-2">
+                <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight">No Chat Open</h4>
+                <p className="text-xs text-gray-400 dark:text-zinc-500 font-medium max-w-[260px] leading-relaxed">
+                  Choose a conversation from the left pane or click '+' to search and start custom chats!
                 </p>
               </div>
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="mt-2 px-6 py-2 bg-[#E6FCE8] border-2 border-[var(--color-brand-border)] rounded-xl font-retro text-xs font-black text-[var(--color-brand-border)] shadow-[3px_3px_0px_0px_var(--color-brand-border)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] cursor-pointer"
+                className="mt-2 px-6 py-2.5 bg-gradient-to-r from-[var(--color-brand-accent-pink-light)] to-[var(--color-brand-accent-pink)] hover:opacity-95 text-white font-semibold text-xs rounded-2xl shadow-md shadow-pink-500/10 cursor-pointer"
               >
-                OK
+                Start Chatting
               </button>
             </div>
           </div>
@@ -1204,14 +1182,14 @@ const Chat = () => {
 
       {/* Incoming Call Ringing Dialog */}
       {incomingCall && (
-        <div className="fixed bottom-6 right-6 retro-window w-80 bg-brand-surface p-5 shadow-2xl z-50 flex flex-col gap-4 border-3 border-[var(--color-brand-border)] animate-bounce">
+        <div className="fixed bottom-6 right-6 w-80 bg-white dark:bg-zinc-900 p-5 shadow-[0_10px_35px_rgba(0,0,0,0.06)] z-50 flex flex-col gap-4 border border-zinc-150 dark:border-zinc-800 rounded-3xl animate-bounce">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-primary-light border-2 border-[var(--color-brand-border)] flex items-center justify-center text-[var(--color-brand-border)] animate-pulse">
-              <Phone size={18} />
+            <div className="w-10 h-10 rounded-full bg-[var(--color-brand-accent-pink-light)]/20 text-[var(--color-brand-accent-pink)] flex items-center justify-center animate-pulse">
+              <Phone size={16} />
             </div>
             <div>
-              <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)]">INCOMING CALL...</h4>
-              <p className="text-[10px] text-gray-500 font-bold">
+              <h4 className="text-xs font-bold text-zinc-850 dark:text-zinc-200 tracking-wider">Incoming Call...</h4>
+              <p className="text-[10px] text-gray-400 dark:text-zinc-500 font-semibold">
                 {incomingCall.hostName} is calling you ({incomingCall.callType})
               </p>
             </div>

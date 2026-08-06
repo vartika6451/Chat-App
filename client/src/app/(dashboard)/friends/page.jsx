@@ -145,69 +145,58 @@ const Friends = () => {
       (activeTab === "all" ||
         (activeTab === "online" && friend.status === "online") ||
         (activeTab === "offline" && friend.status === "offline"))
-  );
-
-  return (
+  );  return (
     <div className="flex-1 p-6 overflow-y-auto max-w-5xl mx-auto w-full flex flex-col justify-center">
       {/* Outer Window Panel */}
-      <div className="w-full flex flex-col h-full retro-window min-h-[600px]">
-        {/* Window Title Bar */}
-        <div className="px-4 py-2 bg-brand-accent border-b-3 border-[var(--color-brand-border)] flex items-center justify-between shrink-0 select-none">
-          <div className="flex items-center gap-2">
-            <Users size={14} className="text-[var(--color-brand-border)]" />
-            <span className="font-retro text-[10px] font-black text-[var(--color-brand-border)] tracking-wider">FRIENDS_CLUB.EXE</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-danger border border-[var(--color-brand-border)]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-accent border border-[var(--color-brand-border)]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-success border border-[var(--color-brand-border)]" />
-          </div>
-        </div>
-
+      <div className="w-full flex flex-col h-full bg-white dark:bg-zinc-900/60 backdrop-blur-md rounded-[24px] border border-zinc-150 dark:border-zinc-800/60 shadow-[0_4px_20px_rgba(0,0,0,0.015)] overflow-hidden min-h-[600px]">
         {/* Inner Content Area */}
-        <div className="flex-1 p-6 bg-white overflow-y-auto flex flex-col">
+        <div className="flex-1 p-8 overflow-y-auto flex flex-col">
           {/* Header section in the window */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-zinc-200 pb-4 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800/80 pb-5 mb-6">
             <div>
-              <h2 className="font-retro text-lg font-black text-[var(--color-brand-border)] tracking-wide">FRIENDS DIRECTORY</h2>
-              <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">Interact and manage your stickers club connections</p>
+              <h2 className="text-xl font-bold text-zinc-800 dark:text-zinc-150 tracking-tight">Friends Directory</h2>
+              <p className="text-xs text-gray-400 dark:text-zinc-550 font-semibold mt-1">Interact and manage your sticker club connections</p>
             </div>
-            <button
+            <Button
               onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2.5 bg-brand-primary-light border-3 border-[var(--color-brand-border)] rounded-xl text-[var(--color-brand-border)] font-retro text-xs font-black shadow-[3px_3px_0px_0px_var(--color-brand-border)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] flex items-center gap-2 cursor-pointer w-fit"
+              variant="primary"
+              size="sm"
+              iconBefore={<UserPlus size={14} />}
             >
-              <UserPlus size={14} strokeWidth={2.5} />
-              <span>ADD NEW FRIEND</span>
-            </button>
+              Add New Friend
+            </Button>
           </div>
 
           {/* Tabs Menu */}
           <div className="flex items-center gap-2 mb-6 select-none">
-            {["all", "online", "requests"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-xl border-3 border-[var(--color-brand-border)] font-retro text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
-                  activeTab === tab
-                    ? "bg-brand-primary-light text-[var(--color-brand-border)] shadow-[0px_0px_0px_0px_var(--color-brand-border)] translate-x-[2px] translate-y-[2px]"
-                    : "bg-white text-zinc-500 shadow-[2.5px_2.5px_0px_0px_var(--color-brand-border)] hover:translate-y-[-1px] hover:shadow-[3.5px_3.5px_0px_0px_var(--color-brand-border)]"
-                }`}
-              >
-                {tab === "requests" ? `Requests (${requests.length})` : tab}
-              </button>
-            ))}
+            {["all", "online", "requests"].map((tab) => {
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-2xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-[var(--color-brand-accent-pink-light)]/30 text-[var(--color-brand-accent-pink)] border border-[var(--color-brand-accent-pink-light)]/20 shadow-sm"
+                      : "bg-transparent text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 border border-transparent"
+                  }`}
+                >
+                  {tab === "requests" ? `Requests (${requests.length})` : tab}
+                </button>
+              );
+            })}
           </div>
 
           {/* Search Input for Friends */}
           {activeTab !== "requests" && (
             <div className="relative mb-6 max-w-sm">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
               <input
                 type="text"
                 placeholder="Search friends..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none"
+                className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-150 dark:border-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-100 placeholder-gray-400 focus:outline-none focus:border-[var(--color-brand-accent-pink)] transition-all duration-200"
               />
             </div>
           )}
@@ -216,36 +205,36 @@ const Friends = () => {
           {activeTab === "requests" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {requests.length === 0 ? (
-                <div className="col-span-full text-center py-12 text-xs text-gray-500 font-bold uppercase">
+                <div className="col-span-full text-center py-12 text-xs text-gray-400 font-bold uppercase">
                   No pending friend requests.
                 </div>
               ) : (
                 requests.map((req) => (
                   <div
                     key={req.id}
-                    className="p-3.5 bg-white border-3 border-[var(--color-brand-border)] shadow-[3px_3px_0px_0px_var(--color-brand-border)] rounded-2xl flex items-center justify-between"
+                    className="p-4 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800/80 rounded-[20px] shadow-[0_2px_12px_rgba(0,0,0,0.01)] hover:shadow-md hover:scale-[1.01] transition-all duration-300 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar username={req.name} size="md" className="border-2 border-[var(--color-brand-border)] rounded-full" />
+                      <Avatar username={req.name} size="md" className="rounded-full" />
                       <div>
-                        <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)] uppercase">{req.name}</h4>
-                        <p className="text-[10px] text-gray-500 font-bold mt-0.5">@{req.username} • {req.mutuals} mutuals</p>
+                        <h4 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">{req.name}</h4>
+                        <p className="text-[10px] text-gray-400 mt-0.5">@{req.username} • {req.mutuals} mutuals</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleAcceptRequest(req)}
-                        className="p-2 rounded-xl bg-[#E6FCE8] border-2 border-[var(--color-brand-border)] shadow-[2px_2px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] text-[var(--color-brand-border)] flex items-center justify-center cursor-pointer"
+                        className="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-450 border border-emerald-100 dark:border-emerald-900/60 flex items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-95"
                         title="Accept"
                       >
-                        <Check size={14} strokeWidth={3} />
+                        <Check size={14} strokeWidth={2.5} />
                       </button>
                       <button
                         onClick={() => handleDeclineRequest(req.id)}
-                        className="p-2 rounded-xl bg-white border-2 border-[var(--color-brand-border)] shadow-[2px_2px_0px_0px_var(--color-brand-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] text-gray-400 hover:text-brand-danger flex items-center justify-center cursor-pointer"
+                        className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/20 dark:text-rose-450 border border-rose-100 dark:border-rose-900/60 flex items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-95"
                         title="Decline"
                       >
-                        <X size={14} strokeWidth={3} />
+                        <X size={14} strokeWidth={2.5} />
                       </button>
                     </div>
                   </div>
@@ -255,30 +244,30 @@ const Friends = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredFriends.length === 0 ? (
-                <div className="col-span-full text-center py-12 text-xs text-gray-500 font-bold uppercase">
+                <div className="col-span-full text-center py-12 text-xs text-gray-400 font-bold uppercase">
                   No friends found matching requirements.
                 </div>
               ) : (
                 filteredFriends.map((friend) => (
                   <div
                     key={friend.id}
-                    className="p-3.5 bg-white border-3 border-[var(--color-brand-border)] shadow-[3px_3px_0px_0px_var(--color-brand-border)] rounded-2xl flex items-center justify-between hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_var(--color-brand-border)] transition-all duration-150 group"
+                    className="p-4 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800/80 rounded-[20px] shadow-[0_2px_12px_rgba(0,0,0,0.01)] hover:shadow-md hover:scale-[1.01] transition-all duration-300 flex items-center justify-between group"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar
                         username={friend.name}
                         status={friend.status}
                         size="md"
-                        className="border-2 border-[var(--color-brand-border)] rounded-full"
+                        className="rounded-full"
                       />
                       <div>
-                        <h4 className="font-retro text-xs font-black text-[var(--color-brand-border)] uppercase">{friend.name}</h4>
-                        <p className="text-[10px] text-gray-500 font-bold mt-0.5">@{friend.username} • {friend.mutuals} mutuals</p>
+                        <h4 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">{friend.name}</h4>
+                        <p className="text-[10px] text-gray-400 mt-0.5">@{friend.username} • {friend.mutuals} mutuals</p>
                       </div>
                     </div>
                     <button
                       onClick={() => router.push("/chat")}
-                      className="p-2.5 rounded-xl bg-brand-primary-light border-2 border-[var(--color-brand-border)] text-[var(--color-brand-border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[2px_2px_0px_0px_var(--color-brand-border)]"
+                      className="p-2.5 rounded-xl bg-[var(--color-brand-accent-pink-light)]/20 hover:bg-[var(--color-brand-accent-pink-light)]/40 text-[var(--color-brand-accent-pink)] border border-[var(--color-brand-accent-pink-light)]/10 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
                     >
                       <MessageSquare size={14} strokeWidth={2.5} />
                     </button>
@@ -302,33 +291,33 @@ const Friends = () => {
         size="md"
       >
         <div className="flex flex-col gap-4">
-          <p className="text-[10px] text-[#8E7A82] leading-relaxed font-bold uppercase">
+          <p className="text-[11px] text-gray-400 leading-relaxed font-semibold">
             Search by name or username to add friends and start chatting with other users on Blink.
           </p>
 
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
             <input
               type="text"
               placeholder="Search by name or @username..."
               value={modalSearchQuery}
               onChange={(e) => setModalSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none"
+              className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-150 dark:border-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-100 focus:outline-none focus:border-[var(--color-brand-accent-pink)] transition-all duration-200"
             />
           </div>
 
           <div className="mt-2 space-y-2.5 max-h-[300px] overflow-y-auto">
             {modalSearching ? (
-              <div className="flex items-center justify-center py-8 text-gray-500 gap-2 font-bold text-xs uppercase">
-                <Loader2 size={14} className="animate-spin text-[var(--color-brand-border)]" />
-                <span>Searching stickers...</span>
+              <div className="flex items-center justify-center py-8 text-gray-400 gap-2 font-semibold text-xs">
+                <Loader2 size={14} className="animate-spin text-[var(--color-brand-accent-pink)]" />
+                <span>Searching directory...</span>
               </div>
             ) : modalSearchQuery.trim() === "" ? (
-              <div className="text-center py-8 text-[10px] text-gray-400 font-bold uppercase">
+              <div className="text-center py-8 text-[11px] text-gray-400 font-semibold">
                 Type a name to begin searching.
               </div>
             ) : modalSearchResults.length === 0 ? (
-              <div className="text-center py-8 text-[10px] text-gray-400 font-bold uppercase">
+              <div className="text-center py-8 text-[11px] text-gray-400 font-semibold">
                 No users found.
               </div>
             ) : (
@@ -337,23 +326,23 @@ const Friends = () => {
                 return (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-[#FFFBFD] border-2 border-[var(--color-brand-border)] hover:bg-brand-primary-light/40 transition-colors"
+                    className="flex items-center justify-between p-3.5 bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-150 dark:border-zinc-800/60 rounded-2xl hover:bg-zinc-100/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar username={user.name} src={user.profileImage} size="md" className="border border-[var(--color-brand-border)] rounded-full" />
+                      <Avatar username={user.name} src={user.profileImage} size="md" className="rounded-full" />
                       <div>
-                        <h5 className="font-retro text-xs font-black text-[var(--color-brand-border)] uppercase">{user.name}</h5>
-                        <p className="text-[9px] text-gray-500 font-bold">@{user.username}</p>
+                        <h5 className="text-xs font-semibold text-zinc-850 dark:text-zinc-200">{user.name}</h5>
+                        <p className="text-[9px] text-gray-400">@{user.username}</p>
                       </div>
                     </div>
                     {isFriend ? (
-                      <span className="text-[9px] uppercase font-black text-[var(--color-brand-border)] tracking-wider bg-brand-primary-light border-2 border-[var(--color-brand-border)] px-2.5 py-1 rounded-lg">
+                      <span className="text-[10px] font-bold text-[var(--color-brand-accent-pink)] bg-[var(--color-brand-accent-pink-light)]/20 border border-[var(--color-brand-accent-pink-light)]/20 px-3 py-1 rounded-xl">
                         Friends
                       </span>
                     ) : (
                       <button
                         onClick={() => handleAddFriend(user)}
-                        className="px-3.5 py-1.5 bg-[#E6FCE8] border-2 border-[var(--color-brand-border)] text-[var(--color-brand-border)] font-retro text-[10px] font-black rounded-xl hover:scale-105 active:scale-95 shadow-[1.5px_1.5px_0px_0px_var(--color-brand-border)] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-[0px_0px_0px_0px_var(--color-brand-border)] cursor-pointer"
+                        className="px-3.5 py-1.5 bg-[var(--color-brand-accent-pink-light)]/20 hover:bg-[var(--color-brand-accent-pink-light)]/40 text-[var(--color-brand-accent-pink)] border border-[var(--color-brand-accent-pink-light)]/10 font-bold text-[10px] rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
                       >
                         ADD
                       </button>
@@ -370,3 +359,5 @@ const Friends = () => {
 };
 
 export default Friends;
+
+

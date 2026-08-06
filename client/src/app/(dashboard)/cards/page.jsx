@@ -152,34 +152,21 @@ const GreetingStudio = () => {
   return (
     <div className="flex-1 p-6 overflow-y-auto max-w-5xl mx-auto w-full flex flex-col justify-center">
       {/* Outer Page Window */}
-      <div className="w-full flex flex-col h-full retro-window min-h-[600px]">
-        {/* Window Title Bar */}
-        <div className="px-4 py-2 bg-[#C5F8C7] border-b-3 border-[#C85B7C] flex items-center justify-between shrink-0 select-none">
-          <div className="flex items-center gap-2">
-            <Sparkles size={14} className="text-[#C85B7C]" />
-            <span className="font-retro text-[10px] font-black text-[#C85B7C] tracking-wider">GREETING_STUDIO.EXE</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FFCCD7] border border-[#C85B7C]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FFF1C5] border border-[#C85B7C]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#C5F8C7] border border-[#C85B7C]" />
-          </div>
-        </div>
-
+      <div className="w-full flex flex-col h-full bg-white dark:bg-zinc-900/60 backdrop-blur-md rounded-[24px] border border-zinc-150 dark:border-zinc-800/60 shadow-[0_4px_20px_rgba(0,0,0,0.015)] overflow-hidden min-h-[600px]">
         {/* Inner Content Grid */}
-        <div className="flex-1 p-6 bg-white overflow-y-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="flex-1 p-8 bg-white dark:bg-zinc-900/10 overflow-y-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: AI Builder Frame */}
           <div className="lg:col-span-1">
-            <div className="p-5 border-3 border-[#C85B7C] shadow-[3px_3px_0px_0px_#C85B7C] rounded-2xl bg-white sticky top-2">
-              <h3 className="font-retro text-xs font-black text-[#C85B7C] mb-4 flex items-center gap-2">
-                <Sparkles size={16} className="text-[#C85B7C]" />
-                <span>AI BUILDER.EXE</span>
+            <div className="p-6 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800/80 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.01)] sticky top-2">
+              <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-4 flex items-center gap-2">
+                <Sparkles size={15} className="text-[var(--color-brand-accent-pink)]" />
+                <span>AI Builder</span>
               </h3>
 
               <form onSubmit={handleGenerateAI} className="space-y-4">
                 {/* Prompt */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-black text-[#8E7A82] uppercase tracking-wider">
+                  <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
                     Describe card message
                   </label>
                   <textarea
@@ -188,20 +175,20 @@ const GreetingStudio = () => {
                     onChange={(e) => setPrompt(e.target.value)}
                     disabled={loading}
                     rows={4}
-                    className="w-full px-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none resize-none"
+                    className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-150 dark:border-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-100 placeholder-gray-400 focus:outline-none focus:border-[var(--color-brand-accent-pink)] transition-all duration-200 resize-none"
                   />
                 </div>
 
                 {/* Occasion */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-black text-[#8E7A82] uppercase tracking-wider">
+                  <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
                     Occasion
                   </label>
                   <select
                     value={occasion}
                     onChange={(e) => setOccasion(e.target.value)}
                     disabled={loading}
-                    className="w-full px-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+                    className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-150 dark:border-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-[var(--color-brand-accent-pink)] cursor-pointer transition-all duration-200"
                   >
                     {[
                       "Birthday",
@@ -212,7 +199,7 @@ const GreetingStudio = () => {
                       "Thank You",
                       "Congratulations",
                     ].map((occ) => (
-                      <option key={occ} value={occ} className="text-zinc-800">
+                      <option key={occ} value={occ} className="text-zinc-800 dark:text-zinc-200">
                         {occ}
                       </option>
                     ))}
@@ -221,17 +208,17 @@ const GreetingStudio = () => {
 
                 {/* Theme */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-black text-[#8E7A82] uppercase tracking-wider">
+                  <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
                     Artistic Style
                   </label>
                   <select
                     value={theme}
                     onChange={(e) => setTheme(e.target.value)}
                     disabled={loading}
-                    className="w-full px-3 py-2 rounded-xl bg-brand-bg border-2 border-[#C85B7C] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+                    className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-150 dark:border-zinc-800/60 text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-[var(--color-brand-accent-pink)] cursor-pointer transition-all duration-200"
                   >
                     {["Minimal", "Cute", "Luxury", "Anime", "Neon", "Glass"].map((th) => (
-                      <option key={th} value={th} className="text-zinc-800">
+                      <option key={th} value={th} className="text-zinc-800 dark:text-zinc-200">
                         {th}
                       </option>
                     ))}
@@ -240,23 +227,25 @@ const GreetingStudio = () => {
 
                 {/* Submit Buttons */}
                 <div className="flex flex-col gap-2 pt-2">
-                  <button
+                  <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-2.5 bg-[#FFE4EC] border-2 border-[#C85B7C] rounded-xl text-[#C85B7C] font-retro text-xs font-black shadow-[2px_2px_0px_0px_#C85B7C] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center gap-1.5 cursor-pointer"
+                    variant="primary"
+                    iconBefore={<Wand2 size={14} />}
+                    className="w-full"
                   >
-                    <Wand2 size={14} strokeWidth={2.5} />
-                    <span>GENERATE WITH AI</span>
-                  </button>
-                  <button
+                    Generate with AI
+                  </Button>
+                  <Button
                     type="button"
                     onClick={handleCreateManually}
                     disabled={loading}
-                    className="w-full py-2.5 bg-white border-2 border-[#C85B7C] rounded-xl text-zinc-500 font-retro text-xs font-black shadow-[2px_2px_0px_0px_#C85B7C] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center gap-1.5 cursor-pointer"
+                    variant="outline"
+                    iconBefore={<Edit3 size={14} />}
+                    className="w-full"
                   >
-                    <Edit3 size={14} strokeWidth={2.5} />
-                    <span>CREATE MANUALLY</span>
-                  </button>
+                    Create Manually
+                  </Button>
                 </div>
               </form>
             </div>
@@ -264,9 +253,9 @@ const GreetingStudio = () => {
 
           {/* Right Column: Templates Grid */}
           <div className="lg:col-span-2 space-y-6">
-            <h3 className="font-retro text-base font-black text-[#C85B7C] tracking-wide flex items-center gap-2">
-              <span>TEMPLATES DIRECTORY</span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFE4EC] border border-[#C85B7C]">
+            <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight flex items-center gap-2.5">
+              <span>Templates Directory</span>
+              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[var(--color-brand-accent-pink-light)]/20 text-[var(--color-brand-accent-pink)] border border-[var(--color-brand-accent-pink-light)]/10">
                 {templates.length} cards
               </span>
             </h3>
@@ -276,7 +265,7 @@ const GreetingStudio = () => {
                 <div
                   key={tpl.id}
                   onClick={() => openPreview(tpl)}
-                  className="group relative flex flex-col justify-between aspect-[1.4] p-5 border-3 border-[#C85B7C] shadow-[3px_3px_0px_0px_#C85B7C] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#C85B7C] transition-all rounded-2xl cursor-pointer bg-white overflow-hidden"
+                  className="group relative flex flex-col justify-between aspect-[1.4] p-6 border border-zinc-150 dark:border-zinc-800/80 rounded-[20px] shadow-[0_2px_12px_rgba(0,0,0,0.01)] hover:shadow-md hover:scale-[1.01] transition-all duration-350 cursor-pointer bg-white dark:bg-zinc-900 overflow-hidden"
                 >
                   {/* Background overlay gradient */}
                   <div
@@ -286,23 +275,23 @@ const GreetingStudio = () => {
                   {/* Header */}
                   <div className="flex justify-between items-start z-10">
                     <div>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[#C85B7C]">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--color-brand-accent-pink)]">
                         {tpl.occasion}
                       </span>
-                      <h4 className="font-retro text-xs font-black text-[#C85B7C] mt-0.5">{tpl.title.toUpperCase()}</h4>
+                      <h4 className="text-xs font-bold text-zinc-850 dark:text-zinc-150 mt-1">{tpl.title}</h4>
                     </div>
                     <span className="text-2xl">{tpl.accentSymbol}</span>
                   </div>
 
                   {/* Body Snippet */}
-                  <p className="text-[10px] text-zinc-500 font-bold line-clamp-2 mt-4 leading-relaxed z-10">
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium line-clamp-2 mt-4 leading-relaxed z-10">
                     {tpl.description}
                   </p>
 
                   {/* Footer */}
-                  <div className="flex justify-between items-center mt-6 pt-3 border-t border-[#C85B7C]/20 z-10">
-                    <span className="text-[9px] text-gray-400 font-bold uppercase">By {tpl.author}</span>
-                    <span className="text-[10px] text-[#C85B7C] flex items-center gap-1 font-black uppercase">
+                  <div className="flex justify-between items-center mt-6 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 z-10">
+                    <span className="text-[9px] text-gray-400 font-semibold">By {tpl.author}</span>
+                    <span className="text-[10px] text-[var(--color-brand-accent-pink)] flex items-center gap-1 font-bold">
                       <span>Preview</span>
                       <Eye size={12} strokeWidth={2.5} />
                     </span>
@@ -325,46 +314,48 @@ const GreetingStudio = () => {
           <div className="space-y-6 flex flex-col items-center">
             {/* Postcard Frame Mockup */}
             <div
-              className={`w-full aspect-[1.3] bg-gradient-to-br ${selectedTemplate.gradient} border-3 border-[#C85B7C] shadow-[4px_4px_0px_0px_#C85B7C] rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden`}
+              className={`w-full aspect-[1.3] bg-gradient-to-br ${selectedTemplate.gradient} border border-zinc-150 dark:border-zinc-800 shadow-md rounded-[20px] p-8 flex flex-col justify-between relative overflow-hidden`}
             >
               <div className="absolute inset-0 bg-white/10" />
 
               <div className="relative z-10 flex justify-between items-start">
-                <span className="text-[10px] font-black uppercase tracking-widest bg-white border-2 border-[#C85B7C] px-3 py-1 rounded-full text-[#C85B7C]">
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-white/80 border border-zinc-100 px-3.5 py-1 rounded-full text-zinc-700">
                   {selectedTemplate.occasion}
                 </span>
                 <span className="text-4xl animate-bounce">{selectedTemplate.accentSymbol}</span>
               </div>
 
               <div className="relative z-10 text-center my-4">
-                <p className="text-sm md:text-base font-retro font-black text-[#C85B7C] tracking-wide leading-relaxed px-4">
+                <p className="text-sm md:text-base font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight leading-relaxed px-4">
                   {selectedTemplate.description}
                 </p>
               </div>
 
-              <div className="relative z-10 border-t-2 border-[#C85B7C]/20 pt-4 flex justify-between items-center text-[8px] text-[#C85B7C] font-bold uppercase">
-                <span>BLINK STUDIO ENGINE v1.0</span>
-                <span>BY {selectedTemplate.author}</span>
+              <div className="relative z-10 border-t border-zinc-200/40 pt-4 flex justify-between items-center text-[9px] text-zinc-500 font-semibold">
+                <span>Blink Studio Engine v1.0</span>
+                <span>By {selectedTemplate.author}</span>
               </div>
             </div>
 
             {/* Modal Actions */}
             <div className="flex gap-3 w-full">
-              <button
+              <Button
                 onClick={() => {
                   toast.success("Saved greeting card successfully!");
                   setIsPreviewOpen(false);
                 }}
-                className="flex-1 py-2.5 bg-[#E6FCE8] border-2 border-[#C85B7C] rounded-xl text-[#C85B7C] font-retro text-xs font-black shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center cursor-pointer"
+                variant="primary"
+                className="flex-1"
               >
                 Save Card
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setIsPreviewOpen(false)}
-                className="flex-1 py-2.5 bg-white border-2 border-[#C85B7C] rounded-xl text-zinc-500 font-retro text-xs font-black shadow-[2px_2px_0px_0px_#C85B7C] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_#C85B7C] flex items-center justify-center cursor-pointer"
+                variant="secondary"
+                className="flex-1"
               >
                 Close Preview
-              </button>
+              </Button>
             </div>
           </div>
         )}

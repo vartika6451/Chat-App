@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }) {
       {/* Theme Toggle Button */}
       <button
         onClick={toggleTheme}
-        className="fixed top-5 right-6 z-40 p-2.5 rounded-xl bg-brand-surface border-2 border-brand-primary text-brand-primary hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_0px_var(--color-brand-primary)] cursor-pointer flex items-center justify-center"
+        className="fixed top-5 right-6 z-40 p-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-zinc-500 hover:text-[var(--color-brand-accent-pink)] hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer flex items-center justify-center"
         title="Toggle Theme"
       >
         {isDark ? <Sun size={15} /> : <Moon size={15} />}
@@ -42,7 +42,7 @@ export default function DashboardLayout({ children }) {
       <Sidebar />
 
       {/* Primary view content */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden retro-grid-bg">
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
         {children}
       </main>
     </div>

@@ -47,34 +47,34 @@ const Modal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeOnOverlayClick ? onClose : undefined}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-zinc-950/40 backdrop-blur-md"
           />
 
           {/* Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 15 }}
-            transition={{ type: "spring", duration: 0.4 }}
-            className={`relative w-full ${sizes[size]} glass-panel rounded-2xl overflow-hidden shadow-2xl border border-white/10 z-10 flex flex-col`}
+            exit={{ opacity: 0, scale: 0.96, y: 12 }}
+            transition={{ type: "spring", duration: 0.35 }}
+            className={`relative w-full ${sizes[size]} bg-white dark:bg-zinc-900 rounded-[28px] overflow-hidden shadow-2xl border border-zinc-100 dark:border-zinc-800 z-10 flex flex-col`}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-brand-surface/80">
+            <div className="flex items-center justify-between px-6 py-4.5 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900">
               {title && (
-                <h3 className="text-lg font-semibold text-[#2E2A25] tracking-wide">
+                <h3 className="text-base font-bold text-zinc-800 dark:text-zinc-100 tracking-tight">
                   {title}
                 </h3>
               )}
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-gray-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl text-gray-400 hover:text-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition-all cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
             {/* Modal Content */}
-            <div className="px-6 py-6 overflow-y-auto max-h-[75vh]">
+            <div className="px-6 py-6 overflow-y-auto max-h-[75vh] bg-white dark:bg-zinc-900">
               {children}
             </div>
           </motion.div>

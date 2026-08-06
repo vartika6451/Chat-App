@@ -16,6 +16,8 @@
   --color-brand-border: #9a8b80;
   --color-brand-body-text: #4e4844;
   --color-brand-grid: rgba(154, 139, 128, 0.08);
+  --color-brand-accent-pink: #ee93b3;
+  --color-brand-accent-pink-light: #f5b6cc;
   
   color-scheme: light;
 }
@@ -33,6 +35,8 @@
   --color-brand-border: #E58AA4;
   --color-brand-body-text: #F5EAEF;
   --color-brand-grid: rgba(229, 138, 164, 0.05);
+  --color-brand-accent-pink: #FE7B9B;
+  --color-brand-accent-pink-light: #2A1D22;
 
   color-scheme: dark;
 }

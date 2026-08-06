@@ -42,33 +42,33 @@ const Settings = () => {
 
       <div className="space-y-6">
         {/* Appearance Settings */}
-        <Card variant="glass" className="p-6 border-white/5 space-y-4">
-          <h3 className="text-sm font-bold text-zinc-900 tracking-wider uppercase flex items-center gap-2">
-            <Palette size={16} className="text-brand-primary" />
+        <Card variant="glass" className="p-6 space-y-4">
+          <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight flex items-center gap-2">
+            <Palette size={16} className="text-[var(--color-brand-accent-pink)]" />
             <span>Appearance & Theme</span>
           </h3>
 
-          <div className="flex items-center justify-between text-xs py-2 border-b border-zinc-800/40">
+          <div className="flex items-center justify-between text-xs py-3 border-b border-zinc-100 dark:border-zinc-800/80">
             <div>
-              <h4 className="font-semibold text-zinc-800">Force Dark Mode</h4>
-              <p className="text-gray-500 mt-0.5">Toggle default interface color palette</p>
+              <h4 className="font-semibold text-zinc-800 dark:text-zinc-250">Force Dark Mode</h4>
+              <p className="text-gray-400 dark:text-zinc-550 mt-0.5">Toggle default interface color palette</p>
             </div>
             <button
               onClick={toggleTheme}
-              className={`w-11 h-6 rounded-full transition-all cursor-pointer relative ${
-                darkMode ? "bg-brand-primary" : "bg-zinc-800"
+              className={`w-10 h-6 rounded-full transition-all cursor-pointer relative ${
+                darkMode ? "bg-[var(--color-brand-accent-pink)]" : "bg-zinc-200 dark:bg-zinc-800"
               }`}
             >
               <div
                 className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${
-                  darkMode ? "left-6" : "left-1"
+                  darkMode ? "left-5" : "left-1"
                 }`}
               />
             </button>
           </div>
 
           <div className="flex flex-col gap-1.5 pt-2">
-            <label className="text-xs font-semibold text-gray-400">Primary Color Override</label>
+            <label className="text-xs font-semibold text-zinc-500">Primary Color Override</label>
             <div className="flex gap-3 mt-1.5">
               {[
                 { name: "indigo", bg: "bg-indigo-500" },
@@ -90,17 +90,17 @@ const Settings = () => {
         </Card>
 
         {/* AI Theme Engine Settings */}
-        <Card variant="glass" className="p-6 border-white/5 space-y-4">
-          <h3 className="text-sm font-bold text-zinc-900 tracking-wider uppercase flex items-center gap-2">
-            <Sparkles size={16} className="text-[#C85B7C]" />
+        <Card variant="glass" className="p-6 space-y-4">
+          <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight flex items-center gap-2">
+            <Sparkles size={16} className="text-[var(--color-brand-accent-pink)]" />
             <span>AI Sentiment Themes</span>
           </h3>
 
           <div className="flex flex-col gap-4 text-xs">
             {/* Mode selection switches */}
-            <div className="flex flex-col gap-1.5">
-              <label className="font-semibold text-zinc-800">Theme Engine Control Mode</label>
-              <div className="flex gap-2.5 mt-1">
+            <div className="flex flex-col gap-2">
+              <label className="font-semibold text-zinc-650 dark:text-zinc-400">Theme Engine Control Mode</label>
+              <div className="flex flex-wrap gap-2.5 mt-1">
                 {[
                   { mode: "auto", label: "Auto (AI Sentiment)" },
                   { mode: "manual", label: "Manual Theme Lock" },
@@ -109,10 +109,10 @@ const Settings = () => {
                   <button
                     key={item.mode}
                     onClick={() => setThemeMode(item.mode)}
-                    className={`px-3 py-2 border-2 rounded-xl font-bold cursor-pointer transition-all ${
+                    className={`px-4 py-2 border rounded-xl font-bold cursor-pointer transition-all ${
                       themeMode === item.mode
-                        ? "bg-[#FFE4EC] border-[#C85B7C] text-[#C85B7C] shadow-[2px_2px_0px_0px_#C85B7C]"
-                        : "bg-white border-zinc-200 text-zinc-600 hover:border-[#C85B7C]/40"
+                        ? "bg-[var(--color-brand-accent-pink-light)]/20 border-[var(--color-brand-accent-pink-light)] text-[var(--color-brand-accent-pink)] shadow-sm"
+                        : "bg-white dark:bg-zinc-850 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                     }`}
                   >
                     {item.label}
@@ -124,11 +124,11 @@ const Settings = () => {
             {/* Locked theme selection dropdown - visible only in manual mode */}
             {themeMode === "manual" && (
               <div className="flex flex-col gap-1.5 pt-2 animate-fade-in">
-                <label className="font-semibold text-zinc-800">Select locked emotion theme</label>
+                <label className="font-semibold text-zinc-650 dark:text-zinc-400">Select locked emotion theme</label>
                 <select
                   value={lockedTheme}
                   onChange={(e) => lockTheme(e.target.value)}
-                  className="w-full max-w-xs px-3 py-2 bg-white border-2 border-[#C85B7C] text-zinc-800 font-bold rounded-xl focus:outline-none cursor-pointer"
+                  className="w-full max-w-xs px-4 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold rounded-2xl focus:outline-none cursor-pointer"
                 >
                   {[
                     { value: "friendly", label: "Friendly (Default Retro)" },
@@ -155,26 +155,26 @@ const Settings = () => {
         </Card>
 
         {/* Notification Settings */}
-        <Card variant="glass" className="p-6 border-white/5 space-y-4">
-          <h3 className="text-sm font-bold text-zinc-900 tracking-wider uppercase flex items-center gap-2">
-            <Bell size={16} className="text-brand-accent" />
+        <Card variant="glass" className="p-6 space-y-4">
+          <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight flex items-center gap-2">
+            <Bell size={16} className="text-[var(--color-brand-accent-pink)]" />
             <span>Notifications</span>
           </h3>
 
           <div className="flex items-center justify-between text-xs py-2">
             <div>
-              <h4 className="font-semibold text-zinc-800">Desktop Push Notifications</h4>
-              <p className="text-gray-500 mt-0.5">Show notifications on incoming messages</p>
+              <h4 className="font-semibold text-zinc-800 dark:text-zinc-250">Desktop Push Notifications</h4>
+              <p className="text-gray-400 dark:text-zinc-550 mt-0.5">Show notifications on incoming messages</p>
             </div>
             <button
               onClick={() => setNotifications(!notifications)}
-              className={`w-11 h-6 rounded-full transition-all cursor-pointer relative ${
-                notifications ? "bg-brand-primary" : "bg-zinc-800"
+              className={`w-10 h-6 rounded-full transition-all cursor-pointer relative ${
+                notifications ? "bg-[var(--color-brand-accent-pink)]" : "bg-zinc-200 dark:bg-zinc-800"
               }`}
             >
               <div
                 className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${
-                  notifications ? "left-6" : "left-1"
+                  notifications ? "left-5" : "left-1"
                 }`}
               />
             </button>
@@ -182,26 +182,26 @@ const Settings = () => {
         </Card>
 
         {/* Privacy Settings */}
-        <Card variant="glass" className="p-6 border-white/5 space-y-4">
-          <h3 className="text-sm font-bold text-zinc-900 tracking-wider uppercase flex items-center gap-2">
-            <Shield size={16} className="text-brand-success" />
+        <Card variant="glass" className="p-6 space-y-4">
+          <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight flex items-center gap-2">
+            <Shield size={16} className="text-[var(--color-brand-accent-pink)]" />
             <span>Security & Privacy</span>
           </h3>
 
-          <div className="flex items-center justify-between text-xs py-2 border-b border-zinc-800/40">
+          <div className="flex items-center justify-between text-xs py-3 border-b border-zinc-100 dark:border-zinc-800/80">
             <div>
-              <h4 className="font-semibold text-zinc-800">Send Read Receipts</h4>
-              <p className="text-gray-500 mt-0.5">Let contacts see when you read messages</p>
+              <h4 className="font-semibold text-zinc-800 dark:text-zinc-250">Send Read Receipts</h4>
+              <p className="text-gray-400 dark:text-zinc-550 mt-0.5">Let contacts see when you read messages</p>
             </div>
             <button
               onClick={() => setReadReceipts(!readReceipts)}
-              className={`w-11 h-6 rounded-full transition-all cursor-pointer relative ${
-                readReceipts ? "bg-brand-primary" : "bg-zinc-800"
+              className={`w-10 h-6 rounded-full transition-all cursor-pointer relative ${
+                readReceipts ? "bg-[var(--color-brand-accent-pink)]" : "bg-zinc-200 dark:bg-zinc-800"
               }`}
             >
               <div
                 className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${
-                  readReceipts ? "left-6" : "left-1"
+                  readReceipts ? "left-5" : "left-1"
                 }`}
               />
             </button>
@@ -209,18 +209,18 @@ const Settings = () => {
 
           <div className="flex items-center justify-between text-xs py-2">
             <div>
-              <h4 className="font-semibold text-zinc-800">Discoverable via email</h4>
-              <p className="text-gray-500 mt-0.5">Let users search for your profile by email</p>
+              <h4 className="font-semibold text-zinc-800 dark:text-zinc-250">Discoverable via email</h4>
+              <p className="text-gray-400 dark:text-zinc-550 mt-0.5">Let users search for your profile by email</p>
             </div>
             <button
               onClick={() => setProfileSearchable(!profileSearchable)}
-              className={`w-11 h-6 rounded-full transition-all cursor-pointer relative ${
-                profileSearchable ? "bg-brand-primary" : "bg-zinc-800"
+              className={`w-10 h-6 rounded-full transition-all cursor-pointer relative ${
+                profileSearchable ? "bg-[var(--color-brand-accent-pink)]" : "bg-zinc-200 dark:bg-zinc-800"
               }`}
             >
               <div
                 className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${
-                  profileSearchable ? "left-6" : "left-1"
+                  profileSearchable ? "left-5" : "left-1"
                 }`}
               />
             </button>
@@ -232,7 +232,7 @@ const Settings = () => {
           <Button variant="primary" size="md" onClick={handleSaveSettings} className="px-8">
             Save Settings
           </Button>
-          <Button variant="danger" size="md" onClick={handleLogout} className="px-8" iconBefore={<LogOut size={16} />}>
+          <Button variant="outline" size="md" onClick={handleLogout} className="px-8" iconBefore={<LogOut size={16} />}>
             Logout from Blink
           </Button>
         </div>

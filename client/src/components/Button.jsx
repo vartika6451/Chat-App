@@ -18,22 +18,22 @@ const Button = ({
   iconAfter,
   ...props
 }) => {
-  const baseStyles = "relative inline-flex items-center justify-center font-medium transition-all focus:outline-none rounded-xl active:scale-[0.98] select-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50";
+  const baseStyles = "relative inline-flex items-center justify-center font-semibold transition-all focus:outline-none rounded-2xl active:scale-[0.98] select-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50";
 
   const sizes = {
-    sm: "px-3.5 py-1.5 text-sm",
-    md: "px-5 py-2.5 text-base",
-    lg: "px-7 py-3.5 text-lg",
+    sm: "px-4 py-2 text-xs",
+    md: "px-5 py-2.5 text-sm",
+    lg: "px-6 py-3.5 text-base",
   };
 
   const variants = {
-    primary: "bg-brand-accent hover:bg-brand-accent/90 text-zinc-950 shadow-md shadow-brand-accent/15 border border-transparent",
-    secondary: "bg-brand-card hover:bg-zinc-950 text-zinc-800 hover:text-white border border-zinc-800/80 shadow-sm",
-    accent: "bg-brand-primary hover:bg-brand-primary/90 text-white shadow-md shadow-brand-primary/15 border border-transparent",
-    danger: "bg-brand-danger hover:bg-brand-danger/95 text-zinc-950 shadow-md shadow-brand-danger/15 border border-transparent",
-    outline: "bg-transparent hover:bg-zinc-950 text-zinc-800 hover:text-white border border-zinc-800",
-    glass: "glass-panel hover:bg-zinc-950 text-zinc-800 hover:text-white border border-zinc-800 backdrop-blur-md",
-    ghost: "bg-transparent hover:bg-zinc-100 text-brand-text-secondary hover:text-zinc-900 border border-transparent",
+    primary: "bg-gradient-to-r from-[var(--color-brand-accent-pink-light)] to-[var(--color-brand-accent-pink)] hover:opacity-95 text-white shadow-md shadow-pink-500/10 border border-transparent",
+    secondary: "bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 shadow-sm",
+    accent: "bg-[var(--color-brand-accent-pink)] hover:opacity-90 text-white shadow-md shadow-pink-500/10 border border-transparent",
+    danger: "bg-rose-500 hover:bg-rose-600 text-white shadow-md shadow-rose-500/10 border border-transparent",
+    outline: "bg-transparent hover:bg-zinc-50 text-zinc-700 border border-zinc-200",
+    glass: "bg-white/30 hover:bg-white/40 border border-white/50 backdrop-blur-md text-zinc-800",
+    ghost: "bg-transparent hover:bg-zinc-100 text-zinc-600 hover:text-zinc-900 border border-transparent",
   };
 
   const handleClick = (e) => {
