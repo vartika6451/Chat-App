@@ -12,14 +12,22 @@ import Card from "../../../components/Card";
 
 const Settings = () => {
   const { logout } = useAuth();
-  const { isDark: darkMode, toggleTheme, themeMode, setThemeMode, lockedTheme, lockTheme } = useTheme();
+  const { 
+    isDark: darkMode, 
+    toggleTheme, 
+    themeMode, 
+    setThemeMode, 
+    lockedTheme, 
+    lockTheme,
+    primaryColor,
+    setPrimaryColor
+  } = useTheme();
   const router = useRouter();
 
   // Settings State Mock
   const [notifications, setNotifications] = useState(true);
   const [readReceipts, setReadReceipts] = useState(true);
   const [profileSearchable, setProfileSearchable] = useState(true);
-  const [chatTheme, setChatTheme] = useState("indigo");
 
   const handleSaveSettings = () => {
     toast.success("Settings saved successfully!", {
@@ -70,7 +78,7 @@ const Settings = () => {
           <div className="flex flex-col gap-1.5 pt-2">
             <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Primary Color Override</label>
             <div className="flex gap-3 mt-1.5">
-              {[
+               {[
                 { name: "indigo", bg: "bg-indigo-500" },
                 { name: "violet", bg: "bg-violet-500" },
                 { name: "rose", bg: "bg-rose-500" },
@@ -78,9 +86,9 @@ const Settings = () => {
               ].map((c) => (
                 <button
                   key={c.name}
-                  onClick={() => setChatTheme(c.name)}
+                  onClick={() => setPrimaryColor(c.name)}
                   className={`w-8 h-8 rounded-full ${c.bg} flex items-center justify-center border-2 cursor-pointer transition-transform hover:scale-105 ${
-                    chatTheme === c.name ? "border-white" : "border-transparent"
+                    primaryColor === c.name ? "border-white dark:border-zinc-200 ring-2 ring-[var(--color-brand-accent-pink)] ring-offset-2 dark:ring-offset-zinc-900" : "border-transparent"
                   }`}
                   title={`${c.name} theme`}
                 />

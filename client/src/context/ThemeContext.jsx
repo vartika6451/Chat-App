@@ -15,6 +15,7 @@ export const ThemeProvider = ({ children }) => {
   const [themeMode, setThemeModeState] = useState("auto"); // "auto" | "manual" | "disabled"
   const [activeEmotion, setActiveEmotion] = useState("friendly");
   const [lockedTheme, setLockedThemeState] = useState("friendly");
+  const [primaryColor, setPrimaryColorState] = useState("rose");
 
   // Load initial settings from localStorage on mount
   useEffect(() => {
@@ -28,6 +29,9 @@ export const ThemeProvider = ({ children }) => {
 
     const savedLocked = localStorage.getItem("blink_locked_theme") || "friendly";
     setLockedThemeState(savedLocked);
+
+    const savedColor = localStorage.getItem("blink_primary_color") || "rose";
+    setPrimaryColorState(savedColor);
   }, []);
 
   // Update DOM classes whenever theme variables change
@@ -57,7 +61,12 @@ export const ThemeProvider = ({ children }) => {
     } else {
       root.classList.remove("dark");
     }
-  }, [theme, themeMode, activeEmotion, lockedTheme]);
+
+    // 4. Sync primary color override class
+    const colorClasses = ["color-indigo", "color-violet", "color-rose", "color-emerald"];
+    colorClasses.forEach((cls) => root.classList.remove(cls));
+    root.classList.add(`color-${primaryColor}`);
+  }, [theme, themeMode, activeEmotion, lockedTheme, primaryColor]);
 
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
@@ -87,6 +96,11 @@ export const ThemeProvider = ({ children }) => {
     }
   };
 
+  const setPrimaryColor = (color) => {
+    setPrimaryColorState(color);
+    localStorage.setItem("blink_primary_color", color);
+  };
+
   return (
     <ThemeContext.Provider
       value={{
@@ -100,7 +114,9 @@ export const ThemeProvider = ({ children }) => {
         setActiveEmotion,
         lockedTheme,
         lockTheme,
-        updateEmotion
+        updateEmotion,
+        primaryColor,
+        setPrimaryColor
       }}
     >
       {children}

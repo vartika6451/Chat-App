@@ -546,5 +546,31 @@ p.sub {
 .animate-drift-medium { animation: drift-medium 7s ease-in-out infinite; }
 .animate-drift-fast { animation: drift-fast 5s ease-in-out infinite; }
 
+/* Primary Color Theme Overrides */
+.color-indigo {
+  --color-brand-primary: #6366f1;
+  --color-brand-accent-pink: #6366f1;
+  --color-brand-primary-light: rgba(99, 102, 241, 0.15);
+  --color-brand-accent-pink-light: rgba(99, 102, 241, 0.15);
+}
+.color-violet {
+  --color-brand-primary: #8b5cf6;
+  --color-brand-accent-pink: #8b5cf6;
+  --color-brand-primary-light: rgba(139, 92, 246, 0.15);
+  --color-brand-accent-pink-light: rgba(139, 92, 246, 0.15);
+}
+.color-rose {
+  --color-brand-primary: #f43f5e;
+  --color-brand-accent-pink: #f43f5e;
+  --color-brand-primary-light: rgba(244, 63, 94, 0.15);
+  --color-brand-accent-pink-light: rgba(244, 63, 94, 0.15);
+}
+.color-emerald {
+  --color-brand-primary: #10b981;
+  --color-brand-accent-pink: #10b981;
+  --color-brand-primary-light: rgba(16, 185, 129, 0.15);
+  --color-brand-accent-pink-light: rgba(16, 185, 129, 0.15);
+}
+
 
 
