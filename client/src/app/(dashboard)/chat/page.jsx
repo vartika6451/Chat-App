@@ -164,21 +164,59 @@ const Chat = () => {
   useEffect(() => {
     const initializeChat = async () => {
       const fetched = await fetchConversations();
+      let initialized = false;
+
       if (typeof window !== "undefined") {
-        const savedChat = localStorage.getItem("blink_active_chat");
-        if (savedChat) {
-          try {
-            const parsed = JSON.parse(savedChat);
-            if (parsed && parsed.id) {
-              const updated = fetched.find((c) => c.id === parsed.id);
-              if (updated) {
-                setActiveChat(updated);
+        const urlParams = new URLSearchParams(window.location.search);
+        const startUserId = urlParams.get("userId");
+        if (startUserId) {
+          const existing = fetched.find((c) => c.user.id === startUserId);
+          if (existing) {
+            setActiveChat(existing);
+            initialized = true;
+          } else {
+            try {
+              const res = await api.get(`/users/profile/${startUserId}`);
+              if (res.data.success) {
+                const selectedUser = res.data.user;
+                setActiveChat({
+                  id: null,
+                  user: {
+                    id: selectedUser.id,
+                    name: selectedUser.name,
+                    username: selectedUser.username,
+                    status: "offline",
+                    profileImage: selectedUser.avatar || "",
+                  },
+                  lastMessage: "",
+                  updatedAt: new Date().toISOString(),
+                });
+                initialized = true;
               }
-            } else if (parsed) {
-              setActiveChat(parsed);
+            } catch (err) {
+              console.error("Failed to start chat from url params:", err);
             }
-          } catch (e) {
-            console.error("Error restoring active chat:", e);
+          }
+          // Clear query param
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        if (!initialized) {
+          const savedChat = localStorage.getItem("blink_active_chat");
+          if (savedChat) {
+            try {
+              const parsed = JSON.parse(savedChat);
+              if (parsed && parsed.id) {
+                const updated = fetched.find((c) => c.id === parsed.id);
+                if (updated) {
+                  setActiveChat(updated);
+                }
+              } else if (parsed) {
+                setActiveChat(parsed);
+              }
+            } catch (e) {
+              console.error("Error restoring active chat:", e);
+            }
           }
         }
       }
@@ -472,6 +510,7 @@ const Chat = () => {
               >
                 <div className="flex items-center gap-3 overflow-hidden">
                   <Avatar
+                    src={chat.user.profileImage}
                     username={chat.user.name}
                     status={chat.user.status}
                     size="md"
@@ -518,6 +557,7 @@ const Chat = () => {
               <div className="px-6 py-3.5 border-b border-zinc-100 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/40 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Avatar
+                    src={activeChat.user.profileImage}
                     username={activeChat.user.name}
                     status={activeChat.user.status}
                     size="md"
@@ -594,7 +634,7 @@ const Chat = () => {
                           isOutgoing ? "self-end flex-row-reverse" : ""
                         }`}
                       >
-                        {!isOutgoing && <Avatar username={activeChat.user.name} size="sm" className="border-2 border-[var(--color-brand-border)] rounded-full" />}
+                        {!isOutgoing && <Avatar src={activeChat.user.profileImage} username={activeChat.user.name} size="sm" className="border-2 border-[var(--color-brand-border)] rounded-full" />}
                         <div className={`flex flex-col ${isOutgoing ? "items-end" : "items-start"}`}>
                           <div
                             className={`px-4 py-2 rounded-2xl text-xs font-bold border-2 border-[var(--color-brand-border)] shadow-[2px_2px_0px_0px_var(--color-brand-border)] ${
@@ -813,7 +853,7 @@ const Chat = () => {
                   onClick={() => handleStartChatWithUser(searchUser)}
                   className="flex items-center gap-3 p-2.5 rounded-xl border border-zinc-200/60 hover:bg-brand-primary-light/55 cursor-pointer transition-colors"
                 >
-                  <Avatar username={searchUser.name} size="md" className="border border-[var(--color-brand-border)] rounded-full" />
+                  <Avatar src={searchUser.profileImage} username={searchUser.name} size="md" className="border border-[var(--color-brand-border)] rounded-full" />
                   <div>
                     <div className="text-xs font-black text-[var(--color-brand-border)]">{searchUser.name}</div>
                     <div className="text-[10px] text-gray-500 font-bold">@{searchUser.username}</div>
@@ -1065,6 +1105,7 @@ const Chat = () => {
 
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
                       <Avatar
+                        src={activeChat?.user?.profileImage}
                         username={activeChat?.user?.name || "Blink"}
                         size="lg"
                         className="w-24 h-24 border-3 border-brand-primary rounded-full shadow-lg"
@@ -1083,6 +1124,7 @@ const Chat = () => {
                   <span className="absolute inline-flex h-24 w-24 rounded-full bg-brand-accent/20 animate-pulse" />
                   
                   <Avatar
+                    src={activeChat?.user?.profileImage}
                     username={activeChat?.user?.name || "Blink"}
                     size="lg"
                     className="w-20 h-20 border-3 border-brand-primary rounded-full relative z-10"

@@ -84,6 +84,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async (idToken) => {
+    setLoading(true);
+    try {
+      const res = await api.post("/auth/google", { idToken });
+      if (res.data.success) {
+        const { user, token } = res.data;
+        setUser(user);
+        localStorage.setItem("blink_token", token);
+        localStorage.setItem("blink_user", JSON.stringify(user));
+        setLoading(false);
+        return user;
+      }
+    } catch (error) {
+      setLoading(false);
+      const errMsg = extractErrorMessage(error, "Failed to authenticate with Google");
+      throw new Error(errMsg);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("blink_token");
@@ -115,6 +134,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         signup,
+        loginWithGoogle,
         logout,
         updateUserProfile,
       }}

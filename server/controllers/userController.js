@@ -63,7 +63,7 @@ export const getUserProfile = async (req, res) => {
 };
 
 export const updateUserProfile = async (req, res) => {
-  const { name, bio, username } = req.body;
+  const { name, bio, username, profileImage } = req.body;
   const userId = req.user.id;
   console.log(`📝 [USER] Profile update request received for user: ${userId}`);
 
@@ -87,6 +87,7 @@ export const updateUserProfile = async (req, res) => {
         name: name || undefined,
         bio: bio !== undefined ? bio : undefined,
         username: username || undefined,
+        profileImage: profileImage !== undefined ? profileImage : undefined,
       },
       select: {
         id: true,
@@ -105,6 +106,7 @@ export const updateUserProfile = async (req, res) => {
         name: updatedUser.name,
         username: updatedUser.username,
         bio: updatedUser.bio,
+        profileImage: updatedUser.profileImage || "",
         avatar: updatedUser.profileImage || "",
       },
     });
@@ -155,6 +157,109 @@ export const searchUsers = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Error searching users",
+    });
+  }
+};
+
+export const getUserActivities = async (req, res) => {
+  const userId = req.user.id;
+  console.log(`🔍 [USER] Fetching activities for user: ${userId}`);
+
+  try {
+    const activities = [];
+
+    // 1. Get user signup activity
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { createdAt: true },
+    });
+    if (user) {
+      activities.push({
+        id: "act-signup",
+        type: "signup",
+        title: "Joined Blink Chat App",
+        description: `Welcome to Blink! Your account was created successfully.`,
+        timestamp: user.createdAt,
+      });
+    }
+
+    // 2. Get last 3 conversations started/joined
+    const conversations = await prisma.conversation.findMany({
+      where: {
+        participants: {
+          some: { userId: userId },
+        },
+      },
+      include: {
+        participants: {
+          include: {
+            user: {
+              select: { id: true, name: true, username: true },
+            },
+          },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 3,
+    });
+
+    conversations.forEach((conv) => {
+      const otherParticipant = conv.participants.find((p) => p.userId !== userId);
+      if (otherParticipant) {
+        activities.push({
+          id: `act-conv-${conv.id}`,
+          type: "conversation",
+          title: `Started chat with ${otherParticipant.user.name}`,
+          description: `Established a new conversation channel under @${otherParticipant.user.username}.`,
+          timestamp: conv.createdAt,
+        });
+      }
+    });
+
+    // 3. Get last 3 messages sent
+    const lastMessages = await prisma.message.findMany({
+      where: { senderId: userId },
+      include: {
+        conversation: {
+          include: {
+            participants: {
+              include: {
+                user: {
+                  select: { name: true },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+    });
+
+    lastMessages.forEach((msg) => {
+      const otherParticipant = msg.conversation.participants.find((p) => p.userId !== userId);
+      const recipientName = otherParticipant ? otherParticipant.user.name : "chat";
+      activities.push({
+        id: `act-msg-${msg.id}`,
+        type: "message",
+        title: `Sent message to ${recipientName}`,
+        description: `"${msg.text.length > 40 ? msg.text.substring(0, 40) + '...' : msg.text}"`,
+        timestamp: msg.createdAt,
+      });
+    });
+
+    // Sort activities by timestamp desc
+    activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    return res.status(200).json({
+      success: true,
+      activities: activities.slice(0, 5), // return top 5
+    });
+  } catch (error) {
+    console.error("❌ [GET USER ACTIVITIES ERROR]", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching user activities",
     });
   }
 };

@@ -16,51 +16,44 @@ const Friends = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
-  // Mock Friends data
-  const defaultFriends = [
-    { id: "fr-1", name: "Leo Messi", username: "leomessi", status: "online", mutuals: 15 },
-    { id: "fr-2", name: "Taylor Swift", username: "taylorswift", status: "away", mutuals: 8 },
-    { id: "fr-3", name: "Sam Altman", username: "samaltman", status: "offline", mutuals: 3 },
-    { id: "fr-4", name: "Elon Musk", username: "elonmusk", status: "online", mutuals: 12 },
-    { id: "fr-5", name: "Ariana Grande", username: "arianagrande", status: "online", mutuals: 2 },
-    { id: "fr-6", name: "Zendaya", username: "zendaya", status: "offline", mutuals: 1 },
-  ];
-
-  // Mock Incoming Requests
-  const defaultRequests = [
-    { id: "req-1", name: "Bill Gates", username: "billgates", avatar: "", mutuals: 5 },
-    { id: "req-2", name: "Mark Zuckerberg", username: "zuck", avatar: "", mutuals: 21 },
-  ];
-
-  // State-backed lists
-  const [friends, setFriends] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("blink_friends_list");
-      return saved ? JSON.parse(saved) : defaultFriends;
-    }
-    return defaultFriends;
-  });
-
-  const [requests, setRequests] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("blink_friend_requests");
-      return saved ? JSON.parse(saved) : defaultRequests;
-    }
-    return defaultRequests;
-  });
-
-  // Sync to localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("blink_friends_list", JSON.stringify(friends));
-    }
-  }, [friends]);
+  const [friends, setFriends] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("blink_friend_requests", JSON.stringify(requests));
-    }
-  }, [requests]);
+    const fetchUsersAndStatus = async () => {
+      try {
+        setLoading(true);
+        const [usersRes, convRes] = await Promise.all([
+          api.get("/users/search"),
+          api.get("/chat/conversations")
+        ]);
+
+        if (usersRes.data.success) {
+          const conversations = convRes.data.conversations || [];
+          const mapped = usersRes.data.users.map((u) => {
+            const activeConv = conversations.find(c => c.user.id === u.id);
+            const status = activeConv ? activeConv.user.status : "offline";
+            return {
+              id: u.id,
+              name: u.name,
+              username: u.username,
+              profileImage: u.profileImage || "",
+              status: status,
+              mutuals: Math.floor(Math.random() * 4) + 1,
+            };
+          });
+          setFriends(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to fetch database users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsersAndStatus();
+  }, []);
 
   // Add Friend Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -93,48 +86,16 @@ const Friends = () => {
   }, [modalSearchQuery]);
 
   const handleAddFriend = (userToAdd) => {
-    // Check if already in friends list
-    const isAlreadyFriend = friends.some(
-      (f) => f.id === userToAdd.id || f.username.toLowerCase() === userToAdd.username.toLowerCase()
-    );
-
-    if (isAlreadyFriend) {
-      toast.error("User is already in your friends list!");
-      return;
-    }
-
-    setFriends((prev) => [
-      ...prev,
-      {
-        id: userToAdd.id,
-        name: userToAdd.name,
-        username: userToAdd.username,
-        status: "online", // Always show new friends/bots online initially
-        mutuals: 0,
-        profileImage: userToAdd.profileImage || "",
-      }
-    ]);
-
-    toast.success(`Added ${userToAdd.name} to your friends!`);
+    setIsAddModalOpen(false);
+    router.push(`/chat?userId=${userToAdd.id}`);
+    toast.success(`Starting conversation with ${userToAdd.name}!`);
   };
 
   const handleAcceptRequest = (req) => {
-    setRequests((prev) => prev.filter((r) => r.id !== req.id));
-    setFriends((prev) => [
-      ...prev,
-      {
-        id: req.id,
-        name: req.name,
-        username: req.username,
-        status: "online",
-        mutuals: req.mutuals || 0,
-      }
-    ]);
-    toast.success(`Accepted friend request from ${req.name}!`);
+    router.push(`/chat?userId=${req.id}`);
   };
 
   const handleDeclineRequest = (id) => {
-    setRequests((prev) => prev.filter((r) => r.id !== id));
     toast.success("Declined friend request");
   };
 
@@ -215,7 +176,7 @@ const Friends = () => {
                     className="p-4 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800/80 rounded-[20px] shadow-[0_2px_12px_rgba(0,0,0,0.01)] hover:shadow-md hover:scale-[1.01] transition-all duration-300 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar username={req.name} size="md" className="rounded-full" />
+                      <Avatar src={req.profileImage} username={req.name} size="md" className="rounded-full" />
                       <div>
                         <h4 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">{req.name}</h4>
                         <p className="text-[10px] text-gray-400 mt-0.5">@{req.username} • {req.mutuals} mutuals</p>
@@ -255,6 +216,7 @@ const Friends = () => {
                   >
                     <div className="flex items-center gap-3">
                       <Avatar
+                        src={friend.profileImage}
                         username={friend.name}
                         status={friend.status}
                         size="md"
@@ -266,7 +228,7 @@ const Friends = () => {
                       </div>
                     </div>
                     <button
-                      onClick={() => router.push("/chat")}
+                      onClick={() => router.push(`/chat?userId=${friend.id}`)}
                       className="p-2.5 rounded-xl bg-[var(--color-brand-accent-pink-light)]/20 hover:bg-[var(--color-brand-accent-pink-light)]/40 text-[var(--color-brand-accent-pink)] border border-[var(--color-brand-accent-pink-light)]/10 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
                     >
                       <MessageSquare size={14} strokeWidth={2.5} />

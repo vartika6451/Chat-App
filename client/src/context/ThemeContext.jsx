@@ -47,7 +47,7 @@ export const ThemeProvider = ({ children }) => {
       targetEmotion = activeEmotion;
     }
 
-    if (targetEmotion !== "none" && EMOTIONS.includes(targetEmotion)) {
+    if (theme !== "dark" && targetEmotion !== "none" && EMOTIONS.includes(targetEmotion)) {
       root.classList.add(`theme-${targetEmotion}`);
     }
 

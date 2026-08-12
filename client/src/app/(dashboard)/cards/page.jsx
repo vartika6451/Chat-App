@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sparkles, Edit3, Eye, Wand2, FileText } from "lucide-react";
 import { toast } from "react-hot-toast";
 import PageHeader from "../../../components/PageHeader";
@@ -16,6 +16,19 @@ const GreetingStudio = () => {
   const [loading, setLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("blink_generated_cards");
+      if (saved) {
+        setTemplates((prev) => {
+          const savedCards = JSON.parse(saved);
+          const nonDupSaved = savedCards.filter(sc => !prev.some(p => p.id === sc.id));
+          return [...nonDupSaved, ...prev];
+        });
+      }
+    }
+  }, []);
 
   // Mock initial templates
   const [templates, setTemplates] = useState([
@@ -130,7 +143,12 @@ const GreetingStudio = () => {
         accentSymbol: accentSymbols[occasion] || "✨",
       };
 
-      setTemplates((prev) => [newCard, ...prev]);
+      setTemplates((prev) => {
+        const updated = [newCard, ...prev];
+        const savedCards = JSON.parse(localStorage.getItem("blink_generated_cards") || "[]");
+        localStorage.setItem("blink_generated_cards", JSON.stringify([newCard, ...savedCards]));
+        return updated;
+      });
       toast.success("AI greeting card generated successfully!");
       setPrompt("");
     } catch (err) {

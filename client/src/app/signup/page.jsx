@@ -11,6 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import Card from "../../components/Card";
+import GoogleAuthModal from "../../components/GoogleAuthModal";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -20,7 +21,8 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const { signup, login } = useAuth();
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const { signup, login, loginWithGoogle } = useAuth();
   const router = useRouter();
 
   const validateForm = () => {
@@ -75,26 +77,19 @@ const SignUp = () => {
   };
 
   const handleGoogleSignup = () => {
-    toast.success("Redirecting to Google Auth...", {
-      style: {
-        background: "#18181B",
-        color: "#fff",
-        border: "1px solid #27272A",
-      },
-    });
-    setTimeout(async () => {
-      try {
-        await signup("Google User", "google_user", "google-user@gmail.com", "google-oauth-pwd");
-        router.push("/chat");
-      } catch (err) {
-        try {
-          await login("google-user@gmail.com", "google-oauth-pwd");
-          router.push("/chat");
-        } catch (loginErr) {
-          toast.error("Failed to sign up with Google");
-        }
-      }
-    }, 1000);
+    setShowGoogleModal(true);
+  };
+
+  const handleSelectGoogleAccount = async (idToken) => {
+    try {
+      await loginWithGoogle(idToken);
+      toast.success("Welcome to Blink!");
+      router.push("/chat");
+    } catch (err) {
+      toast.error(err.message || "Failed to authenticate with Google");
+    } finally {
+      setShowGoogleModal(false);
+    }
   };
 
   return (
@@ -240,6 +235,12 @@ const SignUp = () => {
           </p>
         </Card>
       </motion.div>
+
+      <GoogleAuthModal
+        isOpen={showGoogleModal}
+        onClose={() => setShowGoogleModal(false)}
+        onSelectAccount={handleSelectGoogleAccount}
+      />
     </div>
   );
 };

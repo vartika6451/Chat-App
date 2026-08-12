@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { User, Edit3, MessageSquare, Users, Sparkles, Save, X, Globe, ShieldAlert } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../../context/AuthContext";
@@ -10,6 +10,7 @@ import Button from "../../../components/Button";
 import Card from "../../../components/Card";
 import Input from "../../../components/Input";
 import Modal from "../../../components/Modal";
+import api from "../../../utils/api";
 
 const Profile = () => {
   const { user, updateUserProfile } = useAuth();
@@ -17,7 +18,57 @@ const Profile = () => {
   const [editName, setEditName] = useState(user?.name || "");
   const [editUsername, setEditUsername] = useState(user?.username || "");
   const [editBio, setEditBio] = useState(user?.bio || "");
+  const [editProfileImage, setEditProfileImage] = useState(user?.profileImage || "");
   const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState(null);
+  const [activities, setActivities] = useState([]);
+  const [cardsCount, setCardsCount] = useState(0);
+
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const profileRes = await api.get(`/users/profile/${user?.id}`);
+        if (profileRes.data.success) {
+          setProfileData(profileRes.data.user);
+        }
+      } catch (err) {
+        console.error("Failed to load user profile metrics:", err);
+      }
+
+      try {
+        const activitiesRes = await api.get("/users/activities");
+        if (activitiesRes.data.success) {
+          setActivities(activitiesRes.data.activities);
+        }
+      } catch (err) {
+        console.error("Failed to load user activity logs:", err);
+      }
+    };
+
+    if (user?.id) {
+      loadProfileData();
+    }
+
+    if (typeof window !== "undefined") {
+      const savedCards = JSON.parse(localStorage.getItem("blink_generated_cards") || "[]");
+      setCardsCount(savedCards.length);
+    }
+  }, [user]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Image must be smaller than 2MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditProfileImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -33,7 +84,9 @@ const Profile = () => {
         name: editName,
         username: editUsername,
         bio: editBio,
+        profileImage: editProfileImage,
       });
+      setProfileData(prev => prev ? { ...prev, name: editName, username: editUsername, bio: editBio, avatar: editProfileImage } : null);
       toast.success("Profile updated successfully!", {
         style: { background: "#18181B", color: "#fff", border: "1px solid #27272A" },
       });
@@ -49,6 +102,7 @@ const Profile = () => {
     setEditName(user?.name || "");
     setEditUsername(user?.username || "");
     setEditBio(user?.bio || "");
+    setEditProfileImage(user?.profileImage || "");
     setIsEditing(true);
   };
 
@@ -73,6 +127,7 @@ const Profile = () => {
         {/* Main profile Identity Card */}
         <Card variant="glass" className="md:col-span-1 p-6 flex flex-col items-center text-center">
           <Avatar
+            src={user?.profileImage}
             username={user?.name || "User"}
             size="xl"
             status="online"
@@ -106,12 +161,12 @@ const Profile = () => {
 
           {/* Stats grid */}
           <div className="grid grid-cols-3 gap-4">
-            <Card variant="default" className="p-5 flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-300">
+             <Card variant="default" className="p-5 flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-300">
               <div className="w-10 h-10 rounded-full bg-[var(--color-brand-accent-pink-light)]/20 flex items-center justify-center text-[var(--color-brand-accent-pink)] mb-3">
                 <Users size={18} />
               </div>
               <span className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight">
-                {user?.stats?.friends ?? 42}
+                {profileData?.stats?.friends ?? 0}
               </span>
               <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider mt-1">Friends</span>
             </Card>
@@ -121,7 +176,7 @@ const Profile = () => {
                 <Sparkles size={18} />
               </div>
               <span className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight">
-                {user?.stats?.cardsCreated ?? 12}
+                {cardsCount}
               </span>
               <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider mt-1">Cards Generated</span>
             </Card>
@@ -131,42 +186,54 @@ const Profile = () => {
                 <MessageSquare size={18} />
               </div>
               <span className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight">
-                {user?.stats?.messages ?? 1337}
+                {profileData?.stats?.messages ?? 0}
               </span>
               <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider mt-1">Total Messages</span>
             </Card>
           </div>
 
-          {/* Dummy account activities section */}
+          {/* Dynamic account activities section */}
           <h3 className="text-base font-bold text-zinc-800 dark:text-zinc-200 tracking-tight pt-2">Recent Activities</h3>
           <Card variant="default" className="p-6 space-y-4">
-            <div className="flex gap-4 items-start text-xs border-b border-zinc-100 dark:border-zinc-800/80 pb-4">
-              <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 mt-0.5 shrink-0">
-                <Sparkles size={14} />
-              </div>
-              <div>
-                <p className="text-zinc-700 dark:text-zinc-300 font-medium">Generated the &quot;Cyberpunk Birthday&quot; template using AI</p>
-                <span className="text-[10px] text-gray-400 dark:text-zinc-550 mt-1 block">2 hours ago</span>
-              </div>
-            </div>
-            <div className="flex gap-4 items-start text-xs border-b border-zinc-100 dark:border-zinc-800/80 pb-4">
-              <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 mt-0.5 shrink-0">
-                <User size={14} />
-              </div>
-              <div>
-                <p className="text-zinc-700 dark:text-zinc-300 font-medium">Accepted friend request from Mark Zuckerberg</p>
-                <span className="text-[10px] text-gray-400 dark:text-zinc-550 mt-1 block">Yesterday</span>
-              </div>
-            </div>
-            <div className="flex gap-4 items-start text-xs">
-              <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 mt-0.5 shrink-0">
-                <ShieldAlert size={14} />
-              </div>
-              <div>
-                <p className="text-zinc-700 dark:text-zinc-300 font-medium">Security settings audit completed</p>
-                <span className="text-[10px] text-gray-400 dark:text-zinc-550 mt-1 block">3 days ago</span>
-              </div>
-            </div>
+            {activities.length === 0 ? (
+              <p className="text-xs text-gray-400 text-center py-4">No recent activities found.</p>
+            ) : (
+              activities.map((act) => {
+                const getIcon = (type) => {
+                  switch (type) {
+                    case "signup": return <User size={14} />;
+                    case "conversation": return <Users size={14} />;
+                    case "message": return <MessageSquare size={14} />;
+                    default: return <Sparkles size={14} />;
+                  }
+                };
+
+                const formatTime = (ts) => {
+                  const diffMs = Date.now() - new Date(ts).getTime();
+                  const diffMins = Math.floor(diffMs / 60000);
+                  const diffHours = Math.floor(diffMins / 60);
+                  const diffDays = Math.floor(diffHours / 24);
+
+                  if (diffMins < 1) return "Just now";
+                  if (diffMins < 60) return `${diffMins}m ago`;
+                  if (diffHours < 24) return `${diffHours}h ago`;
+                  return `${diffDays}d ago`;
+                };
+
+                return (
+                  <div key={act.id} className="flex gap-4 items-start text-xs border-b border-zinc-100 dark:border-zinc-800/80 pb-4 last:border-b-0 last:pb-0">
+                    <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 mt-0.5 shrink-0">
+                      {getIcon(act.type)}
+                    </div>
+                    <div>
+                      <p className="text-zinc-700 dark:text-zinc-300 font-medium">{act.title}</p>
+                      <p className="text-[10px] text-gray-400 dark:text-zinc-500 mt-0.5">{act.description}</p>
+                      <span className="text-[9px] text-gray-400 dark:text-zinc-550 mt-1 block">{formatTime(act.timestamp)}</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </Card>
         </div>
       </div>
@@ -174,6 +241,25 @@ const Profile = () => {
       {/* Edit Profile Modal */}
       <Modal isOpen={isEditing} onClose={() => setIsEditing(false)} title="Edit Public Identity" size="md">
         <form onSubmit={handleUpdateProfile} className="space-y-4">
+          <div className="flex flex-col items-center gap-2 pb-4">
+            <label className="text-xs font-semibold text-zinc-500">Profile Picture</label>
+            <div className="relative group cursor-pointer" onClick={() => document.getElementById("avatar-file-input").click()}>
+              <Avatar src={editProfileImage} username={editName} size="xl" className="border-4 border-[var(--color-brand-accent-pink-light)]/20 rounded-full" />
+              <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <Edit3 size={20} className="text-white" />
+              </div>
+            </div>
+            <input
+              id="avatar-file-input"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+              disabled={loading}
+            />
+            <span className="text-[10px] text-gray-400">Click to upload custom image (max 2MB)</span>
+          </div>
+
           <Input
             label="Full Name"
             value={editName}

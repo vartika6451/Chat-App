@@ -216,15 +216,44 @@ const Landing = () => {
           transition: "opacity 1s ease",
         }}
       >
-        <div className="logo font-logo font-extrabold text-[22px] tracking-wide flex items-center gap-2 text-white">
-          <span className="dot w-[9px] h-[9px] rounded-full bg-gradient-to-r from-[var(--color-brand-primary-light)] to-[var(--color-brand-danger)] shadow-[0_0_12px_2px_rgba(238,147,179,.7)]" />
-          Blink
+        <div className="logo font-logo font-extrabold text-[22px] tracking-wide flex items-center gap-2.5 text-white">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ filter: "drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.2))" }}
+          >
+            {/* Cute Cat Head Silhouette */}
+            <path d="M3 12c0-3 1-6.5 3-8l3.5 3c1.5-.6 3.5-.6 5 0L18 4c2 1.5 3 5 3 8 0 5-4 9-9 9s-9-4-9-9z" />
+            {/* Inner Ears (Pink accent matching the UI) */}
+            <path d="M6 7.5L8 9.5" stroke="#ee93b3" strokeWidth="1.5" />
+            <path d="M18 7.5L16 9.5" stroke="#ee93b3" strokeWidth="1.5" />
+            {/* Winking Left Eye */}
+            <path d="M7.5 12c.5 1.2 1.5 1.2 2 0" strokeWidth="2.2" />
+            {/* Open Right Eye */}
+            <circle cx="15.5" cy="11.5" r="1.8" fill="#ffffff" stroke="none" />
+            {/* Cute Neko Mouth */}
+            <path d="M12 14v1c-.3.4-.7.4-1 0M12 15c.3.4.7.4 1 0" strokeWidth="1.5" />
+            {/* Whiskers */}
+            <path d="M4 14.5H1M3.5 16.5L1 17M20 14.5h3M20.5 16.5l2.5.5" strokeWidth="1.5" />
+          </svg>
+          <span style={{
+            fontFamily: "'Great Vibes', cursive",
+            fontSize: "42px",
+            fontWeight: "normal",
+            textTransform: "none",
+            lineHeight: 1,
+            paddingBottom: "2px",
+            color: "#ffffff",
+            filter: "drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.2)) drop-shadow(0px 0px 4px rgba(238, 147, 179, 0.4))",
+            display: "inline-block"
+          }}>Blink</span>
         </div>
-        <nav className="hidden md:flex gap-8">
-          <a href="#product" className="text-sm text-white/85 hover:text-white/70 transition-opacity">Product</a>
-          <a href="#experience" className="text-sm text-white/85 hover:text-white/70 transition-opacity">Experience</a>
-          <a href="#download" className="text-sm text-white/85 hover:text-white/70 transition-opacity">Download</a>
-        </nav>
       </header>
 
       {/* 4. Main content */}
@@ -302,6 +331,7 @@ const Landing = () => {
               opacity: isFinalVisible ? 1 : 0,
               transform: isFinalVisible ? "translateY(0)" : "translateY(18px)",
               transition: "transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease",
+              color: "#ffffff"
             }}
           >
             Stop texting. Start vibing.
@@ -334,9 +364,14 @@ const Landing = () => {
               opacity: isFinalVisible ? 1 : 0,
               transform: isFinalVisible ? "translateY(0)" : "translateY(18px)",
               transition: "transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease",
+              color: "rgba(255, 255, 255, 0.95)",
+              fontFamily: "'Great Vibes', cursive",
+              fontSize: "28px",
+              lineHeight: 1.3,
+              textTransform: "none"
             }}
           >
-            Blink is a cozy corner for your closest friends. Share how you feel with dynamic ambient spaces, custom aesthetic cards, and real-time vibe checks.
+            <span style={{ color: "#ee93b3" }}>Blink</span> is a cozy corner for your closest friends. Share how you feel with dynamic ambient spaces, custom aesthetic cards, and real-time vibe checks.
           </p>
 
           {/* CTA Row */}
@@ -350,9 +385,6 @@ const Landing = () => {
           >
             <button onClick={() => router.push("/signup")} className="btn-custom primary">
               vibe with us
-            </button>
-            <button onClick={() => router.push("/login")} className="btn-custom ghost">
-              sign in
             </button>
           </div>
 
