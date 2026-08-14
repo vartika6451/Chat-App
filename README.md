@@ -2,6 +2,9 @@
 
 Blink is a modern, retro-themed real-time chat application featuring real-time messaging, calendar scheduling, audio/video call stubs, and an **AI Emotion Adaptive Theme Engine** that transforms the interface's style based on conversation sentiment.
 
+> [!NOTE]
+> For a deep dive into the system design, API schemas, WebSocket protocols, and implementation specifications, see the detailed [Project Architecture & Technical Documentation](file:///Users/vartikasharma/.gemini/antigravity-ide/brain/40b5e0a8-afa3-438f-88d0-ac0d9bcd85e3/project_architecture.md).
+
 ---
 
 ## 🚀 Key Features

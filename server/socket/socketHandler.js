@@ -82,34 +82,34 @@ export const initSocket = (server) => {
           
           if (!conversationId || !text) return;
 
-          // Save message to database
-          const newMessage = await prisma.message.create({
-            data: {
-              text,
-              senderId: userId,
-              conversationId,
-            },
-            include: {
-              sender: {
-                select: {
-                  id: true,
-                  name: true,
-                  username: true,
+          // Fetch participants and save message in parallel to reduce remote DB query sequence latency
+          const [newMessage, participants] = await Promise.all([
+            prisma.message.create({
+              data: {
+                text,
+                senderId: userId,
+                conversationId,
+              },
+              include: {
+                sender: {
+                  select: {
+                    id: true,
+                    name: true,
+                    username: true,
+                  }
                 }
               }
-            }
-          });
+            }),
+            prisma.conversationParticipant.findMany({
+              where: { conversationId },
+            })
+          ]);
 
-          // Update conversation updatedAt timestamp
-          await prisma.conversation.update({
+          // Update conversation updatedAt timestamp in background
+          prisma.conversation.update({
             where: { id: conversationId },
             data: { updatedAt: new Date() },
-          });
-
-          // Fetch all conversation participants
-          const participants = await prisma.conversationParticipant.findMany({
-            where: { conversationId },
-          });
+          }).catch(err => console.error("❌ [SOCKET] Conversation timestamp update error:", err));
 
           // Broadcast to all active participants in the conversation
           const broadcastPayload = {
@@ -128,10 +128,10 @@ export const initSocket = (server) => {
             sendMessageToUser(p.userId, broadcastPayload);
           });
 
-          // Trigger emotion classification broadcast
+          // Trigger emotion classification broadcast in background
           broadcastEmotionUpdate(conversationId);
 
-          // Trigger simulated AI reply if conversation contains an AI bot
+          // Trigger simulated AI reply in background
           triggerAIReplyIfNeeded(conversationId, text, userId);
         }
       } catch (err) {
@@ -152,42 +152,128 @@ export const initSocket = (server) => {
 const AI_BOTS = {
   jarvis: {
     name: "Jarvis AI",
-    getReply: (userMsg) => {
-      const msg = userMsg.toLowerCase();
-      if (msg.includes("hello") || msg.includes("hi")) {
-        return "Hello! I am Jarvis, your virtual assistant. How can I help you today?";
+    getReply: async (userMsg) => {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        try {
+          const prompt = `You are Jarvis AI, a highly professional, efficient, and friendly AI assistant. The user is talking to you in a chat app. Keep your response brief, helpful, professional, and limited to 2-3 sentences.
+User message: "${userMsg}"
+Jarvis AI response:`;
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+              })
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (reply) return reply.trim();
+          }
+        } catch (err) {
+          console.warn("⚠️ [AI BOT] Gemini reply failed, using local rules:", err.message);
+        }
       }
-      if (msg.includes("help")) {
-        return "I can help you navigate Blink, manage your cards, or answer general questions. What do you need assistance with?";
+
+      // Local fallback parser
+      const msg = userMsg.toLowerCase().trim();
+      
+      // Greetings
+      if (/^(hi|hello|hey|hola|greet|hell|he+y)/.test(msg)) {
+        return "Hello! I am Jarvis, your professional AI assistant. How can I help you today?";
       }
-      if (msg.includes("time")) {
-        return `The current time is ${new Date().toLocaleTimeString()}.`;
+      
+      // Help
+      if (msg.includes("help") || msg.includes("assist") || msg.includes("support")) {
+        return "I am here to assist you. You can ask me to help you navigate Blink, manage greeting cards, schedule calls, or answer general inquiries. What can I do for you?";
       }
-      if (msg.includes("who are you")) {
-        return "I am Jarvis, an AI assistant configured to help you test the Blink chat application.";
+
+      // Time
+      if (msg.includes("time") || msg.includes("date")) {
+        return `The current local time is ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}. Please let me know if you need help scheduling any calls or messages around this time.`;
       }
-      return "Understood. I'm analyzing your request. Is there anything specific you would like me to do?";
+
+      // Who are you / background
+      if (msg.includes("who are you") || msg.includes("your name") || msg.includes("what is jarvis")) {
+        return "I am Jarvis AI, a professional virtual assistant integrated into Blink. I am designed to assist with scheduling, productivity, and test execution workflows.";
+      }
+
+      // Status / How are you
+      if (msg.includes("how are you") || msg.includes("how is it going") || msg.includes("how's it going")) {
+        return "I am operating at peak efficiency, thank you for asking. How is your project going, and how may I assist you today?";
+      }
+
+      // Productivity / Scheduling
+      if (msg.includes("schedule") || msg.includes("calendar") || msg.includes("remind")) {
+        return "You can schedule messages or calls in Blink by clicking the clock or phone icons at the top right of the chat window. Let me know if you would like me to guide you through the process.";
+      }
+
+      // Card / Studio
+      if (msg.includes("card") || msg.includes("studio") || msg.includes("generator")) {
+        return "The Greeting Card Studio allows you to create customized cards using AI or manual layouts. You can access it via the 'Studio' icon in the sidebar navigation.";
+      }
+
+      // Generic professional fallback
+      return `Understood. I have analyzed your query: "${userMsg}". Please tell me if there's any specific action or information you require, and I'll resolve it efficiently.`;
     }
   },
   copilot: {
     name: "Blink Copilot",
-    getReply: (userMsg) => {
-      const msg = userMsg.toLowerCase();
-      if (msg.includes("hello") || msg.includes("hi")) {
-        return "Hey there! Blink Copilot here. Ready to write some code or whiteboard some ideas? 🚀";
+    getReply: async (userMsg) => {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        try {
+          const prompt = `You are Blink Copilot, a brilliant, professional coding assistant. The user is asking you code-related questions. Keep your reply highly helpful, technically accurate, and brief (2-3 sentences max). You can include brief Markdown code snippets.
+User message: "${userMsg}"
+Copilot response:`;
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+              })
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (reply) return reply.trim();
+          }
+        } catch (err) {
+          console.warn("⚠️ [AI BOT] Copilot Gemini reply failed, using local rules:", err.message);
+        }
       }
-      if (msg.includes("code") || msg.includes("javascript") || msg.includes("react")) {
-        return "React is awesome! For example, a simple functional component looks like this:\n```jsx\nfunction Welcome() {\n  return <h1>Hello from Copilot!</h1>;\n}\n```\nWhat are you coding right now?";
+
+      const msg = userMsg.toLowerCase().trim();
+
+      if (/^(hi|hello|hey|hola|greet|hell|he+y)/.test(msg)) {
+        return "Hey there! Blink Copilot at your service. Ready to write some code, review PRs, or whiteboard architecture ideas? 🚀";
       }
-      if (msg.includes("bug") || msg.includes("error")) {
-        return "Oh, a bug? Describe what's happening or paste the stack trace! Let's debug it together.";
+
+      if (msg.includes("code") || msg.includes("javascript") || msg.includes("react") || msg.includes("html") || msg.includes("css")) {
+        return "I love coding! For React components, make sure to keep props clean and use Hooks for state management. What project or language are you coding in right now?";
       }
-      return "That sounds interesting! Tell me more or paste some code, and let's work on it together.";
+
+      if (msg.includes("bug") || msg.includes("error") || msg.includes("broken") || msg.includes("fail")) {
+        return "Debugging is half the fun. Please share the error stack trace or describe the behavior, and let's track down the root cause together.";
+      }
+
+      if (msg.includes("database") || msg.includes("prisma") || msg.includes("sql")) {
+        return "Prisma is a great ORM for PostgreSQL. Make sure schemas are correctly migrated and relations are indexed. What table query are you working on?";
+      }
+
+      return "That sounds like a great engineering challenge! Tell me more about it or paste some code, and let's work on it together.";
     }
   },
   echo_bot: {
     name: "Echo Bot",
-    getReply: (userMsg) => {
+    getReply: async (userMsg) => {
       return `Echo: "${userMsg}"`;
     }
   }
@@ -221,8 +307,8 @@ export const triggerAIReplyIfNeeded = async (conversationId, userMessageText, se
     const botConfig = AI_BOTS[aiParticipant.user.username];
     const botUser = aiParticipant.user;
 
-    // Generate reply text
-    const replyText = botConfig.getReply(userMessageText);
+    // Generate reply text (async)
+    const replyText = await botConfig.getReply(userMessageText);
 
     // Simulate typing/response delay
     setTimeout(async () => {

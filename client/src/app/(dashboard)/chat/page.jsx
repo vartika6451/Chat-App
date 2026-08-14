@@ -259,7 +259,7 @@ const Chat = () => {
       setMessages([]);
       setActiveEmotion("friendly");
     }
-  }, [activeChat]);
+  }, [activeChat?.id, activeChat?.user?.id]);
 
   // Setup WebSocket connection
   useEffect(() => {
@@ -292,7 +292,16 @@ const Chat = () => {
             setMessages((prev) => {
               // Avoid duplicate messages
               if (prev.some((m) => m.id === newMsg.id)) return prev;
-              return [...prev, newMsg];
+              
+              // Filter out the optimistic message matching this message text and sender
+              const filtered = prev.filter((m) => {
+                if (m.id.startsWith("opt-") && m.text === newMsg.text && m.senderId === newMsg.senderId) {
+                  return false;
+                }
+                return true;
+              });
+              
+              return [...filtered, newMsg];
             });
           }
 
@@ -384,6 +393,24 @@ const Chat = () => {
 
     // If it's a pre-existing conversation, send via WebSocket
     if (activeChat.id) {
+      const optimisticId = `opt-${Date.now()}`;
+      const optimisticMessage = {
+        id: optimisticId,
+        conversationId: activeChat.id,
+        senderId: user.id,
+        text: messageText,
+        createdAt: new Date().toISOString(),
+        sender: {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+        },
+        sending: true,
+      };
+
+      // Optimistically append the message
+      setMessages((prev) => [...prev, optimisticMessage]);
+
       if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
         socketRef.current.send(
           JSON.stringify({
@@ -403,6 +430,8 @@ const Chat = () => {
           });
         } catch (err) {
           console.error("❌ [CLIENT] Send message REST error:", err);
+          // Remove the optimistic message on failure
+          setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
           toast.error("Failed to send message");
         }
       }
@@ -835,7 +864,7 @@ const Chat = () => {
               placeholder="Search by name or username..."
               value={userSearchQuery}
               onChange={(e) => setUserSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 dark:text-zinc-150 focus:outline-none"
             />
           </div>
 
@@ -905,7 +934,7 @@ const Chat = () => {
               value={scheduledMsgText}
               onChange={(e) => setScheduledMsgText(e.target.value)}
               placeholder="Type your message to schedule..."
-              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 placeholder-gray-400 focus:outline-none resize-none"
+              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 dark:text-zinc-150 placeholder-gray-400 focus:outline-none resize-none"
               rows={3}
               required
             />
@@ -916,7 +945,7 @@ const Chat = () => {
               type="datetime-local"
               value={scheduledMsgTime}
               onChange={(e) => setScheduledMsgTime(e.target.value)}
-              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 dark:text-zinc-150 focus:outline-none cursor-pointer"
               required
             />
           </div>
@@ -1018,7 +1047,7 @@ const Chat = () => {
                 value={scheduledCallTitle}
                 onChange={(e) => setScheduledCallTitle(e.target.value)}
                 placeholder="Weekly Sync, Brainstorming, etc."
-                className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none"
+                className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 dark:text-zinc-150 focus:outline-none"
                 required
               />
             </div>
@@ -1028,7 +1057,7 @@ const Chat = () => {
                 <select
                   value={scheduledCallType}
                   onChange={(e) => setScheduledCallType(e.target.value)}
-                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 dark:text-zinc-150 focus:outline-none cursor-pointer"
                 >
                   <option value="audio">Audio Connection</option>
                   <option value="video">Video Stream</option>
@@ -1040,7 +1069,7 @@ const Chat = () => {
                   type="datetime-local"
                   value={scheduledCallTime}
                   onChange={(e) => setScheduledCallTime(e.target.value)}
-                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 focus:outline-none cursor-pointer"
+                  className="w-full mt-1.5 px-3 py-2.5 rounded-xl bg-brand-bg border-2 border-[var(--color-brand-border)] text-xs text-zinc-800 dark:text-zinc-150 focus:outline-none cursor-pointer"
                   required
                 />
               </div>

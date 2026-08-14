@@ -65,7 +65,7 @@ const HeartSVG = ({ color }) => (
 const RomanticParticles = () => {
   const list = useParticles(10, "romantic");
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-40">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-80">
       {list.map((p) => (
         <motion.div
           key={p.id}
